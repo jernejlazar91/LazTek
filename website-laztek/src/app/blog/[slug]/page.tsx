@@ -1,8 +1,18 @@
-import {notFound} from 'next/navigation'
-import {PortableText} from '@portabletext/react'
+import {
+  Breadcrumbs,
+  CTASection,
+  TechnicalBadge,
+} from '@/components/engineering/DesignSystem'
+import JsonLd from '@/components/engineering/JsonLd'
+import RichText from '@/components/engineering/RichText'
 import SiteHeader from '@/components/SiteHeader'
+import {pageMetadata} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
+import type {Metadata} from 'next'
+import Link from 'next/link'
+import {notFound} from 'next/navigation'
+import {cache} from 'react'
 
 async function getSiteSettings() {
   return client.fetch(`*[_type == "siteSettings"][0]{
@@ -11,7 +21,7 @@ async function getSiteSettings() {
   }`)
 }
 
-async function getPost(slug: string) {
+const getPost = cache(async (slug: string) => {
   return client.fetch(
     `*[_type == "blogPost" && slug.current == $slug][0]{
       _id,
@@ -22,52 +32,96 @@ async function getPost(slug: string) {
       publishedAt,
       content
     }`,
-    {slug}
+    {slug},
+  )
+})
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{slug: string}>
+}): Promise<Metadata> {
+  const {slug} = await params
+  const item = await getPost(slug)
+  if (!item)
+    return {title: 'Vsebina ni najdena', robots: {index: false, follow: false}}
+  return pageMetadata(
+    item.title,
+    item.excerpt || 'Blog LazTek Engineering.',
+    `/blog/${encodeURIComponent(slug)}`,
   )
 }
-
-export default async function BlogDetailPage({
+export default async function DetailPage({
   params,
 }: {
   params: Promise<{slug: string}>
 }) {
   const {slug} = await params
   const [site, post] = await Promise.all([getSiteSettings(), getPost(slug)])
-
   if (!post) notFound()
-
   return (
-    <main className="laztek-page">
-      <SiteHeader
-        logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
-        brandName={site?.brandName}
-        basePath="/"
-      />
+    <>
+      <SiteHeader brandName={site?.brandName} basePath="/" />
+      <main id="vsebina" tabIndex={-1} className="lt-theme">
+        <div className="lt-container">
+          <Breadcrumbs
+            items={[{label: 'Blog', href: '/blog'}, {label: post.title}]}
+          />
+          <article className="lt-article">
+            <header>
+              <TechnicalBadge>
+                {post.category || 'Blog / LazTek Engineering'}
+              </TechnicalBadge>
+              <h1>{post.title}</h1>
+              <p className="lt-lead">{post.excerpt}</p>
+              {post.publishedAt &&
+                !Number.isNaN(Date.parse(post.publishedAt)) && (
+                  <time className="lt-published" dateTime={post.publishedAt}>
+                    {new Date(post.publishedAt).toLocaleDateString('sl-SI', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      timeZone: 'UTC',
+                    })}
+                  </time>
+                )}
+            </header>
+            {post.coverImage && (
+              <img
+                className="lt-article-cover"
+                src={urlFor(post.coverImage).width(1600).auto('format').url()}
+                alt={post.coverImage.alt || post.title}
+                fetchPriority="high"
+              />
+            )}
+            <RichText value={post.content || []} />
 
-      <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-        <div className="mx-auto max-w-4xl">
-          <div className="inline-flex rounded-full border border-cyan-200/15 bg-cyan-100/[0.07] px-3 py-1 text-xs text-white/60">
-            Blog
-          </div>
-
-          <h1 className="mt-4 text-4xl font-semibold sm:text-5xl">{post.title}</h1>
-          <p className="mt-4 text-lg text-white/70">{post.excerpt}</p>
-
-          {post.coverImage ? (
-            <img
-              src={urlFor(post.coverImage).width(1400).height(900).url()}
-              alt={post.title || 'Blog image'}
-              className="mt-8 w-full rounded-[2rem] border border-cyan-200/15 object-cover shadow-[0_24px_80px_rgba(0,15,27,0.30)]"
-            />
-          ) : null}
-
-          <div className="mt-10 rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/68 p-6 shadow-[0_22px_70px_rgba(0,15,27,0.24)] backdrop-blur-xl sm:p-8">
-            <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-white/78 prose-a:text-cyan-200 prose-strong:text-white">
-              <PortableText value={post.content || []} />
-            </div>
-          </div>
+            <Link href="/blog" className="lt-text-link">
+              ← Nazaj: blog
+            </Link>
+          </article>
         </div>
-      </section>
-    </main>
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            name: post.title,
+            headline: post.title,
+            description: post.excerpt,
+            url: `https://laztek.si/blog/${encodeURIComponent(slug)}`,
+            datePublished: post.publishedAt,
+            publisher: {
+              '@type': 'Organization',
+              name: 'LazTek Engineering',
+              url: 'https://laztek.si',
+            },
+            image: post.coverImage
+              ? urlFor(post.coverImage).width(1600).url()
+              : undefined,
+          }}
+        />
+        <CTASection />
+      </main>
+    </>
   )
 }

@@ -666,6 +666,7 @@ export default function ContactForm() {
       />
 
       <form
+        aria-busy={sending}
         onSubmit={handleSubmit}
         className="rounded-[2rem] border border-cyan-200/15 bg-[#061a2c]/72 p-6 shadow-[0_26px_90px_rgba(0,18,32,0.30)] backdrop-blur-2xl sm:p-8"
       >
@@ -810,7 +811,7 @@ export default function ContactForm() {
             accept=".step,.stp,.stl,.obj"
             disabled={sending}
             onChange={handleFileChange}
-            className="hidden"
+            className="sr-only"
           />
 
           {selectedFiles.length > 0 ? (
@@ -934,7 +935,7 @@ export default function ContactForm() {
         </p>
 
         {success ? (
-          <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-5 py-4 text-sm leading-6 text-emerald-100">
+          <div role="status" className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-5 py-4 text-sm leading-6 text-emerald-100">
             <strong>
               Povpraševanje je bilo uspešno poslano.
             </strong>
@@ -946,7 +947,7 @@ export default function ContactForm() {
         ) : null}
 
         {error ? (
-          <div className="mt-5 rounded-2xl border border-red-300/20 bg-red-400/10 px-5 py-4 text-sm leading-6 text-red-100">
+          <div role="alert" className="mt-5 rounded-2xl border border-red-300/20 bg-red-400/10 px-5 py-4 text-sm leading-6 text-red-100">
             {error}
           </div>
         ) : null}

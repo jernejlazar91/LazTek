@@ -1,5 +1,5 @@
-import type {MetadataRoute} from 'next'
 import {client} from '@/sanity/client'
+import type {MetadataRoute} from 'next'
 
 type SanityItem = {
   slug: string
@@ -9,7 +9,7 @@ type SanityItem = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://laztek.si'
 
-  const [projects, blogPosts] = await Promise.all([
+  const [projects, blogPosts, galleryItems] = await Promise.all([
     client.fetch<SanityItem[]>(`
       *[_type == "project" && defined(slug.current)]{
         "slug": slug.current,
@@ -23,6 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         _updatedAt
       }
     `),
+    client.fetch<{_id: string; _updatedAt?: string}[]>(
+      `*[_type == "galleryItem"]{_id, _updatedAt}`,
+    ),
   ])
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -104,22 +107,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
-    url: `${baseUrl}/projekti/${project.slug}`,
-    lastModified: project._updatedAt
-      ? new Date(project._updatedAt)
-      : undefined,
+    url: `${baseUrl}/projekti/${encodeURIComponent(project.slug)}`,
+    lastModified: project._updatedAt ? new Date(project._updatedAt) : undefined,
     changeFrequency: 'monthly',
     priority: 0.7,
   }))
 
   const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post._updatedAt
-      ? new Date(post._updatedAt)
-      : undefined,
+    url: `${baseUrl}/blog/${encodeURIComponent(post.slug)}`,
+    lastModified: post._updatedAt ? new Date(post._updatedAt) : undefined,
     changeFrequency: 'monthly',
     priority: 0.6,
   }))
 
-  return [...staticPages, ...projectPages, ...blogPages]
+  const galleryPages: MetadataRoute.Sitemap = galleryItems.map((item) => ({
+    url: `${baseUrl}/galerija/${encodeURIComponent(item._id)}`,
+    lastModified: item._updatedAt ? new Date(item._updatedAt) : undefined,
+    changeFrequency: 'monthly',
+    priority: 0.5,
+  }))
+  return [...staticPages, ...projectPages, ...blogPages, ...galleryPages]
 }
