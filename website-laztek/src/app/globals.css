@@ -1,20 +1,100 @@
 @import "tailwindcss";
 
+/*
+  LazTek Engineering – unified production palette
+  Direction:
+  - deep graphite/navy = engineering / machinery
+  - steel blue = technical depth
+  - restrained cyan = active technology / scanning / CAD
+  - muted teal = secondary accent only
+  - warm off-white = avoids "refrigeration / ice" feeling
+*/
+
 :root {
-  --background: #071522;
-  --foreground: #f4fbff;
-  --laztek-navy: #061727;
-  --laztek-navy-2: #0a2942;
-  --laztek-blue: #0b5f8f;
-  --laztek-cyan: #27c8e7;
-  --laztek-turquoise: #35c9c2;
+  --background: #07131c;
+  --foreground: #edf4f6;
+
+  --laztek-ink: #06131d;
+  --laztek-navy: #071927;
+  --laztek-navy-2: #0b2434;
+  --laztek-steel: #123b50;
+  --laztek-blue: #176b91;
+  --laztek-cyan: #31b7c9;
+  --laztek-cyan-bright: #56cedd;
+  --laztek-teal: #299d96;
+
+  --laztek-text: #edf4f6;
+  --laztek-text-soft: #b6c7cf;
+  --laztek-text-muted: #8197a3;
+
+  --laztek-border: rgba(105, 190, 205, 0.14);
+  --laztek-glass: rgba(7, 25, 39, 0.72);
+  --laztek-glass-2: rgba(10, 34, 50, 0.58);
 }
 
+/*
+  Tailwind v4 palette remap.
+  Existing cyan / sky / blue / teal utilities across the whole site now
+  automatically use the same LazTek colour system.
+*/
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
+
+  /* CYAN – primary technical accent, deliberately less neon/icy */
+  --color-cyan-50: #f2fafb;
+  --color-cyan-100: #d9f1f4;
+  --color-cyan-200: #afe1e8;
+  --color-cyan-300: #72ceda;
+  --color-cyan-400: #31b7c9;
+  --color-cyan-500: #1999ad;
+  --color-cyan-600: #147b90;
+  --color-cyan-700: #145f70;
+  --color-cyan-800: #134b59;
+  --color-cyan-900: #113e49;
+  --color-cyan-950: #082830;
+
+  /* SKY – steel / scan blue */
+  --color-sky-50: #f3f8fa;
+  --color-sky-100: #deedf2;
+  --color-sky-200: #bedce5;
+  --color-sky-300: #8dc4d4;
+  --color-sky-400: #58a7bf;
+  --color-sky-500: #3288a7;
+  --color-sky-600: #216d8c;
+  --color-sky-700: #1d5872;
+  --color-sky-800: #1c495e;
+  --color-sky-900: #193d4f;
+  --color-sky-950: #0b2634;
+
+  /* BLUE – structural / deep engineering blue */
+  --color-blue-50: #f2f7fa;
+  --color-blue-100: #dceaf1;
+  --color-blue-200: #bed7e4;
+  --color-blue-300: #91bdd1;
+  --color-blue-400: #5b9bb9;
+  --color-blue-500: #377da2;
+  --color-blue-600: #286487;
+  --color-blue-700: #24516e;
+  --color-blue-800: #23455c;
+  --color-blue-900: #203a4e;
+  --color-blue-950: #102536;
+
+  /* TEAL – secondary material / process accent */
+  --color-teal-50: #f1f8f7;
+  --color-teal-100: #d9edeb;
+  --color-teal-200: #b5ddd8;
+  --color-teal-300: #83c6be;
+  --color-teal-400: #4eaaa2;
+  --color-teal-500: #348e88;
+  --color-teal-600: #28736f;
+  --color-teal-700: #255c59;
+  --color-teal-800: #224b49;
+  --color-teal-900: #1f3f3d;
+  --color-teal-950: #0d2524;
 }
 
 html {
@@ -32,7 +112,7 @@ body {
 }
 
 ::selection {
-  background: rgba(39, 200, 231, 0.34);
+  background: rgba(49, 183, 201, 0.32);
   color: #ffffff;
 }
 
@@ -46,7 +126,7 @@ details > summary {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(39, 200, 231, 0.42) rgba(4, 20, 33, 0.55);
+  scrollbar-color: rgba(49, 183, 201, 0.40) rgba(4, 17, 27, 0.72);
 }
 
 *::-webkit-scrollbar {
@@ -55,24 +135,30 @@ details > summary {
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(4, 20, 33, 0.55);
+  background: rgba(4, 17, 27, 0.72);
 }
 
 *::-webkit-scrollbar-thumb {
-  border: 2px solid rgba(4, 20, 33, 0.55);
+  border: 2px solid rgba(4, 17, 27, 0.72);
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(39, 200, 231, 0.72), rgba(11, 95, 143, 0.78));
+  background: linear-gradient(
+    180deg,
+    rgba(49, 183, 201, 0.72),
+    rgba(23, 107, 145, 0.84)
+  );
 }
 
-/* Globalni shell za podstrani. Ozadje iz layout.tsx ostane vidno,
-   vsebina pa dobi temnejši premium engineering kontrast. */
+/*
+  Global shell for subpages.
+  Dark enough to feel industrial, but not black / gaming.
+*/
 .laztek-page {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
   overflow-x: hidden;
   background: transparent;
-  color: white;
+  color: var(--laztek-text);
 }
 
 .laztek-page::before {
@@ -82,9 +168,23 @@ details > summary {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(circle at 78% 10%, rgba(23, 176, 205, 0.12), transparent 34%),
-    radial-gradient(circle at 12% 72%, rgba(15, 96, 143, 0.10), transparent 36%),
-    linear-gradient(115deg, rgba(3, 16, 28, 0.86) 0%, rgba(5, 26, 43, 0.76) 38%, rgba(7, 42, 64, 0.60) 72%, rgba(5, 35, 56, 0.46) 100%);
+    radial-gradient(
+      circle at 79% 8%,
+      rgba(49, 183, 201, 0.095),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 10% 72%,
+      rgba(36, 104, 137, 0.11),
+      transparent 38%
+    ),
+    linear-gradient(
+      116deg,
+      rgba(4, 16, 25, 0.90) 0%,
+      rgba(7, 26, 39, 0.82) 38%,
+      rgba(10, 43, 59, 0.70) 72%,
+      rgba(8, 34, 49, 0.58) 100%
+    );
 }
 
 .laztek-page::after {
@@ -93,25 +193,75 @@ details > summary {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 22%, transparent 80%, rgba(5,22,36,0.16));
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 250, 242, 0.012),
+      transparent 24%,
+      transparent 78%,
+      rgba(4, 17, 27, 0.20)
+    );
 }
 
-/* Enoten premium glass videz za temne kartice. */
+/* Main dark glass card */
 .laztek-glass {
-  border: 1px solid rgba(111, 224, 242, 0.14);
-  background: linear-gradient(145deg, rgba(8, 31, 50, 0.76), rgba(6, 26, 43, 0.58));
-  box-shadow: 0 22px 70px rgba(0, 15, 27, 0.24);
+  border: 1px solid var(--laztek-border);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(9, 31, 45, 0.78),
+      rgba(6, 23, 35, 0.62)
+    );
+  box-shadow:
+    0 22px 70px rgba(0, 10, 18, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(18px);
 }
 
+/* Light glass – warm/neutral, not ice-blue */
 .laztek-glass-light {
-  border: 1px solid rgba(170, 231, 242, 0.30);
-  background: linear-gradient(145deg, rgba(255,255,255,0.82), rgba(229,245,249,0.70));
-  box-shadow: 0 18px 60px rgba(16, 66, 94, 0.10);
+  border: 1px solid rgba(124, 179, 192, 0.24);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(250, 250, 247, 0.88),
+      rgba(233, 241, 241, 0.76)
+    );
+  box-shadow: 0 18px 60px rgba(12, 45, 63, 0.11);
   backdrop-filter: blur(18px);
 }
 
-a, button {
+/* Optional reusable semantic accents */
+.laztek-kicker {
+  color: #72ceda;
+}
+
+.laztek-muted {
+  color: var(--laztek-text-soft);
+}
+
+.laztek-border {
+  border-color: var(--laztek-border);
+}
+
+.laztek-cta {
+  background:
+    linear-gradient(
+      90deg,
+      #2fb0c3 0%,
+      #328bab 58%,
+      #2d6f98 100%
+    );
+  color: #f6fbfc;
+  box-shadow: 0 12px 34px rgba(24, 125, 151, 0.22);
+}
+
+.laztek-cta:hover {
+  box-shadow: 0 17px 44px rgba(24, 125, 151, 0.30);
+}
+
+a,
+button {
   -webkit-tap-highlight-color: transparent;
 }
 
