@@ -213,18 +213,6 @@ export default async function Home() {
               </div>
             </div>
           </section>
-          <section
-            className="lt-home-bridge"
-            aria-label="Povezan razvojni proces"
-          >
-            <div className="lt-container">
-              <p>3D skeniranje → CAD razvoj → funkcionalni del</p>
-              <Link href="/storitve">
-                Raziščite celoten inženirski proces →
-              </Link>
-            </div>
-          </section>
-
           {/* NADALJEVANJE STRANI - spodaj je ŠE VEDNO ista fixed HEX slika */}
           <div className="relative z-10">
             {/* STORITVE */}
