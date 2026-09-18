@@ -60,8 +60,7 @@ export default async function PrototypingPage() {
   const contactHref = site?.email ? `mailto:${site.email}` : '/#kontakt'
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -85,7 +84,7 @@ export default async function PrototypingPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
                 href={contactHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
               >
                 Opiši idejo ali problem
                 <ArrowRight size={16} />
@@ -99,7 +98,7 @@ export default async function PrototypingPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-sky-300/18 bg-gradient-to-br from-sky-400/14 to-indigo-500/10 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
+          <div className="rounded-[2rem] border border-sky-300/18 bg-gradient-to-br from-sky-400/14 to-blue-600/10 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
             <div className="mb-5 flex items-center gap-3">
               <div className="rounded-2xl border border-sky-300/20 bg-sky-400/10 p-3">
                 <Rocket size={24} className="text-cyan-300" />
@@ -168,7 +167,7 @@ function BackgroundGlow() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-400/12 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-fuchsia-500/10 blur-[120px]" />
+      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-sky-500/10 blur-[120px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_28%),linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:auto,80px_80px,80px_80px]" />
     </div>
   )

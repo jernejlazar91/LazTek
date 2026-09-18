@@ -37,8 +37,7 @@ export default async function GalleryPage() {
   const galleryItems = data?.galleryItems || []
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -66,7 +65,7 @@ export default async function GalleryPage() {
               <Link
                 key={item._id}
                 href={`/galerija/${item._id}`}
-                className="group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] transition hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-cyan-400/10"
+                className="group overflow-hidden rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-cyan-400/10"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-white/[0.04]">
                   {item.image ? (
@@ -100,7 +99,7 @@ export default async function GalleryPage() {
             ))}
           </div>
         ) : (
-          <div className="mt-12 rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 text-white/65">
+          <div className="mt-12 rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-8 text-white/65">
             Galerija je pripravljena. Ko dodaš galerijske elemente v Sanity, se bodo prikazali tukaj.
           </div>
         )}
@@ -113,7 +112,7 @@ function BackgroundGlow() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-[-10%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[140px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-fuchsia-500/15 blur-[160px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-blue-500/12 blur-[160px]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:80px_80px] opacity-30" />
     </div>
   )

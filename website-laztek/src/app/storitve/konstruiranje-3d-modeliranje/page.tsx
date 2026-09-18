@@ -169,8 +169,7 @@ export default async function CADModelingPage() {
   const site = data?.siteSettings
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -181,7 +180,7 @@ export default async function CADModelingPage() {
       <section className="mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <div className="mb-6 inline-flex rounded-full border border-indigo-300/15 bg-indigo-400/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-indigo-100/75">
+            <div className="mb-6 inline-flex rounded-full border border-blue-300/15 bg-blue-400/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-blue-100/75">
               CAD / 3D modeliranje / tehnični razvoj / DfAM
             </div>
             <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
@@ -195,7 +194,7 @@ export default async function CADModelingPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/kontakt"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
               >
                 Pošlji skico ali opis
                 <ArrowRight size={16} />
@@ -209,9 +208,9 @@ export default async function CADModelingPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-indigo-300/18 bg-gradient-to-br from-indigo-400/14 to-cyan-500/10 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
+          <div className="rounded-[2rem] border border-blue-300/18 bg-gradient-to-br from-blue-400/14 to-cyan-500/10 p-6 shadow-[0_20px_80px_rgba(0,0,0,0.25)]">
             <div className="mb-5 flex items-center gap-3">
-              <div className="rounded-2xl border border-indigo-300/20 bg-indigo-400/10 p-3">
+              <div className="rounded-2xl border border-blue-300/20 bg-blue-400/10 p-3">
                 <DraftingCompass size={24} className="text-cyan-300" />
               </div>
               <div>
@@ -294,7 +293,7 @@ export default async function CADModelingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/10 via-indigo-400/10 to-fuchsia-400/8 p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/10 via-sky-400/10 to-sky-400/8 p-6 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div>
               <div className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/65">Napredna optimizacija oblike</div>
@@ -321,7 +320,7 @@ export default async function CADModelingPage() {
             {advancedMethods.map((item) => {
               const Icon = item.icon
               return (
-                <article key={item.title} className="rounded-[1.75rem] border border-white/10 bg-[#050816]/45 p-6">
+                <article key={item.title} className="rounded-[1.75rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-6">
                   <div className="mb-5 inline-flex rounded-2xl border border-cyan-300/20 bg-cyan-400/10 p-3">
                     <Icon size={22} className="text-cyan-300" />
                   </div>
@@ -359,7 +358,7 @@ export default async function CADModelingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-white/10 bg-gradient-to-br from-indigo-400/12 via-cyan-400/8 to-fuchsia-400/10 p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-white/10 bg-gradient-to-br from-blue-400/12 via-cyan-400/8 to-sky-400/10 p-6 sm:p-8 lg:p-10">
           <div className="max-w-3xl">
             <div className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/65">Proces</div>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Od zahteve do uporabnega modela.</h2>
@@ -370,7 +369,7 @@ export default async function CADModelingPage() {
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-4">
             {process.map((step, index) => (
-              <article key={step.title} className="rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5 text-sm leading-7 text-white/72">
+              <article key={step.title} className="rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5 text-sm leading-7 text-white/72">
                 <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-400/10 font-semibold text-cyan-100">
                   {index + 1}
                 </div>
@@ -399,15 +398,15 @@ export default async function CADModelingPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-fuchsia-300/15 bg-fuchsia-400/10 p-6 sm:p-8">
-            <div className="mb-4 inline-flex rounded-2xl border border-fuchsia-300/20 bg-fuchsia-400/10 p-3">
-              <XCircle size={22} className="text-fuchsia-200" />
+          <div className="rounded-[2rem] border border-sky-300/15 bg-sky-400/10 p-6 sm:p-8">
+            <div className="mb-4 inline-flex rounded-2xl border border-sky-300/20 bg-sky-400/10 p-3">
+              <XCircle size={22} className="text-sky-200" />
             </div>
             <h2 className="text-2xl font-semibold tracking-tight">Kdaj moramo najprej razčistiti zahteve?</h2>
             <div className="mt-6 grid gap-3">
               {notIdeal.map((item) => (
                 <div key={item} className="flex items-start gap-3 text-sm leading-6 text-white/74">
-                  <XCircle size={17} className="mt-0.5 shrink-0 text-fuchsia-200" />
+                  <XCircle size={17} className="mt-0.5 shrink-0 text-sky-200" />
                   <span>{item}</span>
                 </div>
               ))}
@@ -417,7 +416,7 @@ export default async function CADModelingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <div className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/65">Naslednji korak</div>
@@ -430,7 +429,7 @@ export default async function CADModelingPage() {
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
               <Link
                 href="/kontakt"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.25)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.25)] transition hover:scale-[1.02]"
               >
                 Oddaj povpraševanje
                 <ArrowRight size={16} />
@@ -453,7 +452,7 @@ function BackgroundGlow() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-400/12 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-fuchsia-500/10 blur-[120px]" />
+      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-sky-500/10 blur-[120px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_28%),linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:auto,80px_80px,80px_80px]" />
     </div>
   )

@@ -73,11 +73,11 @@ export default async function SiteFooter() {
     'Slovenija'
 
   return (
-    <footer className="relative border-t border-white/10 bg-[#050816] text-white">
+    <footer className="relative border-t border-cyan-200/10 bg-[linear-gradient(180deg,rgba(3,19,32,0.96),rgba(2,13,23,0.99))] text-white shadow-[0_-20px_70px_rgba(0,21,36,0.18)]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-cyan-400/8 blur-3xl" />
 
-        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-indigo-500/8 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-blue-500/8 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -86,7 +86,7 @@ export default async function SiteFooter() {
           <div className="xl:col-span-2">
             <Link
               href="/"
-              className="inline-flex max-w-[300px] items-center rounded-[1.25rem] border border-white/10 bg-white/[0.04] px-4 py-3 transition hover:border-cyan-300/20 hover:bg-cyan-400/[0.06]"
+              className="inline-flex max-w-[300px] items-center rounded-[1.25rem] border border-cyan-200/10 bg-cyan-100/[0.035] px-4 py-3 transition hover:border-cyan-300/20 hover:bg-cyan-400/[0.06]"
             >
               <img
                 src="/laztek-logo.png"

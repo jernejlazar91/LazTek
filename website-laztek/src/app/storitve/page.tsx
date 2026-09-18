@@ -113,8 +113,7 @@ export default async function ServicesPage() {
   const contactHref = site?.email ? `mailto:${site.email}` : '/#kontakt'
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -142,7 +141,7 @@ export default async function ServicesPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
                 href={contactHref}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
               >
                 Pošlji povpraševanje
                 <ArrowRight size={16} />
@@ -211,19 +210,19 @@ export default async function ServicesPage() {
                 className={[
                   'group block rounded-[2rem] border p-6 transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(0,0,0,0.28)]',
                   index === 0 && 'border-cyan-300/18 bg-gradient-to-br from-cyan-400/16 to-sky-500/10',
-                  index === 1 && 'border-fuchsia-300/18 bg-gradient-to-br from-fuchsia-400/14 to-violet-500/10',
-                  index === 2 && 'border-indigo-300/18 bg-gradient-to-br from-indigo-400/14 to-cyan-500/10',
-                  index === 3 && 'border-indigo-300/18 bg-gradient-to-br from-indigo-400/14 to-cyan-500/10',
-                  index === 4 && 'border-sky-300/18 bg-gradient-to-br from-sky-400/14 to-indigo-500/10',
+                  index === 1 && 'border-sky-300/18 bg-gradient-to-br from-sky-400/14 to-blue-500/10',
+                  index === 2 && 'border-blue-300/18 bg-gradient-to-br from-blue-400/14 to-cyan-500/10',
+                  index === 3 && 'border-blue-300/18 bg-gradient-to-br from-blue-400/14 to-cyan-500/10',
+                  index === 4 && 'border-sky-300/18 bg-gradient-to-br from-sky-400/14 to-blue-600/10',
                 ]
                   .filter(Boolean)
                   .join(' ')}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
+                  <div className="rounded-2xl border border-cyan-200/15 bg-cyan-100/[0.07] p-3">
                     <Icon size={22} className="text-cyan-300" />
                   </div>
-                  <div className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-white/55">
+                  <div className="rounded-full border border-cyan-200/15 bg-cyan-100/[0.07] px-3 py-1 text-xs text-white/55">
                     Podstran
                   </div>
                 </div>
@@ -256,10 +255,10 @@ export default async function ServicesPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-cyan-400/12 via-indigo-400/10 to-fuchsia-400/10 p-6 sm:p-10 lg:p-12">
+        <div className="rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-cyan-400/12 via-sky-400/10 to-sky-400/10 p-6 sm:p-10 lg:p-12">
           <div className="grid gap-8 lg:grid-cols-[1fr_0.75fr] lg:items-center">
             <div>
-              <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-white/65">
+              <div className="mb-4 inline-flex rounded-full border border-cyan-200/15 bg-cyan-100/[0.07] px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-white/65">
                 Povpraševanje
               </div>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -300,8 +299,8 @@ function BackgroundGlow() {
     <div className="fixed inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.13),transparent_25%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.15),transparent_22%),radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.12),transparent_24%)]" />
       <div className="absolute left-[-8%] top-[-10%] h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
-      <div className="absolute right-[-8%] top-[10%] h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl" />
-      <div className="absolute bottom-[-10%] left-[12%] h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
+      <div className="absolute right-[-8%] top-[10%] h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
+      <div className="absolute bottom-[-10%] left-[12%] h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
     </div>
   )
 }

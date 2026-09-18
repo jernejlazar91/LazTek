@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="laztek-page">
       <section className="mx-auto max-w-5xl px-6 pb-24 pt-24 sm:px-8 lg:px-10">
         <div className="max-w-3xl">
           <div className="mb-4 text-sm font-medium uppercase tracking-[0.22em] text-cyan-300">
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
               Upravljavec osebnih podatkov je:
             </p>
 
-            <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+            <div className="mt-4 rounded-2xl border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-5">
               <p className="font-semibold text-white">
                 Lazar engineering Tech s.p.
               </p>
@@ -322,7 +322,7 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+    <section className="rounded-[2rem] border border-cyan-200/12 bg-[#071b2d]/58 backdrop-blur-xl p-6 sm:p-8">
       <h2 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
         {title}
       </h2>
@@ -342,7 +342,7 @@ function Service({
   description: string
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="rounded-2xl border border-cyan-200/12 bg-[#071b2d]/58 backdrop-blur-xl p-4">
       <div className="font-medium text-white">
         {name}
       </div>

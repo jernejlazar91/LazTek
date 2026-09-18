@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Cpu,
   Layers3,
-  Route,
   ScanLine,
   Sparkles,
   Wrench,
@@ -28,7 +27,6 @@ async function getPageData() {
       eyebrow,
       heroTitle,
       heroText,
-      heroImage,
       badges
     },
     "projects": *[_type == "project"] | order(publishedAt desc)[0...3]{
@@ -100,31 +98,59 @@ export default async function Home() {
   const projects = data?.projects || []
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="relative min-h-screen overflow-x-hidden bg-transparent text-[#0B2B4C]">
+
+      {/* Vsa vsebina je nad enim samim neskončnim backgroundom */}
+      <div className="relative z-10">
 
       <SiteHeader
-        logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
+        logoUrl={
+          site?.logo
+            ? urlFor(site.logo).width(2200).height(650).url()
+            : undefined
+        }
         brandName={site?.brandName}
         basePath=""
       />
 
+      {/* HERO */}
+
       <section
         id="domov"
-        className="scroll-mt-40 mx-auto max-w-7xl px-4 pb-16 pt-14 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20"
+        className="relative z-10 isolate overflow-hidden bg-transparent"
       >
-        <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-14">
-          <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100/90 shadow-[0_0_30px_rgba(34,211,238,0.12)]">
-              <Sparkles size={16} className="text-cyan-300" />
-              {home?.eyebrow || 'Industrijski razvoj, 3D tisk in reverse engineering'}
+        {/* FINALNI TRANSPARENTNI LINEX + PROJEKTI */}
+        <div className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
+          <img
+            src="/images/laztek-hero-objects.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute right-[-1.5%] top-5 w-[54vw] max-w-[980px] object-contain drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)] xl:right-[0.5%] xl:top-2 xl:w-[52vw] xl:max-w-[1040px]"
+          />
+        </div>
+
+        {/* Lokalna bela svetloba samo za berljivost hero teksta.
+            Robovi so mehki, zato se pri dnu heroja ne more pojaviti horizontalna črta. */}
+        <div className="pointer-events-none absolute left-[-14%] top-[-20%] z-[3] h-[120%] w-[70%] rounded-[50%] bg-white/36 blur-[95px]" />
+
+        <div className="relative z-10 mx-auto min-h-[650px] max-w-7xl px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-16 lg:min-h-[690px] lg:px-8 lg:pb-20 lg:pt-20 xl:min-h-[720px]">
+          <div className="max-w-[680px] lg:max-w-[610px] xl:max-w-[660px]">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/70 bg-white/[0.76] px-4 py-2 text-sm font-semibold text-[#0F5D7A] shadow-[0_8px_30px_rgba(56,189,248,0.10)] backdrop-blur-md">
+              <Sparkles
+                size={16}
+                className="text-cyan-500"
+              />
+
+              {home?.eyebrow ||
+                'Industrijski razvoj, 3D tisk in reverse engineering'}
             </div>
 
-            <h1 className="max-w-4xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              {home?.heroTitle || 'Laztek Engineering za funkcionalne tehnične kose, prototipe in industrijske rešitve.'}
+            <h1 className="max-w-[660px] text-4xl font-semibold leading-tight tracking-tight text-[#082A4B] sm:text-5xl lg:text-[3.45rem] xl:text-6xl">
+              {home?.heroTitle ||
+                'LazTek Engineering za funkcionalne tehnične kose, prototipe in industrijske rešitve.'}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-8 text-[#425F74] sm:text-lg">
               {home?.heroText ||
                 'Združujemo konstruiranje, 3D skeniranje, reverse engineering, industrijski 3D tisk in prototipizacijo za podjetja, ki potrebujejo uporabne in tehnično smiselne rešitve.'}
             </p>
@@ -132,7 +158,7 @@ export default async function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/kontakt"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-7 py-3.5 text-sm font-bold text-[#06253D] shadow-[0_12px_32px_rgba(14,165,233,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(14,165,233,0.28)]"
               >
                 Pošlji povpraševanje
                 <ArrowRight size={16} />
@@ -140,222 +166,334 @@ export default async function Home() {
 
               <Link
                 href="/storitve"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/30 hover:bg-cyan-400/10"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200/90 bg-white/[0.88] px-7 py-3.5 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(15,74,105,0.08)] backdrop-blur-md transition hover:border-cyan-300 hover:bg-white"
               >
                 Poglej storitve
               </Link>
             </div>
 
             {home?.badges?.length ? (
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                {home.badges.map((item: {label?: string; value?: string}, index: number) => (
-                  <MetricCard key={`${item.label}-${index}`} label={item.label} value={item.value} index={index} />
-                ))}
+              <div className="mt-10 grid max-w-[650px] gap-4 sm:grid-cols-3">
+                {home.badges.map(
+                  (
+                    item: {
+                      label?: string
+                      value?: string
+                    },
+                    index: number,
+                  ) => (
+                    <MetricCard
+                      key={`${item.label}-${index}`}
+                      label={item.label}
+                      value={item.value}
+                      index={index}
+                    />
+                  ),
+                )}
               </div>
             ) : null}
-          </div>
 
-          <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1020]/70 shadow-2xl shadow-black/20">
-            {home?.heroImage ? (
+            {/* Na manjših zaslonih se vizual prestavi pod tekst. */}
+            <div className="mt-10 lg:hidden">
               <img
-                src={urlFor(home.heroImage).width(1200).height(900).url()}
-                alt={home?.heroTitle || 'Laztek hero image'}
-                className="aspect-[16/10] w-full object-cover"
+                src="/images/laztek-hero-objects.png"
+                alt=""
+                aria-hidden="true"
+                className="mx-auto w-full max-w-[760px] object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)]"
               />
-            ) : (
-              <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-cyan-400/18 via-indigo-400/10 to-fuchsia-400/16 text-center text-sm text-white/45">
-                <div className="flex flex-col items-center gap-3 px-8">
-                  <div className="text-lg font-semibold">Hero slika</div>
-                  <div className="max-w-sm text-xs leading-6 text-white/45">
-                    V Sanityju dodaj sliko v dokument Domov → Hero image
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="p-5">
-              <div className="text-lg font-semibold">{site?.brandName || 'Laztek Engineering'}</div>
-              <p className="mt-2 text-sm leading-7 text-white/70">{site?.tagline}</p>
             </div>
           </div>
         </div>
+
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Storitve"
-          title="Oglejte si, kaj lahko storimo za vas"
-          text="Ne glede na to, ali imate idejo, poškodovan kos, obstoječ izdelek ali že pripravljeno datoteko, vam lahko pomagamo pri izbiri prave poti od zasnove do uporabnega tehničnega izdelka."
-          centered
-        />
+      {/* NADALJEVANJE STRANI - spodaj je ŠE VEDNO ista fixed HEX slika */}
+      <div className="relative z-10">
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {serviceCards.map((service) => {
-            const Icon = service.icon
-            return (
-              <Link
-                key={service.href}
-                href={service.href}
-                className="group rounded-[2rem] border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-cyan-300/25 hover:bg-cyan-400/10"
-              >
-                <div className="mb-5 inline-flex rounded-2xl border border-cyan-300/20 bg-cyan-400/10 p-3">
-                  <Icon size={22} className="text-cyan-300" />
-                </div>
-                <h2 className="text-xl font-semibold tracking-tight">{service.title}</h2>
-                <p className="mt-4 text-sm leading-7 text-white/68">{service.text}</p>
-                <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 transition group-hover:gap-3">
-                  Več o storitvi
-                  <ArrowRight size={15} />
-                </div>
-              </Link>
-            )
-          })}
+      {/* STORITVE */}
+      <section className="relative z-10">
+        <SectionAura side="right" tone="cyan" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <SectionHeading
+            eyebrow="Storitve"
+            title="Oglejte si, kaj lahko storimo za vas"
+            text="Ne glede na to, ali imate idejo, poškodovan kos, obstoječ izdelek ali že pripravljeno datoteko, vam lahko pomagamo pri izbiri prave poti od zasnove do uporabnega tehničnega izdelka."
+            centered
+          />
+
+          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {serviceCards.map((service) => {
+              const Icon = service.icon
+
+              return (
+                <Link
+                  key={service.href}
+                  href={service.href}
+                  className="group relative overflow-hidden rounded-[2rem] border border-sky-200/70 bg-white/[0.76] p-6 shadow-[0_14px_38px_rgba(24,86,122,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300 hover:shadow-[0_20px_48px_rgba(24,86,122,0.12)]"
+                >
+                  <div className="absolute right-[-30px] top-[-30px] h-28 w-28 rounded-full bg-cyan-300/20 blur-2xl" />
+
+                  <div className="relative mb-5 inline-flex rounded-2xl border border-cyan-200 bg-gradient-to-br from-white/90 to-sky-100/70 p-3 shadow-sm">
+                    <Icon
+                      size={22}
+                      className="text-[#1596C0]"
+                    />
+                  </div>
+
+                  <h2 className="relative text-xl font-semibold tracking-tight text-[#0B2B4C]">
+                    {service.title}
+                  </h2>
+
+                  <p className="relative mt-4 text-sm leading-7 text-[#587082]">
+                    {service.text}
+                  </p>
+
+                  <div className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#087EA5] transition group-hover:gap-3">
+                    Več o storitvi
+                    <ArrowRight size={15} />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 lg:p-8">
-            <SectionHeading
-              eyebrow="Zakaj Laztek"
-              title="Manj klasičen 3D print servis, bolj tehnični razvojni partner"
-              text="Največja vrednost je kombinacija prakse, konstrukcijskega razmišljanja in izdelave. Cilj ni samo lep kos, ampak kos, ki opravi svojo nalogo."
-            />
-          </div>
+      {/* ZAKAJ LAZTEK */}
+      <section className="relative z-10 overflow-hidden">
+        <SectionAura side="left" tone="turquoise" />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {whyItems.map((item, index) => (
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+
+            <div className="rounded-[2rem] border border-white/90 bg-white/[0.72] p-7 shadow-[0_18px_50px_rgba(24,86,122,0.08)] backdrop-blur-xl lg:p-9">
+              <SectionHeading
+                eyebrow="Zakaj LazTek"
+                title="Manj klasičen 3D print servis, bolj tehnični razvojni partner"
+                text="Največja vrednost je kombinacija prakse, konstrukcijskega razmišljanja in izdelave. Cilj ni samo lep kos, ampak kos, ki opravi svojo nalogo."
+              />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {whyItems.map((item, index) => (
+                <div
+                  key={`${item}-${index}`}
+                  className="rounded-[1.75rem] border border-white/90 bg-white/[0.72] p-6 shadow-[0_14px_36px_rgba(24,86,122,0.07)] backdrop-blur-xl"
+                >
+                  <div className="mb-4 inline-flex rounded-full border border-cyan-200 bg-cyan-50 p-2.5">
+                    <CheckCircle2
+                      size={19}
+                      className="text-[#1596C0]"
+                    />
+                  </div>
+
+                  <p className="text-sm leading-7 text-[#4F687A]">
+                    {item}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* POTEK SODELOVANJA */}
+      <section className="relative z-10 overflow-hidden">
+        <SectionAura side="left" tone="blue" />
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <SectionHeading
+            eyebrow="Potek sodelovanja"
+            title="Od problema do uporabnega kosa"
+            text="Za povpraševanje ne rabi biti vse pripravljeno. Dovolj je opis problema, slika kosa, obstoječa datoteka ali osnovne mere."
+            centered
+          />
+
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {processSteps.map((step, index) => (
               <div
-                key={`${item}-${index}`}
-                className="rounded-[1.75rem] border border-white/10 bg-[#0b1020]/65 p-5"
+                key={step.title}
+                className="relative overflow-hidden rounded-[2rem] border border-sky-200/70 bg-white/[0.76] p-7 shadow-[0_14px_38px_rgba(24,86,122,0.08)] backdrop-blur-xl"
               >
-                <CheckCircle2 size={18} className="mb-4 text-cyan-300" />
-                <p className="text-sm leading-7 text-white/75">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                <div className="absolute right-[-45px] top-[-45px] h-36 w-36 rounded-full bg-gradient-to-br from-cyan-200/60 to-blue-300/35 opacity-80 blur-2xl" />
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Potek sodelovanja"
-          title="Od problema do uporabnega kosa"
-          text="Za povpraševanje ne rabi biti vse pripravljeno. Dovolj je opis problema, slika kosa, obstoječa datoteka ali osnovne mere."
-          centered
-        />
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {processSteps.map((step, index) => (
-            <div
-              key={step.title}
-              className="rounded-[2rem] border border-white/10 bg-white/5 p-6"
-            >
-              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-cyan-300/20 bg-cyan-400/10 text-sm font-semibold text-cyan-100">
-                {index + 1}
-              </div>
-              <h2 className="text-xl font-semibold">{step.title}</h2>
-              <p className="mt-4 text-sm leading-7 text-white/68">{step.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {projects.length ? (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading
-              eyebrow="Projekti"
-              title="Izbrani razvojni in proizvodni projekti"
-              text="Projekti bodo postopoma postali najmočnejši dokaz sposobnosti: problem, rešitev, material, tehnologija in rezultat."
-            />
-            <Link
-              href="/projekti"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/30 hover:bg-cyan-400/10"
-            >
-              Vsi projekti
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {projects.map((project: any) => (
-              <Link
-                href={`/projekti/${project.slug}`}
-                key={project._id}
-                className="block overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 transition hover:-translate-y-1"
-              >
-                {project.featuredImage ? (
-                  <img
-                    src={urlFor(project.featuredImage).width(900).height(600).url()}
-                    alt={project.title || 'Project image'}
-                    className="aspect-[16/10] w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-cyan-400/18 via-indigo-400/10 to-fuchsia-400/16 text-center text-sm text-white/45">
-                    <div className="px-6">Projekt</div>
-                  </div>
-                )}
-
-                <div className="p-6">
-                  <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-white/60">
-                    {project.category}
-                  </div>
-                  <h2 className="mt-4 text-2xl font-semibold">{project.title}</h2>
-                  <p className="mt-3 text-sm leading-7 text-white/68">{project.excerpt}</p>
+                <div className="relative mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#22C6D7] via-[#35BDE2] to-[#4389EE] text-sm font-bold text-white shadow-[0_10px_25px_rgba(14,165,233,0.22)]">
+                  {index + 1}
                 </div>
-              </Link>
+
+                <h2 className="relative text-xl font-semibold text-[#0B2B4C]">
+                  {step.title}
+                </h2>
+
+                <p className="relative mt-4 text-sm leading-7 text-[#587082]">
+                  {step.text}
+                </p>
+              </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PROJEKTI */}
+      {projects.length ? (
+        <section className="relative z-10 overflow-hidden">
+          <SectionAura side="right" tone="turquoise" />
+          <div className="absolute left-[-120px] top-1/3 h-[360px] w-[360px] rounded-full bg-cyan-200/30 blur-[100px]" />
+          <div className="absolute right-[-120px] top-[10%] h-[400px] w-[400px] rounded-full bg-blue-200/30 blur-[110px]" />
+
+          <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <SectionHeading
+                eyebrow="Projekti"
+                title="Izbrani razvojni in proizvodni projekti"
+                text="Projekti bodo postopoma postali najmočnejši dokaz sposobnosti: problem, rešitev, material, tehnologija in rezultat."
+              />
+
+              <Link
+                href="/projekti"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/85 px-6 py-3 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(24,86,122,0.07)] backdrop-blur transition hover:border-cyan-300 hover:bg-white"
+              >
+                Vsi projekti
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+
+            <div className="mt-12 grid gap-6 lg:grid-cols-3">
+              {projects.map((project: any) => (
+                <Link
+                  href={`/projekti/${project.slug}`}
+                  key={project._id}
+                  className="group block overflow-hidden rounded-[2rem] border border-white/90 bg-white/[0.78] shadow-[0_18px_48px_rgba(24,86,122,0.10)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(24,86,122,0.14)]"
+                >
+                  {project.featuredImage ? (
+                    <img
+                      src={urlFor(project.featuredImage)
+                        .width(900)
+                        .height(600)
+                        .url()}
+                      alt={
+                        project.title ||
+                        'Project image'
+                      }
+                      className="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.025]"
+                    />
+                  ) : (
+                    <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-cyan-100 via-sky-50 to-blue-100 text-center text-sm text-slate-500">
+                      Projekt
+                    </div>
+                  )}
+
+                  <div className="p-6">
+                    <div className="inline-flex rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-medium text-[#087EA5]">
+                      {project.category}
+                    </div>
+
+                    <h2 className="mt-4 text-2xl font-semibold text-[#0B2B4C]">
+                      {project.title}
+                    </h2>
+
+                    <p className="mt-3 text-sm leading-7 text-[#587082]">
+                      {project.excerpt}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       ) : null}
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-[2.25rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/14 via-indigo-400/10 to-fuchsia-400/10 p-6 lg:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
-            <div>
-              <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/75">
-                Povpraševanje
+      {/* CTA */}
+      <section className="relative z-10 overflow-hidden">
+        <SectionAura side="left" tone="cyan" />
+        <div className="absolute bottom-[-140px] left-[20%] h-[380px] w-[380px] rounded-full bg-cyan-200/25 blur-[110px]" />
+        <div className="absolute right-[-120px] top-[-90px] h-[360px] w-[360px] rounded-full bg-blue-200/25 blur-[110px]" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+          <div className="overflow-hidden rounded-[2.25rem] border border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.88)_0%,rgba(232,249,252,0.86)_48%,rgba(230,240,253,0.88)_100%)] shadow-[0_26px_76px_rgba(24,86,122,0.13)] backdrop-blur-2xl">
+
+            <div className="grid lg:grid-cols-[1.15fr_0.85fr]">
+
+              <div className="p-7 sm:p-9 lg:p-12">
+                <div className="mb-4 inline-flex rounded-full border border-cyan-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-[#087EA5]">
+                  Povpraševanje
+                </div>
+
+                <h2 className="text-3xl font-semibold tracking-tight text-[#0B2B4C] sm:text-4xl">
+                  Imate poškodovan kos, prototip, model ali idejo?
+                </h2>
+
+                <p className="mt-5 max-w-2xl text-sm leading-8 text-[#587082] sm:text-base">
+                  Pošljite slike, mere, obstoječo datoteko ali opis problema.
+                  Skupaj določimo, ali je najbolj smiselna izdelava,
+                  skeniranje, reverse engineering, konstrukcijska izboljšava
+                  ali kombinacija postopkov.
+                </p>
               </div>
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Imate poškodovan kos, prototip, model ali idejo?
-              </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-8 text-white/72 sm:text-base">
-                Pošljite slike, mere, obstoječo datoteko ali opis problema. Skupaj določimo, ali je najbolj smiselna izdelava, skeniranje, reverse engineering, konstrukcijska izboljšava ali kombinacija postopkov.
-              </p>
+
+              <div className="flex flex-col justify-center gap-4 border-t border-sky-200/70 bg-white/55 p-7 backdrop-blur-md sm:p-9 lg:border-l lg:border-t-0 lg:p-12">
+                <div className="text-sm font-bold uppercase tracking-[0.18em] text-[#087EA5]">
+                  Začnimo projekt
+                </div>
+
+                <p className="max-w-md text-sm leading-7 text-[#587082]">
+                  Za prvo oceno pogosto zadostujejo že fotografija,
+                  osnovne mere in kratek opis problema.
+                </p>
+
+                <Link
+                  href="/kontakt"
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-7 py-3.5 text-sm font-bold text-[#06253D] shadow-[0_12px_30px_rgba(14,165,233,0.22)] transition hover:-translate-y-0.5"
+                >
+                  Oddaj povpraševanje
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link
+                  href="/o-podjetju"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/80 px-7 py-3.5 text-sm font-semibold text-[#123A57] transition hover:border-cyan-300 hover:bg-white"
+                >
+                  Več o podjetju
+                </Link>
+              </div>
+
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link
-                href="/kontakt"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
-              >
-                Oddaj povpraševanje
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/o-podjetju"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/30 hover:bg-cyan-400/10"
-              >
-                Več o podjetju
-              </Link>
-            </div>
           </div>
         </div>
       </section>
 
+      </div>
+
+      {/* konec vsebine nad fixed backgroundom */}
+      </div>
     </main>
   )
 }
 
-function BackgroundGlow() {
+function SectionAura({
+  side,
+  tone,
+}: {
+  side: 'left' | 'right'
+  tone: 'cyan' | 'blue' | 'turquoise'
+}) {
+  const toneClass =
+    tone === 'blue'
+      ? 'bg-blue-200/20'
+      : tone === 'turquoise'
+        ? 'bg-teal-100/28'
+        : 'bg-cyan-200/24'
+
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.13),transparent_25%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.15),transparent_22%),radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.12),transparent_24%)]" />
-      <div className="absolute left-[-8%] top-[-10%] h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
-      <div className="absolute right-[-8%] top-[10%] h-96 w-96 rounded-full bg-fuchsia-500/10 blur-3xl" />
-      <div className="absolute bottom-[-10%] left-[12%] h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
-    </div>
+    <div
+      className={[
+        'pointer-events-none absolute top-1/2 h-[34rem] w-[34rem] -translate-y-1/2 rounded-full blur-[150px]',
+        toneClass,
+        side === 'left' ? 'left-[-18rem]' : 'right-[-18rem]',
+      ].join(' ')}
+    />
   )
 }
 
@@ -371,18 +509,30 @@ function SectionHeading({
   centered?: boolean
 }) {
   return (
-    <div className={centered ? 'mx-auto max-w-3xl text-center' : 'max-w-2xl'}>
+    <div
+      className={
+        centered
+          ? 'mx-auto max-w-3xl text-center'
+          : 'max-w-2xl'
+      }
+    >
       {eyebrow ? (
-        <div className="mb-4 inline-flex rounded-full border border-cyan-300/15 bg-cyan-400/10 px-4 py-2 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/75">
+        <div className="mb-4 inline-flex rounded-full border border-cyan-200 bg-white/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-[#087EA5] shadow-sm backdrop-blur">
           {eyebrow}
         </div>
       ) : null}
+
       {title ? (
-        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-[#0B2B4C] sm:text-4xl lg:text-5xl">
           {title}
         </h2>
       ) : null}
-      {text ? <p className="mt-5 text-sm leading-8 text-white/66 sm:text-base">{text}</p> : null}
+
+      {text ? (
+        <p className="mt-5 text-sm leading-8 text-[#587082] sm:text-base">
+          {text}
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -396,19 +546,24 @@ function MetricCard({
   value?: string
   index: number
 }) {
+  const border =
+    index === 0
+      ? 'border-cyan-200'
+      : index === 1
+        ? 'border-sky-200'
+        : 'border-blue-200'
+
   return (
     <div
-      className={[
-        'rounded-[1.75rem] border p-5 backdrop-blur-sm',
-        index === 0 && 'border-cyan-300/20 bg-cyan-400/10',
-        index === 1 && 'border-fuchsia-300/20 bg-fuchsia-400/10',
-        index === 2 && 'border-indigo-300/20 bg-indigo-400/10',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={`rounded-[1.75rem] border ${border} bg-white/70 p-5 shadow-[0_10px_28px_rgba(24,86,122,0.06)] backdrop-blur-md`}
     >
-      <div className="text-sm text-white/55">{label}</div>
-      <div className="mt-2 text-base font-medium text-white">{value}</div>
+      <div className="text-sm text-[#6A8292]">
+        {label}
+      </div>
+
+      <div className="mt-2 text-base font-semibold text-[#0B2B4C]">
+        {value}
+      </div>
     </div>
   )
 }

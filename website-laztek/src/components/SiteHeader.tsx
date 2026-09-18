@@ -2,6 +2,12 @@
 
 import {useEffect, useRef, useState} from 'react'
 import Link from 'next/link'
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+} from 'lucide-react'
 
 type SiteHeaderProps = {
   logoUrl?: string
@@ -17,6 +23,17 @@ const dropdownItemClass =
 
 const mobileItemClass =
   'rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base font-medium text-white/85 transition hover:border-cyan-300/20 hover:bg-cyan-400/10 hover:text-white'
+
+const phoneDisplay = '+386 31 656 611'
+const phoneHref = 'tel:+38631656611'
+
+const emailDisplay = 'jernej.lazar91@gmail.com'
+const emailHref = `mailto:${emailDisplay}`
+
+const locationDisplay = 'Rovte 23, 1373 Rovte'
+
+const directionsUrl =
+  'https://www.google.com/maps/dir/?api=1&destination=45.98020087787109,14.1705128253313'
 
 const serviceLinks = [
   {href: '/storitve', label: 'Pregled vseh storitev'},
@@ -98,7 +115,55 @@ export default function SiteHeader({
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050816]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#041421]/94 backdrop-blur-xl">
+
+      {/* ZGORNJI KONTAKTNI PAS */}
+      <div className="border-b border-white/10 bg-white/[0.035]">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-1 px-4 py-2 sm:px-6 md:grid-cols-3 lg:px-8">
+
+          {/* LOKACIJA */}
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-w-0 items-center justify-start gap-2 rounded-xl px-2 py-2 text-xs font-medium text-white/70 transition hover:bg-cyan-400/10 hover:text-white sm:px-3 sm:text-sm"
+            aria-label="Odpri navigacijo do LazTek Engineering"
+          >
+            <MapPin className="h-4 w-4 shrink-0 text-cyan-300 transition group-hover:scale-110" />
+
+            <span className="truncate">
+              {locationDisplay}
+            </span>
+          </a>
+
+          {/* TELEFON */}
+          <a
+            href={phoneHref}
+            className="group inline-flex items-center justify-end gap-2 rounded-xl px-2 py-2 text-xs font-semibold text-white/80 transition hover:bg-cyan-400/10 hover:text-white sm:px-3 sm:text-sm md:justify-center"
+            aria-label={`Pokliči ${phoneDisplay}`}
+          >
+            <Phone className="h-4 w-4 shrink-0 text-cyan-300 transition group-hover:scale-110" />
+
+            <span>
+              {phoneDisplay}
+            </span>
+          </a>
+
+          {/* EMAIL */}
+          <a
+            href={emailHref}
+            className="group col-span-2 inline-flex items-center justify-center gap-2 rounded-xl px-2 py-2 text-xs font-medium text-white/70 transition hover:bg-cyan-400/10 hover:text-white sm:px-3 sm:text-sm md:col-span-1 md:justify-end"
+            aria-label={`Pošlji e-pošto na ${emailDisplay}`}
+          >
+            <Mail className="h-4 w-4 shrink-0 text-cyan-300 transition group-hover:scale-110" />
+
+            <span className="truncate">
+              {emailDisplay}
+            </span>
+          </a>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
 
         {/* MOBILE HEADER */}
@@ -106,7 +171,7 @@ export default function SiteHeader({
           <Link
             href={basePath ? '/#domov' : '#domov'}
             onClick={closeAllMenus}
-            className="relative flex h-[64px] min-w-0 flex-1 items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/10 bg-gradient-to-br from-cyan-100/20 via-sky-300/45 to-fuchsia-300/10"
+            className="relative flex h-[64px] min-w-0 flex-1 items-center justify-center overflow-hidden rounded-[1.35rem] border border-white/10 bg-gradient-to-br from-cyan-900/45 via-sky-700/35 to-blue-950/55"
             aria-label={brandName || 'LazTek Engineering'}
           >
             <img
@@ -123,7 +188,9 @@ export default function SiteHeader({
             aria-label={mobileOpen ? 'Zapri meni' : 'Odpri meni'}
             aria-expanded={mobileOpen}
           >
-            <span className="sr-only">Meni</span>
+            <span className="sr-only">
+              Meni
+            </span>
 
             <span className="flex flex-col gap-1.5">
               <span className="h-0.5 w-6 rounded-full bg-current" />
@@ -135,7 +202,7 @@ export default function SiteHeader({
 
         {/* MOBILE MENU */}
         {mobileOpen ? (
-          <div className="mt-3 rounded-[1.75rem] border border-white/10 bg-[#0b1020]/95 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl md:hidden">
+          <div className="mt-3 rounded-[1.75rem] border border-white/10 bg-[#06192a]/96 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl md:hidden">
             <div className="grid gap-2">
               <Link
                 href={basePath ? '/#domov' : '#domov'}
@@ -182,8 +249,9 @@ export default function SiteHeader({
               <Link
                 href="/kontakt"
                 onClick={closeAllMenus}
-                className="mt-1 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-4 py-3 text-center text-base font-semibold text-slate-950 transition hover:scale-[1.01]"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 px-5 py-4 text-center text-base font-bold text-slate-950 shadow-[0_0_35px_rgba(56,189,248,0.25)] transition hover:scale-[1.01]"
               >
+                <Send className="h-5 w-5" />
                 Oddajte povpraševanje
               </Link>
             </div>
@@ -192,9 +260,11 @@ export default function SiteHeader({
 
         {/* DESKTOP HEADER */}
         <div className="relative hidden items-center justify-center md:flex">
+
+          {/* LOGO */}
           <Link
             href={basePath ? '/#domov' : '#domov'}
-            className="relative flex h-[96px] w-full max-w-[500px] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-100/20 via-sky-300/45 to-fuchsia-300/10 lg:h-[110px] lg:max-w-[560px]"
+            className="relative flex h-[96px] w-full max-w-[500px] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-900/45 via-sky-700/35 to-blue-950/55 lg:h-[110px] lg:max-w-[540px]"
             aria-label={brandName || 'LazTek Engineering'}
           >
             <img
@@ -204,10 +274,12 @@ export default function SiteHeader({
             />
           </Link>
 
+          {/* GUMB POVPRAŠEVANJE */}
           <Link
             href="/kontakt"
-            className="absolute right-0 hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02] lg:inline-flex"
+            className="absolute right-0 hidden items-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 px-8 py-4 text-base font-bold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.30)] transition hover:scale-[1.03] hover:shadow-[0_0_50px_rgba(56,189,248,0.40)] lg:inline-flex"
           >
+            <Send className="h-5 w-5" />
             Oddajte povpraševanje
           </Link>
         </div>
@@ -248,7 +320,7 @@ export default function SiteHeader({
             </button>
 
             {servicesOpen ? (
-              <div className="absolute left-1/2 top-[calc(100%+12px)] z-50 w-[calc(100vw-2rem)] max-w-[340px] -translate-x-1/2 rounded-[1.75rem] border border-white/10 bg-[#0b1020]/95 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+              <div className="absolute left-1/2 top-[calc(100%+12px)] z-50 w-[calc(100vw-2rem)] max-w-[340px] -translate-x-1/2 rounded-[1.75rem] border border-white/10 bg-[#06192a]/96 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <div className="flex flex-col gap-2">
                   {serviceLinks.map((item, index) => (
                     <Link

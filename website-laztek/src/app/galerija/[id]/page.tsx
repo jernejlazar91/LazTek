@@ -50,7 +50,7 @@ export default async function GalleryDetailPage({
   if (!item) notFound()
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="laztek-page">
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
         brandName={site?.brandName}
@@ -67,7 +67,7 @@ export default async function GalleryDetailPage({
               ← Nazaj na glavno galerijo
             </Link>
 
-            <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-white/60">
+            <div className="inline-flex rounded-full border border-cyan-200/15 bg-cyan-100/[0.07] px-3 py-1 text-xs text-white/60">
               {item.category}
             </div>
           </div>
@@ -94,7 +94,7 @@ export default async function GalleryDetailPage({
                 href={item.videoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
+                className="inline-flex rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.02]"
               >
                 Odpri povezani video
               </a>

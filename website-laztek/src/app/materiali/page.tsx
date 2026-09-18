@@ -257,8 +257,7 @@ export default async function MaterialsPage() {
   const materials = data?.materialsSection
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -296,7 +295,7 @@ export default async function MaterialsPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_100px_rgba(8,47,73,0.22)]">
+          <div className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 shadow-[0_24px_100px_rgba(8,47,73,0.22)]">
             <div className="rounded-[1.5rem] border border-cyan-300/15 bg-cyan-400/10 p-5">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-100/70">Pomembno</p>
               <p className="mt-3 text-2xl font-semibold leading-snug text-white">
@@ -308,7 +307,7 @@ export default async function MaterialsPage() {
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {['PA6 CF/GF', 'PPA CF/GF', 'PPS CF/GF', 'PETG CF', 'PCTG', 'ABS', 'ASA', 'PC', 'TPU/TPE'].map((tag) => (
-                <div key={tag} className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4">
+                <div key={tag} className="rounded-2xl border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl px-4 py-4">
                   <div className="text-base font-semibold text-white">{tag}</div>
                   <div className="mt-1 text-xs leading-5 text-white/50">izbira glede na namen kosa</div>
                 </div>
@@ -328,7 +327,7 @@ export default async function MaterialsPage() {
           {primaryMaterials.map((item) => {
             const Icon = item.icon
             return (
-              <article key={item.title} className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+              <article key={item.title} className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6">
                 <Icon className="h-7 w-7 text-cyan-300" />
                 <h2 className="mt-5 text-2xl font-semibold text-white">{item.title}</h2>
                 <p className="mt-3 leading-7 text-white/65">{item.subtitle}</p>
@@ -372,7 +371,7 @@ export default async function MaterialsPage() {
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-400/10 via-white/[0.04] to-fuchsia-400/10 p-7">
+          <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-400/10 via-white/[0.04] to-sky-400/10 p-7">
             <Thermometer className="h-8 w-8 text-cyan-300" />
             <h2 className="mt-5 text-3xl font-semibold">Kako izberemo pravi material?</h2>
             <p className="mt-4 leading-8 text-white/65">
@@ -384,7 +383,7 @@ export default async function MaterialsPage() {
             {decisionFactors.map((item) => {
               const Icon = item.icon
               return (
-                <article key={item.title} className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5">
+                <article key={item.title} className="rounded-[1.5rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-5">
                   <Icon className="h-5 w-5 text-cyan-300" />
                   <h3 className="mt-4 font-semibold text-white">{item.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-white/60">{item.text}</p>
@@ -396,7 +395,7 @@ export default async function MaterialsPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100/55">Priprava materiala</p>
@@ -407,7 +406,7 @@ export default async function MaterialsPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {processControls.map((item) => (
-                <article key={item.title} className="rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5">
+                <article key={item.title} className="rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5">
                   <h3 className="font-semibold text-white">{item.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-white/62">{item.text}</p>
                 </article>
@@ -423,7 +422,7 @@ export default async function MaterialsPage() {
           title="Material glede na tip projekta"
           text="Za prvo oceno je pogosto dovolj, da veš namen kosa. Končna izbira pa se potrdi glede na geometrijo, okolje in zahtevnost izdelave."
         />
-        <div className="mt-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04]">
+        <div className="mt-8 overflow-hidden rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl">
           <div className="hidden grid-cols-[0.9fr_0.9fr_1.2fr] border-b border-white/10 bg-white/[0.04] px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/55 md:grid">
             <div>Tip projekta</div>
             <div>Možna izbira</div>
@@ -450,14 +449,14 @@ export default async function MaterialsPage() {
 
       <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+          <div className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-7">
             <h2 className="text-3xl font-semibold">Kaj pošlji za izbor materiala?</h2>
             <p className="mt-4 leading-8 text-white/65">
               Za hitro oceno ni treba imeti popolne dokumentacije. Pomagajo pa slike, mere in informacija, kaj mora kos prenesti.
             </p>
             <ul className="mt-6 grid gap-3">
               {requestChecklist.map((item) => (
-                <li key={item} className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-white/70">
+                <li key={item} className="flex gap-3 rounded-2xl border border-cyan-200/12 bg-[#071b2d]/58 backdrop-blur-xl p-4 text-sm leading-6 text-white/70">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-cyan-300" />
                   {item}
                 </li>
@@ -505,7 +504,7 @@ function BackgroundGlow() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-[-10%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[140px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-fuchsia-500/15 blur-[160px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-blue-500/12 blur-[160px]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:80px_80px] opacity-30" />
     </div>
   )

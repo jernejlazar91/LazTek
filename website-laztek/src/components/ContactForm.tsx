@@ -667,7 +667,7 @@ export default function ContactForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-[0_24px_100px_rgba(8,47,73,0.22)] sm:p-8"
+        className="rounded-[2rem] border border-cyan-200/15 bg-[#061a2c]/72 p-6 shadow-[0_26px_90px_rgba(0,18,32,0.30)] backdrop-blur-2xl sm:p-8"
       >
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
@@ -872,7 +872,7 @@ export default function ContactForm() {
 
                           <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 transition-all"
+                              className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 transition-all"
                               style={{
                                 width: `${progress}%`,
                               }}
@@ -954,7 +954,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={sending}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-4 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 px-6 py-4 text-sm font-semibold text-slate-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Send size={17} />
 

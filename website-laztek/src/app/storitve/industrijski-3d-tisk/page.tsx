@@ -168,8 +168,7 @@ export default async function IndustrialPrintingPage() {
   const site = data?.siteSettings
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -194,7 +193,7 @@ export default async function IndustrialPrintingPage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/kontakt"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.28)] transition hover:scale-[1.02]"
               >
                 Pošlji model ali opis kosa
                 <ArrowRight size={16} />
@@ -234,7 +233,7 @@ export default async function IndustrialPrintingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 sm:p-8 lg:p-10">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100/55">Inženirska priprava</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Največja razlika nastane pred tiskom.</h2>
@@ -244,7 +243,7 @@ export default async function IndustrialPrintingPage() {
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-3">
             {engineeringPoints.map((item) => (
-              <article key={item.title} className="rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5">
+              <article key={item.title} className="rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5">
                 <h3 className="text-lg font-semibold text-white">{item.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-white/62">{item.text}</p>
               </article>
@@ -318,7 +317,7 @@ export default async function IndustrialPrintingPage() {
 
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             {materialGroups.map((item) => (
-              <article key={item.name} className="rounded-[1.6rem] border border-white/10 bg-[#050816]/45 p-5">
+              <article key={item.name} className="rounded-[1.6rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5">
                 <div className="text-lg font-semibold text-white">{item.name}</div>
                 <p className="mt-3 text-sm leading-7 text-white/68">{item.use}</p>
                 <div className="mt-4 rounded-2xl border border-cyan-300/15 bg-cyan-400/10 px-4 py-3 text-xs leading-6 text-cyan-100/75">
@@ -365,7 +364,7 @@ export default async function IndustrialPrintingPage() {
           </div>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             {notIdeal.map((item) => (
-              <div key={item} className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5 text-sm leading-7 text-white/70">
+              <div key={item} className="flex items-start gap-3 rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5 text-sm leading-7 text-white/70">
                 <XCircle size={18} className="mt-0.5 shrink-0 text-amber-200" />
                 <span>{item}</span>
               </div>
@@ -375,7 +374,7 @@ export default async function IndustrialPrintingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:pb-24">
-        <div className="rounded-[2.25rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/12 via-sky-500/8 to-indigo-500/12 p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/12 via-sky-500/8 to-blue-600/12 p-6 sm:p-8 lg:p-10">
           <div className="max-w-3xl">
             <div className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100/65">Proces</div>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Kako poteka naročilo 3D tiska?</h2>
@@ -411,7 +410,7 @@ export default async function IndustrialPrintingPage() {
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/kontakt"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.25)] transition hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_40px_rgba(56,189,248,0.25)] transition hover:scale-[1.02]"
             >
               Oddaj povpraševanje
               <ArrowRight size={16} />
@@ -433,7 +432,7 @@ function BackgroundGlow() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-400/12 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-fuchsia-500/10 blur-[120px]" />
+      <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-sky-500/10 blur-[120px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_28%),linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:auto,80px_80px,80px_80px]" />
     </div>
   )

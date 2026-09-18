@@ -144,8 +144,7 @@ export default async function LinexPage() {
   const contactHref = site?.email ? `mailto:${site.email}` : '/kontakt'
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -183,8 +182,8 @@ export default async function LinexPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_24px_100px_rgba(8,47,73,0.22)] sm:p-6">
-            <div className="rounded-[1.5rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/15 via-sky-400/10 to-fuchsia-400/10 p-6">
+          <div className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-5 shadow-[0_24px_100px_rgba(8,47,73,0.22)] sm:p-6">
+            <div className="rounded-[1.5rem] border border-cyan-300/15 bg-gradient-to-br from-cyan-400/15 via-sky-400/10 to-sky-400/10 p-6">
               <div className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-100/60">Kaj je prednost?</div>
               <div className="mt-4 text-4xl font-semibold">Stroj + material + konstrukcija</div>
               <p className="mt-4 leading-7 text-white/65">
@@ -193,7 +192,7 @@ export default async function LinexPage() {
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               {['Large format', 'Engineering', 'Advanced polymers', 'Functional parts'].map((item) => (
-                <div key={item} className="rounded-[1.2rem] border border-white/10 bg-white/[0.04] p-4 text-sm font-semibold text-white/75">
+                <div key={item} className="rounded-[1.2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-4 text-sm font-semibold text-white/75">
                   {item}
                 </div>
               ))}
@@ -205,7 +204,7 @@ export default async function LinexPage() {
 
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_24px_100px_rgba(8,47,73,0.18)] sm:p-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:p-8">
+        <div className="grid gap-8 rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-5 shadow-[0_24px_100px_rgba(8,47,73,0.18)] sm:p-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:p-8">
           <div className="overflow-hidden rounded-[1.75rem] border border-cyan-300/15 bg-black/35 shadow-2xl shadow-cyan-950/30">
             <video
               className="aspect-video w-full object-cover"
@@ -228,7 +227,7 @@ export default async function LinexPage() {
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {['lasten razvoj stroja', 'velik delovni volumen', 'industrijski FDM/FGF', 'testiranje procesnih nastavitev'].map((item) => (
-                <div key={item} className="rounded-[1.1rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white/68">
+                <div key={item} className="rounded-[1.1rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl px-4 py-3 text-sm font-semibold text-white/68">
                   {item}
                 </div>
               ))}
@@ -238,7 +237,7 @@ export default async function LinexPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-100/55">Tehnični poudarki</p>
@@ -249,7 +248,7 @@ export default async function LinexPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {technicalSpecs.map((item) => (
-                <article key={item.label} className="rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5">
+                <article key={item.label} className="rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5">
                   <div className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-100/50">{item.label}</div>
                   <div className="mt-2 text-2xl font-semibold text-white">{item.value}</div>
                   <p className="mt-3 text-sm leading-6 text-white/58">{item.note}</p>
@@ -278,7 +277,7 @@ export default async function LinexPage() {
           {strengths.map((item) => {
             const Icon = item.icon
             return (
-              <article key={item.title} className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+              <article key={item.title} className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6">
                 <Icon className="h-7 w-7 text-cyan-300" />
                 <h3 className="mt-5 text-xl font-semibold text-white">{item.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-white/62">{item.text}</p>
@@ -290,7 +289,7 @@ export default async function LinexPage() {
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+          <div className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-7">
             <Cpu className="h-8 w-8 text-cyan-300" />
             <h2 className="mt-5 text-3xl font-semibold">Za kaj je LINEX smiseln?</h2>
             <p className="mt-4 leading-8 text-white/65">
@@ -306,7 +305,7 @@ export default async function LinexPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {useCases.map((item) => (
-              <div key={item} className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 text-sm leading-6 text-white/70">
+              <div key={item} className="rounded-[1.5rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-5 text-sm leading-6 text-white/70">
                 <CheckCircle2 className="mb-3 h-5 w-5 text-cyan-300" />
                 {item}
               </div>
@@ -316,7 +315,7 @@ export default async function LinexPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="rounded-[2.25rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:p-10">
+        <div className="rounded-[2.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6 sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
             <div>
               <Wrench className="h-8 w-8 text-cyan-300" />
@@ -327,7 +326,7 @@ export default async function LinexPage() {
             </div>
             <div className="grid gap-4 md:grid-cols-3">
               {process.map((step) => (
-                <article key={step.title} className="rounded-[1.5rem] border border-white/10 bg-[#050816]/45 p-5">
+                <article key={step.title} className="rounded-[1.5rem] border border-cyan-200/12 bg-[#061a2c]/62 backdrop-blur-xl p-5">
                   <h3 className="text-base font-semibold text-white">{step.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-white/62">{step.text}</p>
                 </article>
@@ -350,7 +349,7 @@ export default async function LinexPage() {
             </ul>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+          <div className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-7">
             <h2 className="text-2xl font-semibold">Kdaj LINEX ni najboljša izbira?</h2>
             <div className="mt-5 space-y-3">
               {notIdeal.map((item) => (
@@ -362,7 +361,7 @@ export default async function LinexPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[2rem] border border-white/10 bg-gradient-to-r from-cyan-400/15 via-blue-500/10 to-fuchsia-400/10 p-7 sm:p-8">
+        <div className="mt-6 rounded-[2rem] border border-white/10 bg-gradient-to-r from-cyan-400/15 via-blue-500/10 to-sky-400/10 p-7 sm:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-100/55">Povpraševanje</p>
@@ -388,7 +387,7 @@ function BackgroundGlow() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-[-10%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[140px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-fuchsia-500/15 blur-[160px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-blue-500/12 blur-[160px]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:80px_80px] opacity-30" />
     </div>
   )

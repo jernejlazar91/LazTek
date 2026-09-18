@@ -37,16 +37,16 @@ export default async function BlogDetailPage({
   if (!post) notFound()
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="laztek-page">
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
         brandName={site?.brandName}
         basePath="/"
       />
 
-      <div className="px-4 py-16 sm:px-6 lg:px-8">
+      <section className="px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-4xl">
-          <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs text-white/60">
+          <div className="inline-flex rounded-full border border-cyan-200/15 bg-cyan-100/[0.07] px-3 py-1 text-xs text-white/60">
             Blog
           </div>
 
@@ -57,15 +57,17 @@ export default async function BlogDetailPage({
             <img
               src={urlFor(post.coverImage).width(1400).height(900).url()}
               alt={post.title || 'Blog image'}
-              className="mt-8 w-full rounded-[2rem] border border-white/10 object-cover"
+              className="mt-8 w-full rounded-[2rem] border border-cyan-200/15 object-cover shadow-[0_24px_80px_rgba(0,15,27,0.30)]"
             />
           ) : null}
 
-          <div className="prose prose-invert mt-10 max-w-none prose-p:text-white/80 prose-headings:text-white">
-            <PortableText value={post.content || []} />
+          <div className="mt-10 rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/68 p-6 shadow-[0_22px_70px_rgba(0,15,27,0.24)] backdrop-blur-xl sm:p-8">
+            <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-white/78 prose-a:text-cyan-200 prose-strong:text-white">
+              <PortableText value={post.content || []} />
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
   )
 }

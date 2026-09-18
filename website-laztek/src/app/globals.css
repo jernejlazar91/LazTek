@@ -1,19 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050816;
-  --foreground: #f5f7ff;
+  --background: #071522;
+  --foreground: #f4fbff;
+  --laztek-navy: #061727;
+  --laztek-navy-2: #0a2942;
+  --laztek-blue: #0b5f8f;
+  --laztek-cyan: #27c8e7;
+  --laztek-turquoise: #35c9c2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: monospace;
+  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(39, 200, 231, 0.34);
+  color: #ffffff;
 }
 
 summary::-webkit-details-marker {
@@ -24,8 +44,77 @@ details > summary {
   list-style: none;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(39, 200, 231, 0.42) rgba(4, 20, 33, 0.55);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(4, 20, 33, 0.55);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(4, 20, 33, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(39, 200, 231, 0.72), rgba(11, 95, 143, 0.78));
+}
+
+/* Globalni shell za podstrani. Ozadje iz layout.tsx ostane vidno,
+   vsebina pa dobi temnejši premium engineering kontrast. */
+.laztek-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: transparent;
+  color: white;
+}
+
+.laztek-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 10%, rgba(23, 176, 205, 0.12), transparent 34%),
+    radial-gradient(circle at 12% 72%, rgba(15, 96, 143, 0.10), transparent 36%),
+    linear-gradient(115deg, rgba(3, 16, 28, 0.86) 0%, rgba(5, 26, 43, 0.76) 38%, rgba(7, 42, 64, 0.60) 72%, rgba(5, 35, 56, 0.46) 100%);
+}
+
+.laztek-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.018), transparent 22%, transparent 80%, rgba(5,22,36,0.16));
+}
+
+/* Enoten premium glass videz za temne kartice. */
+.laztek-glass {
+  border: 1px solid rgba(111, 224, 242, 0.14);
+  background: linear-gradient(145deg, rgba(8, 31, 50, 0.76), rgba(6, 26, 43, 0.58));
+  box-shadow: 0 22px 70px rgba(0, 15, 27, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.laztek-glass-light {
+  border: 1px solid rgba(170, 231, 242, 0.30);
+  background: linear-gradient(145deg, rgba(255,255,255,0.82), rgba(229,245,249,0.70));
+  box-shadow: 0 18px 60px rgba(16, 66, 94, 0.10);
+  backdrop-filter: blur(18px);
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
 }

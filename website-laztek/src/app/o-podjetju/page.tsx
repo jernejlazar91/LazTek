@@ -76,8 +76,7 @@ export default async function AboutPage() {
   const contactHref = site?.email ? `mailto:${site.email}` : '/kontakt'
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <BackgroundGlow />
+    <main className="laztek-page">
 
       <SiteHeader
         logoUrl={site?.logo ? urlFor(site.logo).width(2200).height(650).url() : undefined}
@@ -118,11 +117,11 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-400/10 via-white/[0.04] to-fuchsia-400/10 p-7">
+          <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-cyan-400/10 via-white/[0.04] to-sky-400/10 p-7">
             <div className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-100/60">Način dela</div>
             <div className="mt-5 space-y-4">
               {workFlow.map((item, index) => (
-                <div key={item} className="flex gap-4 rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+                <div key={item} className="flex gap-4 rounded-[1.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-4">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-300 text-sm font-semibold text-slate-950">
                     {index + 1}
                   </div>
@@ -139,7 +138,7 @@ export default async function AboutPage() {
           {pillars.map((item) => {
             const Icon = item.icon
             return (
-              <article key={item.title} className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
+              <article key={item.title} className="rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-6">
                 <Icon className="h-7 w-7 text-cyan-300" />
                 <h2 className="mt-5 text-xl font-semibold text-white">{item.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-white/62">{item.text}</p>
@@ -163,14 +162,14 @@ export default async function AboutPage() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.04] p-7">
+        <div className="mt-8 rounded-[2rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl p-7">
           <h2 className="text-2xl font-semibold">Kaj je glavna razlika?</h2>
           <p className="mt-4 max-w-4xl leading-8 text-white/65">
             Laztek ni samo klasična storitev 3D tiska. Prednost je kombinacija konstrukcijskega znanja, materialnega razumevanja, 3D skeniranja, reverse engineeringa in praktične izdelave. To pomeni, da se lahko lotimo tudi primerov, kjer naročnik nima pripravljene datoteke, ima poškodovan kos ali potrebuje razvoj od začetka.
           </p>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {['3D tisk', 'reverse engineering', '3D skeniranje', 'CAD konstrukcija', 'prototipizacija', 'obnova kosov'].map((item) => (
-              <div key={item} className="flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">
+              <div key={item} className="flex items-center gap-3 rounded-[1.25rem] border border-cyan-200/15 bg-[#071b2d]/65 shadow-[0_18px_58px_rgba(0,15,27,0.20)] backdrop-blur-xl px-4 py-3 text-sm text-white/70">
                 <CheckCircle2 className="h-4 w-4 text-cyan-300" />
                 {item}
               </div>
@@ -186,7 +185,7 @@ function BackgroundGlow() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050816]">
       <div className="absolute left-1/2 top-[-10%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[140px]" />
-      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-fuchsia-500/15 blur-[160px]" />
+      <div className="absolute bottom-[-20%] right-[-10%] h-[620px] w-[620px] rounded-full bg-blue-500/12 blur-[160px]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:80px_80px] opacity-30" />
     </div>
   )
