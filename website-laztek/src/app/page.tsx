@@ -137,8 +137,8 @@ export default async function Home() {
             Robovi so mehki, zato se pri dnu heroja ne more pojaviti horizontalna črta. */}
             <div className="pointer-events-none absolute left-[-14%] top-[-20%] z-[3] h-[120%] w-[70%] rounded-[50%] bg-white/36 blur-[95px]" />
 
-            <div className="relative z-10 mx-auto min-h-[650px] max-w-7xl px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-16 lg:min-h-[690px] lg:px-8 lg:pb-20 lg:pt-20 xl:min-h-[720px]">
-              <div className="max-w-[680px] xl:max-w-[660px]">
+            <div className="relative z-10 mx-auto min-h-[650px] max-w-[1440px] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-16 lg:min-h-[690px] lg:px-8 lg:pb-20 lg:pt-20 xl:grid xl:min-h-[720px] xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:items-center xl:gap-10">
+              <div className="min-w-0 max-w-[680px] xl:max-w-[640px]">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/70 bg-white/[0.76] px-4 py-2 text-sm font-semibold text-[#0F5D7A] shadow-[0_8px_30px_rgba(56,189,248,0.10)] backdrop-blur-md">
                   <Sparkles size={16} className="text-cyan-500" />
 
@@ -197,12 +197,12 @@ export default async function Home() {
 
               {/* En sam optimiziran hero vizual: s tem brskalnik na telefonu ne
                   nalaga skrite desktop kopije velike PNG slike. */}
-              <div className="pointer-events-none relative z-[2] mx-auto mt-10 w-full max-w-[760px] xl:absolute xl:right-[1%] xl:top-4 xl:mt-0 xl:w-[46vw] xl:max-w-[860px]">
+              <div className="pointer-events-none relative z-[2] mx-auto mt-10 w-full max-w-[760px] min-w-0 xl:mt-0 xl:max-w-none">
                 <Image
                   src={heroObjects}
                   alt="LINEX industrijski 3D tiskalnik in primeri razvitih komponent"
                   loading="eager"
-                  sizes="(max-width: 767px) 100vw, (max-width: 1279px) 760px, 46vw"
+                  sizes="(max-width: 767px) 100vw, (max-width: 1279px) 760px, (max-width: 1535px) 52vw, 760px"
                   className="mx-auto h-auto w-full object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)] lg:drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)]"
                 />
               </div>
