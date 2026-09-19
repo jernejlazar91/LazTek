@@ -438,6 +438,7 @@ export default function SiteHeader({
 
             <a
               href={PHONE_HREF}
+              aria-label={`Pokličite LazTek Engineering na ${PHONE_DISPLAY}`}
               className="inline-flex items-center gap-2.5 text-[13px] font-bold text-white/68 transition hover:text-cyan-100"
             >
               <Phone className="h-[17px] w-[17px] text-cyan-300/82" />

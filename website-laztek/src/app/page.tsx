@@ -545,7 +545,7 @@ function MetricCard({
     <div
       className={`rounded-lg border ${border} bg-white/70 p-5 shadow-[0_10px_28px_rgba(24,86,122,0.06)] backdrop-blur-md`}
     >
-      <div className="text-sm text-[#6A8292]">{label}</div>
+      <div className="text-sm font-medium text-[#405A6A]">{label}</div>
 
       <div className="mt-2 text-base font-semibold text-[#0B2B4C]">{value}</div>
     </div>
