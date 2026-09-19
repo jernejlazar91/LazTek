@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import laztekLogo from "@/assets/brand/laztek-logo.webp";
 import {
   ArrowRight,
   Box,
@@ -320,9 +322,11 @@ function DesktopLogo({
       <div className="pointer-events-none absolute right-[-11px] top-1/2 h-[58px] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-cyan-300/30 to-transparent" />
       <div className="pointer-events-none absolute right-[-13px] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border border-cyan-300/30 bg-[#061521]" />
 
-      <img
-        src="/laztek-logo.png"
+      <Image
+        src={laztekLogo}
         alt="LazTek Engineering"
+        priority
+        sizes="(min-width: 1760px) 353px, 305px"
         className="relative z-10 h-full w-full object-contain px-0 py-0 drop-shadow-[0_5px_16px_rgba(0,0,0,.26)]"
       />
     </Link>
@@ -672,9 +676,11 @@ export default function SiteHeader({
               aria-label={brandName || "LazTek Engineering"}
             >
               <div className="pointer-events-none absolute inset-x-[8%] bottom-[7px] h-px bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent opacity-70 transition group-hover:via-cyan-200/55" />
-              <img
-                src="/laztek-logo.png"
+              <Image
+                src={laztekLogo}
                 alt="LazTek Engineering"
+                priority
+                sizes="305px"
                 className="relative z-10 h-full w-full object-contain drop-shadow-[0_5px_16px_rgba(0,0,0,.26)]"
               />
             </Link>
@@ -892,9 +898,11 @@ export default function SiteHeader({
             className="flex h-[72px] w-[235px] items-center"
             aria-label={brandName || "LazTek Engineering"}
           >
-            <img
-              src="/laztek-logo.png"
+            <Image
+              src={laztekLogo}
               alt="LazTek Engineering"
+              priority
+              sizes="235px"
               className="h-full w-full object-contain"
             />
           </Link>

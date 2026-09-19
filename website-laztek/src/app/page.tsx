@@ -12,6 +12,8 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import heroObjects from "@/assets/brand/laztek-hero-objects.webp";
 
 async function getPageData() {
   return client.fetch(`{
@@ -131,16 +133,6 @@ export default async function Home() {
             id="domov"
             className="relative z-10 isolate overflow-hidden bg-transparent"
           >
-            {/* FINALNI TRANSPARENTNI LINEX + PROJEKTI */}
-            <div className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
-              <img
-                src="/images/laztek-hero-objects.png"
-                alt=""
-                aria-hidden="true"
-                className="absolute right-[-1.5%] top-5 w-[54vw] max-w-[980px] object-contain drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)] xl:right-[0.5%] xl:top-2 xl:w-[52vw] xl:max-w-[1040px]"
-              />
-            </div>
-
             {/* Lokalna bela svetloba samo za berljivost hero teksta.
             Robovi so mehki, zato se pri dnu heroja ne more pojaviti horizontalna črta. */}
             <div className="pointer-events-none absolute left-[-14%] top-[-20%] z-[3] h-[120%] w-[70%] rounded-[50%] bg-white/36 blur-[95px]" />
@@ -201,15 +193,19 @@ export default async function Home() {
                   </div>
                 ) : null}
 
-                {/* Na manjših zaslonih se vizual prestavi pod tekst. */}
-                <div className="mt-10 lg:hidden">
-                  <img
-                    src="/images/laztek-hero-objects.png"
-                    alt=""
-                    aria-hidden="true"
-                    className="mx-auto w-full max-w-[760px] object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)]"
-                  />
-                </div>
+              </div>
+
+              {/* En sam optimiziran hero vizual: s tem brskalnik na telefonu ne
+                  nalaga skrite desktop kopije velike PNG slike. */}
+              <div className="pointer-events-none relative z-[2] mt-10 lg:absolute lg:right-[-1.5%] lg:top-5 lg:mt-0 lg:w-[54vw] lg:max-w-[980px] xl:right-[0.5%] xl:top-2 xl:w-[52vw] xl:max-w-[1040px]">
+                <Image
+                  src={heroObjects}
+                  alt="LINEX industrijski 3D tiskalnik in primeri razvitih komponent"
+                  priority
+                  fetchPriority="high"
+                  sizes="(max-width: 1023px) 100vw, 54vw"
+                  className="mx-auto h-auto w-full object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)] lg:drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)]"
+                />
               </div>
             </div>
           </section>
