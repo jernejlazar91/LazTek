@@ -902,7 +902,7 @@ export default function SiteHeader({
               src={laztekLogo}
               alt="LazTek Engineering"
               priority
-              sizes="235px"
+              sizes="140px"
               className="h-full w-full object-contain"
             />
           </Link>

@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {ArrowRight, Mail, MapPin, Phone} from 'lucide-react'
 import {client} from '@/sanity/client'
+import laztekLogo from '@/assets/brand/laztek-logo.webp'
 
 async function getFooterData() {
   return client.fetch(`*[_type == "siteSettings"][0]{
@@ -125,7 +127,13 @@ export default async function SiteFooter() {
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-5">
           <div className="xl:col-span-2">
             <Link href="/" className="inline-flex max-w-[300px] items-center rounded-[1.25rem] border border-cyan-200/[0.09] bg-[linear-gradient(135deg,rgba(12,45,61,0.48),rgba(7,25,38,0.34))] px-4 py-3 transition hover:border-cyan-300/17 hover:bg-cyan-300/[0.045]">
-              <img src="/laztek-logo.png" alt="LazTek Engineering" className="h-14 w-full object-contain sm:h-16" />
+              <Image
+                src={laztekLogo}
+                alt="LazTek Engineering"
+                loading="lazy"
+                sizes="300px"
+                className="h-14 w-full object-contain sm:h-16"
+              />
             </Link>
 
             <p className="mt-4 max-w-md text-sm leading-7 text-white/56">

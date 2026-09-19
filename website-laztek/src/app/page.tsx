@@ -201,8 +201,7 @@ export default async function Home() {
                 <Image
                   src={heroObjects}
                   alt="LINEX industrijski 3D tiskalnik in primeri razvitih komponent"
-                  priority
-                  fetchPriority="high"
+                  loading="lazy"
                   sizes="(max-width: 1023px) 100vw, 54vw"
                   className="mx-auto h-auto w-full object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)] lg:drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)]"
                 />
@@ -259,7 +258,7 @@ export default async function Home() {
             </section>
 
             {/* ZAKAJ LAZTEK */}
-            <section className="relative z-10 overflow-hidden">
+            <section className="lt-deferred-section relative z-10 overflow-hidden">
               <SectionAura side="left" tone="turquoise" />
 
               <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
@@ -293,7 +292,7 @@ export default async function Home() {
             </section>
 
             {/* POTEK SODELOVANJA */}
-            <section className="relative z-10 overflow-hidden">
+            <section className="lt-deferred-section relative z-10 overflow-hidden">
               <SectionAura side="left" tone="blue" />
               <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
                 <SectionHeading
@@ -330,7 +329,7 @@ export default async function Home() {
 
             {/* PROJEKTI */}
             {projects.length ? (
-              <section className="relative z-10 overflow-hidden">
+              <section className="lt-deferred-section relative z-10 overflow-hidden">
                 <SectionAura side="right" tone="turquoise" />
                 <div className="absolute left-[-120px] top-1/3 h-[360px] w-[360px] rounded-full bg-cyan-200/30 blur-[100px]" />
                 <div className="absolute right-[-120px] top-[10%] h-[400px] w-[400px] rounded-full bg-blue-200/30 blur-[110px]" />
@@ -362,9 +361,15 @@ export default async function Home() {
                         {project.featuredImage ? (
                           <img
                             src={urlFor(project.featuredImage)
-                              .width(900)
-                              .height(600)
+                              .width(720)
+                              .height(450)
+                              .format("webp")
+                              .quality(72)
                               .url()}
+                            srcSet={`${urlFor(project.featuredImage).width(480).height(300).format("webp").quality(70).url()} 480w, ${urlFor(project.featuredImage).width(720).height(450).format("webp").quality(72).url()} 720w`}
+                            sizes="(max-width: 1023px) calc(100vw - 2rem), 33vw"
+                            loading="lazy"
+                            decoding="async"
                             alt={
                               project.title ||
                               "Izvedba projekta LazTek Engineering"
@@ -398,7 +403,7 @@ export default async function Home() {
             ) : null}
 
             {/* CTA */}
-            <section className="relative z-10 overflow-hidden">
+            <section className="lt-deferred-section relative z-10 overflow-hidden">
               <SectionAura side="left" tone="cyan" />
               <div className="absolute bottom-[-140px] left-[20%] h-[380px] w-[380px] rounded-full bg-cyan-200/25 blur-[110px]" />
               <div className="absolute right-[-120px] top-[-90px] h-[360px] w-[360px] rounded-full bg-blue-200/25 blur-[110px]" />

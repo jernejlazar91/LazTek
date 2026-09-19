@@ -138,6 +138,21 @@ html[data-theme="dark"] body {
   background: #07131c;
 }
 
+/* Dolge sekcije pod prvim zaslonom se izrišejo šele, ko se jim uporabnik
+   približa. To predvsem na telefonu zmanjša začetno delo brskalnika. */
+.lt-deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+@media (max-width: 767px) {
+  /* Mobilna različica ohrani barvne gradiente, opusti pa drag SVG filter v
+     fiksnem ozadju. Tehnični detajli v headerju ostanejo nespremenjeni. */
+  .laztek-background svg {
+    display: none;
+  }
+}
+
 html[data-theme="dark"] .lt-home {
   color: #edf4f5;
 }
