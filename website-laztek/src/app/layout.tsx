@@ -2,6 +2,7 @@ import JsonLd from "@/components/engineering/JsonLd";
 import ScrollToTop from "@/components/ScrollToTop";
 import SiteFooter from "@/components/SiteFooter";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./engineering.css";
@@ -425,6 +426,7 @@ export default function RootLayout({
           <SiteFooter />
         </div>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
