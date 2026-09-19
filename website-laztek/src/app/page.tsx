@@ -201,7 +201,7 @@ export default async function Home() {
                 <Image
                   src={heroObjects}
                   alt="LINEX industrijski 3D tiskalnik in primeri razvitih komponent"
-                  loading="lazy"
+                  loading="eager"
                   sizes="(max-width: 1023px) 100vw, 54vw"
                   className="mx-auto h-auto w-full object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)] lg:drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)]"
                 />
