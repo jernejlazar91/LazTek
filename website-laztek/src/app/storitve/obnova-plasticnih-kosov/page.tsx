@@ -1,8 +1,10 @@
 import JsonLd from "@/components/engineering/JsonLd";
 import SiteHeader from "@/components/SiteHeader";
-import atxCad from "@/assets/laztek/atx-cad.webp";
-import atxOriginal from "@/assets/laztek/atx-original.webp";
-import atxReconstruction from "@/assets/laztek/atx-reconstruction.webp";
+import atxCad from "@/assets/laztek-v2/projects/atx/atx-engineered-model.webp";
+import atxOriginal from "@/assets/laztek-v2/projects/atx/atx-original-part.webp";
+import atxReconstruction from "@/assets/laztek-v2/projects/atx/atx-scan-model.webp";
+import airVentPrintedPart from "@/assets/laztek-v2/projects/klima/air-vent-printed-part.webp";
+import airVentPrintedPartDetail from "@/assets/laztek-v2/projects/klima/air-vent-printed-part-detail.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { ArrowRight } from "lucide-react";
@@ -152,10 +154,38 @@ export default async function PlasticPartRepairPage() {
             ]}
           />
         </section>
+        <section className="lt-band">
+          <div className="lt-container lt-section">
+            <SectionHeading
+              eyebrow="04 / Od modela do nadomestnega dela"
+              title="Klima element: izdelan nadomestni kos in realna površina."
+              text="Fotografiji prikazujeta isti fizični klima element iz dveh zornih kotov. Vidni ostanejo dejanska geometrija, struktura slojev in površina brez retuširanja."
+            />
+            <ImageSequence
+              ariaLabel="Izdelan nadomestni klima element in detajl njegove površine"
+              items={[
+                {
+                  image: airVentPrintedPart,
+                  alt: "3D natisnjen nadomestni klima element",
+                  label: "01 / IZDELAVA",
+                  title: "Fizični nadomestni kos",
+                  text: "Komponenta je izdelana v dejanski velikosti za preverjanje oblike in uporabe.",
+                },
+                {
+                  image: airVentPrintedPartDetail,
+                  alt: "Detajl površine 3D natisnjenega klima elementa",
+                  label: "02 / PREGLED",
+                  title: "Realna površina izdelka",
+                  text: "Fotografija ohranja dejansko teksturo, robove in vidne sloje končnega kosa.",
+                },
+              ]}
+            />
+          </div>
+        </section>
         <section className="lt-container lt-section lt-split">
           <div>
             <SectionHeading
-              eyebrow="04 / Material in izvedljivost"
+              eyebrow="05 / Material in izvedljivost"
               title="Nadomestni del mora ustrezati uporabi."
             />
             <Link href="/materiali" className="lt-text-link">

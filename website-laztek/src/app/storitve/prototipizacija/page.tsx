@@ -1,7 +1,8 @@
 import JsonLd from "@/components/engineering/JsonLd";
 import SiteHeader from "@/components/SiteHeader";
-import functionalPrototype from "@/assets/laztek/functional-prototype.webp";
-import prototypeCadScreen from "@/assets/laztek/prototype-cad-screen.webp";
+import physicalPrototypeIteration from "@/assets/laztek-v2/services/prototyping/physical-prototype-iteration.webp";
+import prototypeIterationSet from "@/assets/laztek-v2/services/prototyping/prototype-iteration-set.webp";
+import prototypeFinalSet from "@/assets/laztek-v2/services/prototyping/prototype-final-set.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 
@@ -83,10 +84,10 @@ export default async function PrototypingPage() {
           description="Fizični prototip pokaže, kako se kos sestavi, prilega in obnaša pri uporabi. S CAD razvojem in izdelavo podpremo vsako smiselno iteracijo."
           visual={
             <TechnicalImage
-              image={functionalPrototype}
-              alt="Izdelava funkcionalnega prototipa šablone na industrijskem 3D tiskalniku"
-              label="PROTOTYPE / VALIDATION"
-              caption="Fizični prototip za preverjanje geometrije in izdelave"
+              image={prototypeIterationSet}
+              alt="Tri razvojne iteracije funkcionalne zračne rešetke na platformi LINEX"
+              label="PROTOTYPE / ITERATION"
+              caption="Zaporedne fizične izvedbe iste komponente"
               priority
             />
           }
@@ -95,16 +96,22 @@ export default async function PrototypingPage() {
         <section id="iteracije" className="lt-container lt-section lt-split">
           <div className="lt-media-stack">
             <TechnicalImage
-              image={prototypeCadScreen}
-              alt="CAD razvoj radialne prototipne šablone"
-              label="01 / CAD DEVELOPMENT"
-              caption="Razvoj testne geometrije in priprava modela"
+              image={physicalPrototypeIteration}
+              alt="Prva fizična iteracija zračne rešetke na delovni površini 3D tiskalnika"
+              label="01 / PHYSICAL TEST"
+              caption="Prvi kos za preverjanje oblike in izdelovalnosti"
             />
             <TechnicalImage
-              image={functionalPrototype}
-              alt="Fizična izdelava radialne prototipne šablone"
-              label="02 / PHYSICAL PROTOTYPE"
-              caption="Izdelava prvega kosa za preverjanje zasnove"
+              image={prototypeIterationSet}
+              alt="Tri razvojne iteracije iste funkcionalne zračne rešetke"
+              label="02 / ITERATIONS"
+              caption="Primerjava geometrije med zaporednimi izvedbami"
+            />
+            <TechnicalImage
+              image={prototypeFinalSet}
+              alt="Tri izdelane zračne rešetke po zaključenih razvojnih iteracijah"
+              label="03 / VALIDATED SET"
+              caption="Izbrane izvedbe po fizičnem preverjanju"
             />
           </div>
           <div>

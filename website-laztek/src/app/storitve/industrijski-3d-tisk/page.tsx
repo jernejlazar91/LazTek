@@ -1,8 +1,8 @@
 import JsonLd from "@/components/engineering/JsonLd";
 import SiteHeader from "@/components/SiteHeader";
-import fgfPelletPrint from "@/assets/laztek/fgf-pellet-print.webp";
-import functionalParts from "@/assets/laztek/functional-parts.webp";
-import smallSeries from "@/assets/laztek/small-series.webp";
+import fgfPelletPrint from "@/assets/laztek-v2/services/industrial-print/fgf-granulate-print.webp";
+import functionalParts from "@/assets/laztek-v2/projects/clio-197/clio-grille-process.webp";
+import smallSeries from "@/assets/laztek-v2/services/industrial-print/small-series-production.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { ArrowRight } from "lucide-react";
@@ -227,10 +227,10 @@ export default async function IndustrialPrintingPage() {
               },
               {
                 image: functionalParts,
-                alt: "Več različnih funkcionalnih 3D natisnjenih komponent na platformi LINEX",
-                label: "FUNKCIONALNI DELI",
-                title: "Različne geometrije in nameni",
-                text: "Od ohišij in mrežic do namenskih elementov, prilagojenih konkretni uporabi.",
+                alt: "Prototipi in izdelane zračne mrežice Renault Clio 197 na platformi LINEX",
+                label: "ITERACIJE / FUNKCIONALNI DELI",
+                title: "Od prototipa do uporabnega kosa",
+                text: "Zaporedne fizične izvedbe omogočijo preverjanje geometrije pred izdelavo končnega kompleta.",
               },
             ]}
           />

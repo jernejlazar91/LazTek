@@ -1,5 +1,5 @@
 import SiteHeader from "@/components/SiteHeader";
-import engineeringWorkshop from "@/assets/laztek/engineering-workshop.webp";
+import engineeringWorkshop from "@/assets/laztek-v2/linex/linex-development-stage.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { Cpu, DraftingCompass, ScanLine, Wrench } from "lucide-react";
@@ -107,7 +107,7 @@ export default async function AboutPage() {
           visual={
             <TechnicalImage
               image={engineeringWorkshop}
-              alt="Razvojna delavnica LazTek Engineering v Rovtah"
+              alt="Razvoj platforme LINEX v delavnici LazTek Engineering v Rovtah"
               label="ROVTE / DEVELOPMENT WORKSHOP"
               caption="Lasten razvoj, konstrukcija in aditivna izdelava na enem mestu"
               priority

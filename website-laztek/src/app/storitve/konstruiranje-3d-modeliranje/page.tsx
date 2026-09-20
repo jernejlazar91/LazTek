@@ -1,9 +1,12 @@
 import JsonLd from "@/components/engineering/JsonLd";
 import SiteHeader from "@/components/SiteHeader";
-import generativeDesign from "@/assets/laztek/generative-design.webp";
-import linexCadAssembly from "@/assets/laztek/linex-cad-assembly.webp";
 import machineSubassembly from "@/assets/laztek/machine-subassembly.webp";
-import topologyOptimization from "@/assets/laztek/topology-optimization.webp";
+import generativeDesign from "@/assets/laztek-v2/services/engineering/generative-geometry.webp";
+import topologyOptimization from "@/assets/laztek-v2/services/engineering/topology-optimized-part.webp";
+import linexCadAssembly from "@/assets/laztek-v2/linex/linex-cad-assembly.webp";
+import bmwComponentScan from "@/assets/laztek-v2/projects/bmw/bmw-component-scan.webp";
+import bmwComponentSolid from "@/assets/laztek-v2/projects/bmw/bmw-component-solid.webp";
+import bmwComponentPrototypes from "@/assets/laztek-v2/projects/bmw/bmw-component-prototypes.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import {
@@ -221,14 +224,47 @@ export default async function CADModelingPage() {
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="04 / Razvojni proces"
+            eyebrow="04 / Primer razvoja komponente"
+            title="Od zajete oblike do fizičnega prototipa."
+            text="Scan poda prostorsko referenco, urejen solid model omogoči nadzor geometrije, fizični prototip pa potrdi prileganje in izdelovalnost."
+          />
+          <ImageSequence
+            ariaLabel="Razvojni proces komponente od 3D skena do fizičnega prototipa"
+            items={[
+              {
+                image: bmwComponentScan,
+                alt: "Zajeta površinska geometrija avtomobilske komponente",
+                label: "01 / SCAN REFERENCE",
+                title: "Digitalna referenca",
+                text: "Zajeta oblika določi prostorske omejitve, priključna mesta in ključne površine.",
+              },
+              {
+                image: bmwComponentSolid,
+                alt: "Rekonstruiran solid CAD model avtomobilske komponente",
+                label: "02 / SOLID MODEL",
+                title: "Konstrukcijsko urejen model",
+                text: "Površinska referenca je pretvorjena v geometrijo, primerno za spremembe in izdelavo.",
+              },
+              {
+                image: bmwComponentPrototypes,
+                alt: "Fizična prototipa avtomobilske komponente na platformi LINEX",
+                label: "03 / PROTOTYPE",
+                title: "Fizično preverjanje",
+                text: "Izdelana prototipa omogočita pregled oblike, površine in realne uporabe.",
+              },
+            ]}
+          />
+        </section>
+        <section className="lt-container lt-section">
+          <SectionHeading
+            eyebrow="05 / Razvojni proces"
             title="Zahteva → konstrukcija → preverjanje → izdelava."
           />
           <ProcessFlow steps={process} />
         </section>
         <section className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="05 / Predaja"
+            eyebrow="06 / Predaja"
             title="Dokumentacija za nadaljnjo uporabo."
             text="Obseg modelov, risb in prototipov prilagodimo fazi vašega projekta."
           />

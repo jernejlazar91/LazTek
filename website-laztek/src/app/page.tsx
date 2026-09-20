@@ -12,8 +12,21 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import heroObjects from "@/assets/brand/laztek-hero-objects.webp";
+import Image, { getImageProps } from "next/image";
+import heroDesktop from "@/assets/laztek-v2/hero/linex-workshop-desktop.webp";
+import heroMobile from "@/assets/laztek-v2/hero/linex-workshop-mobile.webp";
+import fenderReference from "@/assets/laztek-v2/projects/blatnik/fender-reference-part.webp";
+import clioFinalSet from "@/assets/laztek-v2/projects/clio-197/clio-grille-final-set.webp";
+import smallSeriesProduction from "@/assets/laztek-v2/services/industrial-print/small-series-production.webp";
+
+type HomeProject = {
+  _id: string;
+  slug: string;
+  title?: string;
+  category?: string;
+  excerpt?: string;
+  featuredImage?: unknown;
+};
 
 async function getPageData() {
   return client.fetch(`{
@@ -108,6 +121,26 @@ export default async function Home() {
     !cmsHeroTitle || cmsHeroTitle === previousHeroTitle
       ? conciseHeroTitle
       : cmsHeroTitle;
+  const heroAlt =
+    "Lastno razvita velikoformatna FDM in FGF platforma LINEX HT v delavnici LazTek Engineering";
+  const {
+    props: { srcSet: heroDesktopSrcSet },
+  } = getImageProps({
+    src: heroDesktop,
+    alt: heroAlt,
+    width: heroDesktop.width,
+    height: heroDesktop.height,
+    sizes: "(min-width: 1280px) 52vw, 760px",
+    quality: 82,
+  });
+  const { props: heroMobileProps } = getImageProps({
+    src: heroMobile,
+    alt: heroAlt,
+    width: heroMobile.width,
+    height: heroMobile.height,
+    sizes: "100vw",
+    quality: 80,
+  });
 
   return (
     <>
@@ -195,16 +228,23 @@ export default async function Home() {
 
               </div>
 
-              {/* En sam optimiziran hero vizual: s tem brskalnik na telefonu ne
-                  nalaga skrite desktop kopije velike PNG slike. */}
-              <div className="pointer-events-none relative z-[2] mx-auto mt-10 w-full max-w-[760px] min-w-0 xl:mt-0 xl:max-w-none">
-                <Image
-                  src={heroObjects}
-                  alt="LINEX industrijski 3D tiskalnik in primeri razvitih komponent"
-                  loading="eager"
-                  sizes="(max-width: 767px) 100vw, (max-width: 1279px) 760px, (max-width: 1535px) 52vw, 760px"
-                  className="mx-auto h-auto w-full object-contain drop-shadow-[0_20px_28px_rgba(21,84,118,0.14)] lg:drop-shadow-[0_24px_30px_rgba(21,84,118,0.16)]"
-                />
+              <div className="relative z-[2] mx-auto mt-10 w-full max-w-[760px] min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-white/55 p-2 shadow-[0_24px_64px_rgba(18,67,96,0.16)] xl:mt-0 xl:max-w-none">
+                <picture>
+                  <source
+                    media="(min-width: 768px)"
+                    srcSet={heroDesktopSrcSet}
+                  />
+                  <img
+                    {...heroMobileProps}
+                    alt={heroAlt}
+                    fetchPriority="high"
+                    decoding="async"
+                    className="block aspect-[8/5] h-auto w-full rounded-xl object-cover object-center max-md:aspect-[4/5]"
+                  />
+                </picture>
+                <div className="pointer-events-none absolute inset-x-2 bottom-2 rounded-b-xl bg-gradient-to-t from-[#061f31]/80 via-[#061f31]/25 to-transparent px-4 pb-4 pt-16 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+                  LINEX HT / Lasten razvoj / Rovte
+                </div>
               </div>
             </div>
           </section>
@@ -253,6 +293,65 @@ export default async function Home() {
                       </Link>
                     );
                   })}
+                </div>
+              </div>
+            </section>
+
+            <section
+              className="lt-deferred-section relative z-10 overflow-hidden"
+              aria-label="Dejansko delo iz delavnice LazTek Engineering"
+            >
+              <SectionAura side="left" tone="turquoise" />
+              <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+                <SectionHeading
+                  eyebrow="Dejansko delo"
+                  title="Resnični deli. Resnični procesi."
+                  text="Fotografije prikazujejo dejansko digitalizacijo, izdelavo in končne tehnične komponente iz delavnice LazTek Engineering."
+                  centered
+                />
+                <div
+                  className="mt-10 grid gap-5 md:grid-cols-3"
+                >
+                  {[
+                    {
+                      image: fenderReference,
+                      alt: "Plastični blatnik z referenčnimi markerji, pripravljen za 3D skeniranje",
+                      label: "3D skeniranje",
+                      text: "Priprava realnega kosa za natančen zajem geometrije.",
+                    },
+                    {
+                      image: clioFinalSet,
+                      alt: "Komplet štirih izdelanih zračnih mrežic za Renault Clio 197",
+                      label: "Reverse engineering",
+                      text: "Končni komplet po rekonstrukciji in več razvojnih iteracijah.",
+                    },
+                    {
+                      image: smallSeriesProduction,
+                      alt: "Manjša serija črnih tehničnih komponent na delovni površini LINEX",
+                      label: "Mala serija",
+                      text: "Ponovljiva izdelava funkcionalnih kosov na lastni platformi.",
+                    },
+                  ].map((item) => (
+                    <figure
+                      key={item.label}
+                      className="group overflow-hidden rounded-xl border border-white/90 bg-white/80 shadow-[0_16px_42px_rgba(24,86,122,0.09)]"
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        sizes="(max-width: 767px) calc(100vw - 2rem), 33vw"
+                        className="aspect-[4/3] h-auto w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                      />
+                      <figcaption className="p-5">
+                        <span className="text-xs font-bold uppercase tracking-[0.16em] text-[#087EA5]">
+                          {item.label}
+                        </span>
+                        <p className="mt-2 text-sm leading-6 text-[#587082]">
+                          {item.text}
+                        </p>
+                      </figcaption>
+                    </figure>
+                  ))}
                 </div>
               </div>
             </section>
@@ -352,24 +451,23 @@ export default async function Home() {
                   </div>
 
                   <div className="mt-12 grid gap-6 lg:grid-cols-3">
-                    {projects.map((project: any) => (
+                    {projects.map((project: HomeProject) => (
                       <Link
                         href={`/projekti/${project.slug}`}
                         key={project._id}
                         className="group block overflow-hidden rounded-xl border border-white/90 bg-white/[0.78] shadow-[0_18px_48px_rgba(24,86,122,0.10)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(24,86,122,0.14)]"
                       >
                         {project.featuredImage ? (
-                          <img
+                          <Image
                             src={urlFor(project.featuredImage)
                               .width(720)
                               .height(450)
                               .format("webp")
                               .quality(72)
                               .url()}
-                            srcSet={`${urlFor(project.featuredImage).width(480).height(300).format("webp").quality(70).url()} 480w, ${urlFor(project.featuredImage).width(720).height(450).format("webp").quality(72).url()} 720w`}
+                            width={720}
+                            height={450}
                             sizes="(max-width: 1023px) calc(100vw - 2rem), 33vw"
-                            loading="lazy"
-                            decoding="async"
                             alt={
                               project.title ||
                               "Izvedba projekta LazTek Engineering"

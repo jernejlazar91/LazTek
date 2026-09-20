@@ -1,12 +1,15 @@
 import SiteHeader from "@/components/SiteHeader";
-import fgfPelletPrint from "@/assets/laztek/fgf-pellet-print.webp";
-import linexCadAssembly from "@/assets/laztek/linex-cad-assembly.webp";
-import linexElectronics from "@/assets/laztek/linex-electronics.webp";
-import linexPlatform from "@/assets/laztek/linex-platform.webp";
+import fgfPelletPrint from "@/assets/laztek-v2/services/industrial-print/fgf-granulate-print.webp";
+import linexCadAssembly from "@/assets/laztek-v2/linex/linex-cad-assembly.webp";
+import linexElectronics from "@/assets/laztek-v2/linex/linex-control-electronics.webp";
+import linexEarlyBuild from "@/assets/laztek-v2/linex/linex-early-build.webp";
+import linexDevelopmentStage from "@/assets/laztek-v2/linex/linex-development-stage.webp";
+import linexPlatform from "@/assets/laztek-v2/linex/linex-ht-platform.webp";
 import linexThermalBellows from "@/assets/laztek/linex-thermal-bellows.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/image";
+import Image from "next/image";
 
 export const metadata = pageMetadata(
   "LINEX HT v1",
@@ -122,7 +125,7 @@ export default async function LinexPage() {
           visual={
             platform?.image ? (
               <figure className="lt-product-media">
-                <img
+                <Image
                   src={urlFor(platform.image).width(1100).auto("format").url()}
                   alt={
                     platform.image.alt ||
@@ -130,6 +133,8 @@ export default async function LinexPage() {
                   }
                   width={1100}
                   height={720}
+                  sizes="(max-width: 800px) 100vw, 52vw"
+                  priority
                 />
                 <figcaption>
                   LINEX HT v1 / FDM + FGF / RAZVOJNA PLATFORMA
@@ -192,39 +197,74 @@ export default async function LinexPage() {
         <section className="lt-container lt-section">
           <SectionHeading
             eyebrow="03 / Razvoj platforme"
-            title="Mehanika, elektronika in termični koncept kot en sistem."
-            text="LINEX ni kupljen katalogski tiskalnik. Platforma je razvita kot celota, zato lahko proces prilagodimo velikim geometrijam, različnim ekstruzijskim sistemom in zahtevnejšemu temperaturnemu okolju."
+            title="Od prve postavitve do zrele razvojne platforme."
+            text="LINEX ni kupljen katalogski tiskalnik. Fotografije prikazujejo dejanski razvoj stroja, vmesne izvedbe in platformo v današnji konfiguraciji."
           />
           <ImageSequence
             ariaLabel="Razvojne faze platforme LINEX HT v1"
             items={[
               {
-                image: linexCadAssembly,
-                alt: "CAD sestav velikoformatne platforme LINEX HT v1",
-                label: "MECHANICAL DESIGN",
-                title: "Konstrukcija platforme",
-                text: "Razvoj delovnega območja, kinematike, vodil, nosilcev in dostopnosti komponent.",
+                image: linexEarlyBuild,
+                alt: "Zgodnja mehanska izvedba velikoformatne platforme LINEX HT",
+                label: "01 / EARLY BUILD",
+                title: "Prva delujoča postavitev",
+                text: "Osnovna konstrukcija, gibanje in delovno območje so bili najprej preverjeni na odprti razvojni izvedbi.",
               },
               {
-                image: linexElectronics,
-                alt: "Električna omara in krmilna elektronika platforme LINEX",
-                label: "CONTROL SYSTEM",
-                title: "Krmiljenje in napajanje",
-                text: "Industrijska električna arhitektura za nadzor gibanja, gretja in procesnih funkcij.",
+                image: linexDevelopmentStage,
+                alt: "Vmesna razvojna faza velikoformatne platforme LINEX HT v delavnici",
+                label: "02 / DEVELOPMENT",
+                title: "Razvoj sistema",
+                text: "Mehanika, ekstruzija, ožičenje in procesna oprema so se razvijali kot povezana celota.",
               },
               {
-                image: linexThermalBellows,
-                alt: "Toplotna zaščita delovnega območja platforme LINEX",
-                label: "THERMAL SYSTEM",
-                title: "Priprava termičnega okolja",
-                text: "Zaščita vodil in delovnega območja pri razvoju postopkov za tehnične polimere.",
+                image: linexPlatform,
+                alt: "Zrela velikoformatna FDM in FGF platforma LINEX HT",
+                label: "03 / CURRENT PLATFORM",
+                title: "Zrela platforma",
+                text: "Današnja izvedba združuje velik delovni volumen, dve ekstruzijski tehnologiji in nadzorovan proces.",
               },
             ]}
           />
         </section>
+        <section className="lt-band">
+          <div className="lt-container lt-section">
+            <SectionHeading
+              eyebrow="04 / Tehnični sistemi"
+              title="Mehanika, elektronika in termični koncept kot en sistem."
+              text="Lasten razvoj omogoča, da se posamezen podsistem prilagodi velikim geometrijam, različnim ekstruzijskim sistemom in zahtevnejšemu temperaturnemu okolju."
+            />
+            <ImageSequence
+              ariaLabel="Konstrukcijski, električni in termični sistemi platforme LINEX"
+              items={[
+                {
+                  image: linexCadAssembly,
+                  alt: "CAD sestav velikoformatne platforme LINEX HT v1",
+                  label: "01 / MECHANICAL DESIGN",
+                  title: "Konstrukcija platforme",
+                  text: "Razvoj delovnega območja, kinematike, vodil, nosilcev in dostopnosti komponent.",
+                },
+                {
+                  image: linexElectronics,
+                  alt: "Električna omara in krmilna elektronika platforme LINEX",
+                  label: "02 / CONTROL SYSTEM",
+                  title: "Krmiljenje in napajanje",
+                  text: "Industrijska električna arhitektura za nadzor gibanja, gretja in procesnih funkcij.",
+                },
+                {
+                  image: linexThermalBellows,
+                  alt: "Toplotna zaščita delovnega območja platforme LINEX",
+                  label: "03 / THERMAL SYSTEM",
+                  title: "Priprava termičnega okolja",
+                  text: "Zaščita vodil in delovnega območja pri razvoju postopkov za tehnične polimere.",
+                },
+              ]}
+            />
+          </div>
+        </section>
         <section id="gibanje" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="04 / Razvoj v praksi"
+            eyebrow="05 / Razvoj v praksi"
             title="Platforma v gibanju."
           />
           <figure className="lt-product-media">
@@ -255,7 +295,7 @@ export default async function LinexPage() {
               caption="Izdelava neposredno iz granulata"
             />
             <SectionHeading
-              eyebrow="05 / Proces"
+              eyebrow="06 / Proces"
               title="Platforma je orodje. Rezultat določa proces."
               text="Pri velikih kosih so ključni priprava modela, upravljanje toplotnih obremenitev, stabilen pretok materiala in nadzor nad dolgim proizvodnim ciklom."
             />
@@ -263,7 +303,7 @@ export default async function LinexPage() {
         </section>
         <section id="aplikacije" className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="06 / Aplikacije"
+            eyebrow="07 / Aplikacije"
             title="Za večje kose in razvojne izzive."
           />
           <CapabilityGrid items={useCases} />
