@@ -1,4 +1,5 @@
 import {client} from '@/sanity/client'
+import {staticProjects} from '@/data/projects'
 import type {MetadataRoute} from 'next'
 
 type SanityItem = {
@@ -106,12 +107,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  const projectPages: MetadataRoute.Sitemap = projects.map((project) => ({
+  const staticProjectSlugs = new Set(staticProjects.map(({slug}) => slug))
+  const staticProjectPages: MetadataRoute.Sitemap = staticProjects.map(
+    (project) => ({
+      url: `${baseUrl}/projekti/${project.slug}`,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }),
+  )
+
+  const projectPages: MetadataRoute.Sitemap = projects
+    .filter((project) => !staticProjectSlugs.has(project.slug))
+    .map((project) => ({
     url: `${baseUrl}/projekti/${encodeURIComponent(project.slug)}`,
     lastModified: project._updatedAt ? new Date(project._updatedAt) : undefined,
     changeFrequency: 'monthly',
     priority: 0.7,
-  }))
+    }))
 
   const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${baseUrl}/blog/${encodeURIComponent(post.slug)}`,
@@ -126,5 +138,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly',
     priority: 0.5,
   }))
-  return [...staticPages, ...projectPages, ...blogPages, ...galleryPages]
+  return [
+    ...staticPages,
+    ...staticProjectPages,
+    ...projectPages,
+    ...blogPages,
+    ...galleryPages,
+  ]
 }

@@ -1,5 +1,6 @@
 'use client'
 import {ArrowUpRight} from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import {useId, useMemo, useState} from 'react'
 
@@ -114,13 +115,8 @@ export default function CollectionExplorer({
           >
             <div className="lt-case-media">
               {item.image ? (
-                <img
+                <Image
                   src={item.image}
-                  srcSet={
-                    item.imageSmall
-                      ? `${item.imageSmall} 600w, ${item.image} 1200w`
-                      : undefined
-                  }
                   sizes={
                     kind === 'gallery'
                       ? '(max-width: 520px) 100vw, (max-width: 800px) 50vw, 33vw'
@@ -129,8 +125,6 @@ export default function CollectionExplorer({
                   alt={item.alt || item.title}
                   width={1000}
                   height={625}
-                  loading="lazy"
-                  decoding="async"
                 />
               ) : (
                 <div className="lt-image-placeholder">

@@ -1,4 +1,5 @@
 import SiteHeader from '@/components/SiteHeader'
+import {staticProjects} from '@/data/projects'
 import {pageMetadata} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
@@ -15,7 +16,9 @@ async function getProjectsPageData() {
       "slug": slug.current,
       category,
       excerpt,
+      description,
       featuredImage,
+      videoUrl,
       publishedAt
     }
   }`)
@@ -24,12 +27,43 @@ async function getProjectsPageData() {
 import CollectionExplorer from '@/components/engineering/CollectionExplorer'
 import {CTASection, PageHero} from '@/components/engineering/DesignSystem'
 
+type CmsProjectCard = {
+  _id: string
+  title?: string
+  slug?: string
+  category?: string
+  excerpt?: string
+  description?: string
+  featuredImage?: {alt?: string} & Record<string, unknown>
+  publishedAt?: string
+  videoUrl?: string
+}
+
+type ProjectsPageData = {
+  siteSettings?: {brandName?: string; logo?: unknown}
+  projects?: CmsProjectCard[]
+}
+
 export default async function Page() {
-  const data = await getProjectsPageData()
+  const data = (await getProjectsPageData()) as ProjectsPageData
   const site = data?.siteSettings
-  const items = (data?.projects || [])
-    .filter((item: any) => item.slug)
-    .map((item: any) => ({
+  const staticItems = staticProjects.map((item) => ({
+    id: `static-${item.slug}`,
+    title: item.title,
+    href: `/projekti/${item.slug}`,
+    excerpt: item.excerpt,
+    category: item.category,
+    image: item.featuredImage.src,
+    imageSmall: item.featuredImage.src,
+    alt: item.featuredAlt,
+  }))
+  const staticSlugs = new Set(staticProjects.map(({slug}) => slug))
+  const cmsItems = (data?.projects || [])
+    .filter(
+      (item): item is CmsProjectCard & {slug: string} =>
+        Boolean(item.slug) && !staticSlugs.has(item.slug || ''),
+    )
+    .map((item) => ({
       id: item._id,
       title: item.title || 'Projekti',
       href: `/projekti/${encodeURIComponent(item.slug)}`,
@@ -49,6 +83,7 @@ export default async function Page() {
       alt: item.featuredImage?.alt || item.title,
       hasVideo: Boolean(item.videoUrl),
     }))
+  const items = [...staticItems, ...cmsItems]
   return (
     <>
       <SiteHeader brandName={site?.brandName} basePath="/" />
@@ -56,8 +91,8 @@ export default async function Page() {
         <PageHero
           eyebrow="Projekti / LazTek Engineering"
           breadcrumb="Projekti"
-          title="Inženirstvo v praksi."
-          description="Projekti industrijskega 3D tiska, rekonstrukcije geometrije in razvoja. Izhodišče, pristop in rezultat posamezne izvedbe."
+          title="Resnični projekti. Merljivi koraki."
+          description="Oglejte si, kako iz fizičnega kosa, 3D-skena ali začetne ideje nastane uporabna digitalna geometrija, prototip oziroma končna komponenta."
           variant="editorial"
           action={false}
         />
@@ -71,7 +106,7 @@ export default async function Page() {
 }
 
 export const metadata = pageMetadata(
-  'Inženirski projekti',
-  'Razvojni projekti, industrijski 3D tisk, CAD rekonstrukcija in funkcionalne tehnične komponente LazTek Engineering.',
+  'Projekti 3D-tiska, skeniranja in razvoja',
+  'Resnični projekti LazTek Engineering: industrijski 3D-tisk, 3D-skeniranje, reverse engineering, CAD-rekonstrukcija, prototipi in funkcionalne komponente.',
   '/projekti',
 )
