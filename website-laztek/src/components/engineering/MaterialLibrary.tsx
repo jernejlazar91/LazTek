@@ -1,46 +1,60 @@
-'use client'
-import {useId, useMemo, useState} from 'react'
+"use client";
+import type { Material } from "@/data/materials";
+import { useId, useMemo, useState } from "react";
 
-export type Material = {
-  title: string
-  subtitle: string
-  properties: string[]
-  bestFor: string[]
-  watchOut: string[]
-}
 const groups = [
-  'Vsi materiali',
-  'Kompoziti CF / GF',
-  'Zunanja uporaba',
-  'Fleksibilni deli',
-]
+  "Vsi materiali",
+  "Kompoziti CF / GF",
+  "Poliamidi",
+  "Višja temperatura",
+  "Zunanja uporaba",
+  "Fleksibilni deli",
+];
+
+const groupTags: Record<string, string> = {
+  "Kompoziti CF / GF": "kompoziti",
+  Poliamidi: "poliamidi",
+  "Višja temperatura": "višja temperatura",
+  "Zunanja uporaba": "zunanja uporaba",
+  "Fleksibilni deli": "fleksibilni deli",
+};
+
 const normalize = (value: string) =>
   value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
-export default function MaterialLibrary({materials}: {materials: Material[]}) {
-  const searchId = useId()
-  const [query, setQuery] = useState('')
-  const [group, setGroup] = useState(groups[0])
-  const [selected, setSelected] = useState<string[]>([])
+export default function MaterialLibrary({
+  materials,
+}: {
+  materials: Material[];
+}) {
+  const searchId = useId();
+  const [query, setQuery] = useState("");
+  const [group, setGroup] = useState(groups[0]);
+  const [selected, setSelected] = useState<string[]>([]);
   const visible = useMemo(
     () =>
       materials.filter((item) => {
         const matches = normalize(
-          [item.title, item.subtitle, ...item.bestFor].join(' '),
-        ).includes(normalize(query))
+          [
+            item.title,
+            item.family,
+            item.subtitle,
+            ...item.tags,
+            ...item.bestFor,
+            ...item.examples,
+            ...item.properties,
+          ].join(" "),
+        ).includes(normalize(query));
         const category =
-          group === groups[0] ||
-          (group === groups[1] && /CF|GF/.test(item.title)) ||
-          (group === groups[2] && item.title === 'ASA') ||
-          (group === groups[3] && /TPU|TPE/.test(item.title))
-        return matches && category
+          group === groups[0] || item.tags.includes(groupTags[group] || "");
+        return matches && category;
       }),
     [materials, query, group],
-  )
-  const comparison = materials.filter((item) => selected.includes(item.title))
+  );
+  const comparison = materials.filter((item) => selected.includes(item.title));
   function toggle(title: string) {
     setSelected((current) =>
       current.includes(title)
@@ -48,7 +62,7 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
         : current.length < 3
           ? [...current, title]
           : current,
-    )
+    );
   }
   return (
     <div>
@@ -88,7 +102,7 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
       <div className="lt-comparison-status" role="status">
         {selected.length
           ? `Izbrano za primerjavo: ${selected.length} od 3.`
-          : 'Noben material še ni izbran.'}{' '}
+          : "Noben material še ni izbran."}{" "}
         {selected.length > 0 && (
           <button type="button" onClick={() => setSelected([])}>
             Počisti izbor
@@ -124,9 +138,11 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
               <tbody>
                 {(
                   [
-                    {label: 'Primerno za', key: 'bestFor'},
-                    {label: 'Ključne lastnosti', key: 'properties'},
-                    {label: 'Upoštevati pri izbiri', key: 'watchOut'},
+                    { label: "Primerno za", key: "bestFor" },
+                    { label: "Primeri komponent", key: "examples" },
+                    { label: "Ključne lastnosti", key: "properties" },
+                    { label: "Procesne zahteve", key: "process" },
+                    { label: "Upoštevati pri izbiri", key: "watchOut" },
                   ] as const
                 ).map((row) => (
                   <tr key={row.key}>
@@ -153,7 +169,7 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
             <article className="lt-material" key={item.title}>
               <div className="lt-material-top">
                 <div>
-                  <span className="lt-index">TEHNIČNI POLIMER</span>
+                  <span className="lt-index">{item.family}</span>
                   <h3>{item.title}</h3>
                 </div>
                 <label>
@@ -170,17 +186,42 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
                 </label>
               </div>
               <p>{item.subtitle}</p>
+              <dl
+                className="lt-material-profile"
+                aria-label="Hiter profil materiala"
+              >
+                {item.profile.map((property) => (
+                  <div key={property.label}>
+                    <dt>{property.label}</dt>
+                    <dd>{property.value}</dd>
+                  </div>
+                ))}
+              </dl>
               <h4>Primerno za</h4>
               <ul>
                 {item.bestFor.map((x) => (
                   <li key={x}>{x}</li>
                 ))}
               </ul>
+              <div className="lt-material-examples">
+                <h4>Primeri komponent</h4>
+                <div>
+                  {item.examples.map((example) => (
+                    <span key={example}>{example}</span>
+                  ))}
+                </div>
+              </div>
               <details>
-                <summary>Lastnosti in omejitve</summary>
+                <summary>Lastnosti, proces in omejitve</summary>
                 <h4>Ključne lastnosti</h4>
                 <ul>
                   {item.properties.map((x) => (
+                    <li key={x}>{x}</li>
+                  ))}
+                </ul>
+                <h4>Procesne zahteve</h4>
+                <ul>
+                  {item.process.map((x) => (
                     <li key={x}>{x}</li>
                   ))}
                 </ul>
@@ -201,8 +242,8 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
             className="lt-text-link"
             type="button"
             onClick={() => {
-              setQuery('')
-              setGroup(groups[0])
+              setQuery("");
+              setGroup(groups[0]);
             }}
           >
             Ponastavi iskanje in filtre
@@ -210,5 +251,5 @@ export default function MaterialLibrary({materials}: {materials: Material[]}) {
         </div>
       )}
     </div>
-  )
+  );
 }
