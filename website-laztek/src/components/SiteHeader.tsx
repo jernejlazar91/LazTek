@@ -30,10 +30,13 @@ type SiteHeaderProps = {
   logoUrl?: string;
   brandName?: string;
   basePath?: string;
+  phone?: string;
+  email?: string;
+  location?: string;
+  directionsUrl?: string;
 };
 
 const PHONE_DISPLAY = "+386 31 656 611";
-const PHONE_HREF = "tel:+38631656611";
 const EMAIL = "jernej.lazar91@gmail.com";
 const LOCATION = "Rovte 23, 1373 Rovte";
 const DIRECTIONS_URL =
@@ -330,9 +333,11 @@ function navButtonClass(active: boolean) {
 function DesktopLogo({
   brandName,
   href,
+  logoUrl,
 }: {
   brandName?: string;
   href: string;
+  logoUrl?: string;
 }) {
   return (
     <Link
@@ -346,7 +351,9 @@ function DesktopLogo({
       <div className="pointer-events-none absolute right-[-13px] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rotate-45 border border-cyan-300/30 bg-[#061521]" />
 
       <Image
-        src={laztekLogo}
+        src={logoUrl || laztekLogo}
+        width={laztekLogo.width}
+        height={laztekLogo.height}
         alt="LazTek Engineering"
         priority
         sizes="(min-width: 1760px) 353px, 305px"
@@ -450,7 +457,7 @@ export default function SiteHeader(props: SiteHeaderProps) {
   return (
     <HeaderContent
       key={pathname}
-      brandName={props.brandName}
+      {...props}
       pathname={pathname}
     />
   );
@@ -458,11 +465,13 @@ export default function SiteHeader(props: SiteHeaderProps) {
 
 function HeaderContent({
   brandName,
-  pathname,
-}: {
-  brandName?: string;
-  pathname: string;
-}) {
+  pathname, logoUrl, phone, email, location, directionsUrl,
+}: SiteHeaderProps & {pathname: string}) {
+  const displayPhone = phone?.trim() || PHONE_DISPLAY;
+  const phoneHref = `tel:${displayPhone.replace(/[^+0-9]/g, "")}`;
+  const displayEmail = email?.trim() || EMAIL;
+  const displayLocation = location?.trim() || LOCATION;
+  const mapHref = directionsUrl || DIRECTIONS_URL;
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [compactVisible, setCompactVisible] = useState(false);
@@ -588,13 +597,13 @@ function HeaderContent({
         <div className="relative z-40 border-b border-white/[0.055] bg-black/[0.12]">
           <div className="mx-auto flex h-[42px] max-w-[1880px] items-center justify-between gap-5 px-4 sm:px-6 lg:px-8">
             <a
-              href={DIRECTIONS_URL}
+              href={mapHref}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-w-0 items-center gap-2.5 text-[13px] font-semibold text-white/78 transition hover:text-cyan-100"
             >
               <MapPin className="h-[17px] w-[17px] shrink-0 text-cyan-300/82" />
-              <span className="truncate">{LOCATION}</span>
+              <span className="truncate">{displayLocation}</span>
             </a>
 
             <div className="hidden flex-1 items-center justify-center gap-5 lg:flex">
@@ -609,20 +618,20 @@ function HeaderContent({
               {!compactVisible ? <ThemeToggle /> : null}
 
               <a
-                href={PHONE_HREF}
-                aria-label={`Pokličite LazTek Engineering na ${PHONE_DISPLAY}`}
+                href={phoneHref}
+                aria-label={`Pokličite LazTek Engineering na ${displayPhone}`}
                 className="inline-flex items-center gap-2.5 text-[13px] font-bold text-white/82 transition hover:text-cyan-100"
               >
                 <Phone className="h-[17px] w-[17px] text-cyan-300/82" />
-                <span className="hidden sm:inline">{PHONE_DISPLAY}</span>
+                <span className="hidden sm:inline">{displayPhone}</span>
               </a>
 
               <a
-                href={`mailto:${EMAIL}`}
+                href={`mailto:${displayEmail}`}
                 className="hidden items-center gap-2.5 text-[13px] font-semibold text-white/78 transition hover:text-cyan-100 md:inline-flex"
               >
                 <Mail className="h-[17px] w-[17px] text-cyan-300/82" />
-                <span>{EMAIL}</span>
+                <span>{displayEmail}</span>
               </a>
             </div>
           </div>
@@ -631,7 +640,7 @@ function HeaderContent({
         {/* DESKTOP 07 HEADER */}
         <div className="relative z-10 hidden min-[1760px]:block">
           <div className="mx-auto grid min-h-[128px] max-w-[1880px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[10px] px-7 min-[1750px]:gap-[16px] min-[1750px]:px-9">
-            <DesktopLogo brandName={brandName} href={homeHref} />
+            <DesktopLogo brandName={brandName} href={homeHref} logoUrl={logoUrl} />
 
             <nav className="flex min-w-0 items-center justify-center gap-[5px] min-[1750px]:gap-[7px]">
               <Link
@@ -851,7 +860,9 @@ function HeaderContent({
               >
                 <div className="pointer-events-none absolute inset-x-[8%] bottom-[7px] h-px bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent opacity-70 transition group-hover:via-cyan-200/55" />
                 <Image
-                  src={laztekLogo}
+                  src={logoUrl || laztekLogo}
+        width={laztekLogo.width}
+        height={laztekLogo.height}
                   alt="LazTek Engineering"
                   priority
                   sizes="305px"
@@ -1074,7 +1085,9 @@ function HeaderContent({
               aria-label={brandName || "LazTek Engineering"}
             >
               <Image
-                src={laztekLogo}
+                src={logoUrl || laztekLogo}
+        width={laztekLogo.width}
+        height={laztekLogo.height}
                 alt="LazTek Engineering"
                 priority
                 sizes="205px"
@@ -1142,7 +1155,9 @@ function HeaderContent({
               aria-label={`${brandName || "LazTek Engineering"} – Domov`}
             >
               <Image
-                src={laztekLogo}
+                src={logoUrl || laztekLogo}
+        width={laztekLogo.width}
+        height={laztekLogo.height}
                 alt="LazTek Engineering"
                 sizes="150px"
                 className="h-auto w-full"

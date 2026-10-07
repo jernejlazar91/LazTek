@@ -1,16 +1,18 @@
-import SiteHeader from '@/components/SiteHeader'
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import SiteHeader from '@/components/CmsSiteHeader'
 import {pageMetadata} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
+import type {CmsGalleryItem} from '@/sanity/content'
 
-export const metadata = pageMetadata(
+export async function generateMetadata() { return editableMetadata("/galerija", pageMetadata(
   'Galerija izdelkov in procesov',
   'Galerija 3D tiskanih kosov, prototipov, reverse engineering primerov, procesov in razvojnih projektov Laztek Engineering.',
   '/galerija',
-)
+)); }
 
 async function getPageData() {
-  return client.fetch(`{
+  return client.fetch<{siteSettings?: {brandName?: string}; galleryItems?: CmsGalleryItem[]}>(`{
     "siteSettings": *[_type == "siteSettings"][0]{
       brandName,
       email,
@@ -18,7 +20,7 @@ async function getPageData() {
       location,
       logo
     },
-    "galleryItems": *[_type == "galleryItem"] | order(_createdAt desc){
+    "galleryItems": *[_type == "galleryItem"] | order(isFeatured desc, sortOrder asc, _createdAt desc){
       _id,
       title,
       category,
@@ -26,18 +28,21 @@ async function getPageData() {
       videoUrl,
       description
     }
-  }`)
+  }`, {}, {next: {revalidate: 60}})
 }
 
 import CollectionExplorer from '@/components/engineering/CollectionExplorer'
 import {CTASection, PageHero} from '@/components/engineering/DesignSystem'
 
 export default async function Page() {
+  const editor = await getPageEditor("/galerija");
+  
+
   const data = await getPageData()
   const site = data?.siteSettings
   const items = (data?.galleryItems || [])
-    .filter((item: any) => item._id)
-    .map((item: any) => ({
+    .filter((item) => item._id)
+    .map((item) => ({
       id: item._id,
       title: item.title || 'Galerija',
       href: `/galerija/${encodeURIComponent(item._id)}`,
@@ -58,17 +63,17 @@ export default async function Page() {
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme">
         <PageHero
-          eyebrow="Galerija / LazTek Engineering"
+          eyebrow={editor.text("s01.f001", "Galerija / LazTek Engineering")}
           breadcrumb="Galerija"
-          title="Detajli. Procesi. Izvedbe."
-          description="Vizualni pregled komponent, prototipov in razvojnih postopkov. Za ozadje posameznih rešitev obiščite tudi projekte."
+          title={editor.text("s01.f002", "Detajli. Procesi. Izvedbe.")}
+          description={editor.text("s01.f003", "Vizualni pregled komponent, prototipov in razvojnih postopkov. Za ozadje posameznih rešitev obiščite tudi projekte.")}
           variant="editorial"
           action={false}
         />
         <section className="lt-container lt-section" aria-label="Galerija">
           <CollectionExplorer items={items} kind="gallery" />
         </section>
-        <CTASection title="Imate podoben tehnični izziv?" />
+        <CTASection title={editor.text("s02.f004", "Imate podoben tehnični izziv?")} text={editor.text("s02.ctatext", "Pošljite model, osnovne mere ali opis uporabe. Skupaj določimo smiselno pot do izdelave.")} action={editor.text("s02.ctaaction", "Predstavite projekt")} />
       </main>
     </>
   )

@@ -1,3 +1,7 @@
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import {CmsPageHero} from '@/components/engineering/CmsContent';
+import {getEditablePage, stringList, textOr} from '@/sanity/content';
 import fgfPelletPrint from "@/assets/laztek-v2/services/industrial-print/fgf-granulate-print.webp";
 import linexCadAssembly from "@/assets/laztek-v2/linex/linex-cad-assembly.webp";
 import linexElectronics from "@/assets/laztek-v2/linex/linex-control-electronics.webp";
@@ -11,23 +15,25 @@ import {
   ImageSequence,
   JumpNav,
   Metric,
-  PageHero,
   SectionHeading,
   TechnicalImage,
 } from "@/components/engineering/DesignSystem";
 import JsonLd from "@/components/engineering/JsonLd";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader from "@/components/CmsSiteHeader";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/image";
 import Image from "next/image";
 import Link from "next/link";
 
-export const metadata = pageMetadata(
-  "LINEX HT v1 – velikoformatni FDM/FGF 3D tiskalnik",
-  "Lastno razvit industrijski FDM/FFF in FGF 3D tiskalnik za velike komponente iz filamenta ali granulata, z IDEX sistemom in delovnim volumnom nad enim metrom.",
+export async function generateMetadata() {
+  const linex = await getEditablePage('linexPage');
+  return editableMetadata("/linex", await pageMetadata(
+  textOr(linex?.seoTitle, "LINEX HT v1 – velikoformatni FDM/FGF 3D tiskalnik"),
+  textOr(linex?.seoDescription, "Lastno razvit industrijski FDM/FFF in FGF 3D tiskalnik za velike komponente iz filamenta ali granulata, z IDEX sistemom in delovnim volumnom nad enim metrom."),
   "/linex",
-);
+));
+}
 
 async function getPageData() {
   return client.fetch(`{
@@ -41,10 +47,10 @@ async function getPageData() {
     "platformSection": *[_type == "platformSection"][0]{
       image
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const headlineStats = [
+const defaultHeadlineStats = [
   {
     label: "Največji delovni volumen",
     value: "1030 × 737 × 715 mm",
@@ -77,7 +83,7 @@ const headlineStats = [
   },
 ];
 
-const useCases = [
+const defaultUseCases = [
   "veliki funkcionalni prototipi in tehnični vzorci",
   "pokrovi, ohišja, zaščite in namenski konstrukcijski deli",
   "kalupi, modeli, vpenjala, šablone in industrijske priprave",
@@ -86,9 +92,9 @@ const useCases = [
   "razvoj materiala, geometrije in procesnih parametrov pred proizvodnjo",
 ];
 
-const testedMaterials = ["PLA", "PETG", "PETG-CF", "ABS", "ASA", "PA6-CF"];
+const defaultTestedMaterials = ["PLA", "PETG", "PETG-CF", "ABS", "ASA", "PA6-CF"];
 
-const technicalSpecs = [
+const defaultTechnicalSpecs = [
   ["Naziv stroja", "LINEX HT v1"],
   ["Vrsta stroja", "Industrijski velikoformatni hibridni 3D-tiskalnik"],
   ["Tehnologija", "FFF oziroma FDM iz filamenta in FGF iz granulata"],
@@ -135,7 +141,7 @@ const technicalSpecs = [
   ["Načini IDEX", "Samostojno, dve orodji, kopiranje in zrcaljenje"],
 ];
 
-const faqItems = [
+const defaultFaqItems = [
   {
     question: "Kako velik kos je mogoče izdelati na LINEX HT v1?",
     answer:
@@ -174,132 +180,116 @@ const faqItems = [
 ];
 
 export default async function LinexPage() {
+  const editor = await getPageEditor("/linex");
+  const headlineStats = editor.data("s05.f001", defaultHeadlineStats);
+  const useCases = editor.data("s13.f002", defaultUseCases);
+  const testedMaterials = editor.data("s02.f003", defaultTestedMaterials);
+  const technicalSpecs = editor.data("s12.f004", defaultTechnicalSpecs);
+  const faqItems = editor.data("s03.f005", defaultFaqItems);
+
   const data = await getPageData();
   const site = data?.siteSettings;
   const platform = data?.platformSection;
+  const linex = editor.exists ? null : await getEditablePage('linexPage');
+  const cmsStats = linex?.capabilities?.filter(item => item.label?.trim() && item.value?.trim()).map(item => ({label: item.label!, value: item.value!, note: item.note || ''})) || [];
+  const displayedStats = cmsStats.length ? cmsStats : headlineStats;
+  const cmsSpecs = linex?.technicalSpecs?.filter(item => item.label?.trim() && item.value?.trim()).map(item => [item.label!, item.value!]) || [];
+  const displayedSpecs = cmsSpecs.length ? cmsSpecs : technicalSpecs;
+  const displayedUseCases = stringList(linex?.technologyPoints).length ? stringList(linex?.technologyPoints) : useCases;
 
   return (
     <>
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme lt-linex">
-        <PageHero
-          eyebrow="LazTek / Lastna razvojna platforma"
+        <CmsPageHero page={editor.exists ? null : linex}
+          eyebrow={editor.text("s04.f006", "LazTek / Lastna razvojna platforma")}
           breadcrumb="LINEX HT v1"
           title={
-            <>
-              LINEX
-              <br />
-              <em>HT v1.</em>
-            </>
+            <EditableTitle first={editor.text("s04.f007", "LINEX")} second={editor.text("s04.f008", "HT v1.")} />
           }
-          description="Lastno razvita industrijska platforma za velikoformatni 3D tisk funkcionalnih prototipov, tehničnih komponent, kalupov, priprav in maloserijskih izdelkov iz filamenta ali granulata."
+          description={editor.text("s04.f009", "Lastno razvita industrijska platforma za velikoformatni 3D tisk funkcionalnih prototipov, tehničnih komponent, kalupov, priprav in maloserijskih izdelkov iz filamenta ali granulata.")}
           variant="product"
           visual={
-            platform?.image ? (
+            !editor.exists && platform?.image ? (
               <figure className="lt-product-media">
                 <Image
                   src={urlFor(platform.image).width(1100).auto("format").url()}
-                  alt={
-                    platform.image.alt ||
-                    "Industrijski velikoformatni hibridni 3D-tiskalnik LINEX HT v1"
-                  }
+                  alt={platform.image.alt || "Industrijski velikoformatni hibridni 3D-tiskalnik LINEX HT v1"}
                   width={1100}
                   height={720}
                   sizes="(max-width: 800px) 100vw, 52vw"
                   priority
                 />
-                <figcaption>
-                  LINEX HT v1 / FFF + FGF / INDUSTRIJSKA RAZVOJNA PLATFORMA
-                </figcaption>
+                <figcaption>LINEX HT v1 / FFF + FGF / INDUSTRIJSKA RAZVOJNA PLATFORMA</figcaption>
               </figure>
             ) : (
               <TechnicalImage
-                image={linexPlatform}
-                alt="Industrijski velikoformatni hibridni 3D-tiskalnik LINEX HT v1"
-                label="LINEX / HT v1"
-                caption="Filamentna in peletna ekstruzija na eni razvojni platformi"
+                image={editor.image("s04.f012", linexPlatform)}
+                alt={editor.text("s04.f013", "Industrijski velikoformatni hibridni 3D-tiskalnik LINEX HT v1")}
+                label={editor.text("s04.f014", "LINEX / HT v1")}
+                caption={editor.text("s04.f015", "Filamentna in peletna ekstruzija na eni razvojni platformi")}
                 priority
               />
             )
           }
-          action="Povpraševanje za velik kos"
-          secondary={{ href: "#specifikacije", label: "Tehnične specifikacije" }}
+          action={editor.text("s04.f016", "Povpraševanje za velik kos")}
+          secondary={editor.data("s04.f017", { href: "#specifikacije", label: "Tehnične specifikacije" })}
         />
 
         <JumpNav
-          items={[
+          items={editor.data("s04.f018", [
             { id: "zmogljivosti", label: "Zmogljivosti" },
             { id: "orodji", label: "Dve orodji" },
             { id: "temperatura-materiali", label: "Komora in materiali" },
             { id: "specifikacije", label: "Specifikacije" },
             { id: "pogosta-vprasanja", label: "Vprašanja" },
-          ]}
+          ])}
         />
 
         <section id="zmogljivosti" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="01 / Ključne zmogljivosti"
-            title="Velik format, dve tehnologiji in procesni nadzor."
-            text="LINEX HT v1 ni povečan namizni tiskalnik, temveč razvojna platforma, pri kateri so stroj, material, geometrija izdelka in procesni parametri obravnavani kot povezan sistem."
+            eyebrow={editor.text("s05.f019", "01 / Ključne zmogljivosti")}
+            title={editor.text("s05.f020", "Velik format, dve tehnologiji in procesni nadzor.")}
+            text={editor.text("s05.f021", "LINEX HT v1 ni povečan namizni tiskalnik, temveč razvojna platforma, pri kateri so stroj, material, geometrija izdelka in procesni parametri obravnavani kot povezan sistem.")}
           />
           <dl className="lt-metrics">
-            {headlineStats.slice(0, 3).map((item) => (
+            {displayedStats.slice(0, 3).map((item) => (
               <Metric key={item.label} {...item} />
             ))}
           </dl>
           <dl className="lt-metrics">
-            {headlineStats.slice(3).map((item) => (
+            {displayedStats.slice(3).map((item) => (
               <Metric key={item.label} {...item} />
             ))}
           </dl>
           <div className="lt-linex-intro lt-panel">
-            <h3>Velika komponenta v enem kosu</h3>
-            <p>
-              Delovni volumen dolžine več kot en meter zmanjšuje potrebo po
-              deljenju modela, lepljenju in naknadnem sestavljanju. S tem se
-              ohranijo kontinuiteta geometrije, stabilnost konstrukcije in bolj
-              neposredna pot od digitalnega modela do fizičnega izdelka.
-            </p>
+            <h3>{editor.text("s05.f022", "Velika komponenta v enem kosu")}</h3>
+            <p>{editor.text("s05.f023", "Delovni volumen dolžine več kot en meter zmanjšuje potrebo po deljenju modela, lepljenju in naknadnem sestavljanju. S tem se ohranijo kontinuiteta geometrije, stabilnost konstrukcije in bolj neposredna pot od digitalnega modela do fizičnega izdelka.")}</p>
           </div>
         </section>
 
         <section id="orodji" className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="02 / Hibridna ekstruzija"
-              title="Filament in granulat na eni IDEX platformi."
-              text="Vsako orodje se po osi X premika neodvisno. Neaktivno orodje se parkira izven aktivnega območja, konfiguracija pa omogoča samostojno delo, uporabo dveh materialov, kopiranje in zrcalno izdelavo."
+              eyebrow={editor.text("s06.f024", "02 / Hibridna ekstruzija")}
+              title={editor.text("s06.f025", "Filament in granulat na eni IDEX platformi.")}
+              text={editor.text("s06.f026", "Vsako orodje se po osi X premika neodvisno. Neaktivno orodje se parkira izven aktivnega območja, konfiguracija pa omogoča samostojno delo, uporabo dveh materialov, kopiranje in zrcalno izdelavo.")}
             />
             <div className="lt-editorial-rows">
               <article>
-                <span className="lt-index">ORODJE 01 / FFF</span>
-                <h3>Dyze Design Typhoon™</h3>
-                <p>
-                  Filament Ø 2,85 mm, šoba Ø 0,6 mm, temperatura do 550 °C in
-                  masni pretok do 1 kg/h. Namenjen je podrobnejšim funkcionalnim
-                  komponentam, tanjšim slojem ter površinam, kjer sta pomembni
-                  natančnost in kakovost.
-                </p>
+                <span className="lt-index">{editor.text("s06.f027", "ORODJE 01 / FFF")}</span>
+                <h3>{editor.text("s06.f028", "Dyze Design Typhoon™")}</h3>
+                <p>{editor.text("s06.f029", "Filament Ø 2,85 mm, šoba Ø 0,6 mm, temperatura do 550 °C in masni pretok do 1 kg/h. Namenjen je podrobnejšim funkcionalnim komponentam, tanjšim slojem ter površinam, kjer sta pomembni natančnost in kakovost.")}</p>
               </article>
               <article>
-                <span className="lt-index">ORODJE 02 / FGF</span>
-                <h3>Dyze Design Pulsar™ Atom</h3>
-                <p>
-                  Neposredna ekstruzija granulata, šobe Ø 0,4–2,5 mm,
-                  temperatura do 450 °C in masni pretok do 1 kg/h. Omogoča
-                  uporabo industrijskih surovin ter produktivno nanašanje
-                  materiala pri večjih komponentah.
-                </p>
+                <span className="lt-index">{editor.text("s06.f030", "ORODJE 02 / FGF")}</span>
+                <h3>{editor.text("s06.f031", "Dyze Design Pulsar™ Atom")}</h3>
+                <p>{editor.text("s06.f032", "Neposredna ekstruzija granulata, šobe Ø 0,4–2,5 mm, temperatura do 450 °C in masni pretok do 1 kg/h. Omogoča uporabo industrijskih surovin ter produktivno nanašanje materiala pri večjih komponentah.")}</p>
               </article>
               <article>
-                <span className="lt-index">RAZVOJ / INTEGRACIJA</span>
-                <h3>Praktično testiranje Pulsar Atom</h3>
-                <p>
-                  Razvoj platforme je vključeval neposredno sodelovanje z Dyze
-                  Design in testiranje predprodukcijske različice Pulsar Atom.
-                  Izkušnje so bile uporabljene pri integraciji, dovajanju
-                  granulata in razvoju stabilnih procesnih nastavitev.
-                </p>
+                <span className="lt-index">{editor.text("s06.f033", "RAZVOJ / INTEGRACIJA")}</span>
+                <h3>{editor.text("s06.f034", "Praktično testiranje Pulsar Atom")}</h3>
+                <p>{editor.text("s06.f035", "Razvoj platforme je vključeval neposredno sodelovanje z Dyze Design in testiranje predprodukcijske različice Pulsar Atom. Izkušnje so bile uporabljene pri integraciji, dovajanju granulata in razvoju stabilnih procesnih nastavitev.")}</p>
               </article>
             </div>
           </div>
@@ -307,13 +297,13 @@ export default async function LinexPage() {
 
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="03 / Razvoj platforme"
-            title="Od prve postavitve do industrijskega sistema."
-            text="LINEX ni katalogski tiskalnik. Fotografije prikazujejo dejanski razvoj konstrukcije, integracijo podsistemov in današnjo konfiguracijo platforme."
+            eyebrow={editor.text("s07.f036", "03 / Razvoj platforme")}
+            title={editor.text("s07.f037", "Od prve postavitve do industrijskega sistema.")}
+            text={editor.text("s07.f038", "LINEX ni katalogski tiskalnik. Fotografije prikazujejo dejanski razvoj konstrukcije, integracijo podsistemov in današnjo konfiguracijo platforme.")}
           />
           <ImageSequence
-            ariaLabel="Razvojne faze industrijskega 3D-tiskalnika LINEX HT v1"
-            items={[
+            ariaLabel={editor.text("s07.f039", "Razvojne faze industrijskega 3D-tiskalnika LINEX HT v1")}
+            items={editor.data("s07.f040", [
               {
                 image: linexEarlyBuild,
                 alt: "Zgodnja mehanska izvedba velikoformatnega 3D-tiskalnika LINEX HT v1",
@@ -335,20 +325,20 @@ export default async function LinexPage() {
                 title: "Današnja platforma",
                 text: "Sistem združuje velik delovni volumen, dve ekstruzijski tehnologiji, linearne servo pogone in nadzor procesa.",
               },
-            ]}
+            ])}
           />
         </section>
 
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="04 / Industrijska zasnova"
-              title="Mehanika, krmiljenje in termični koncept kot en sistem."
-              text="Lasten razvoj omogoča prilagoditev posameznega podsistema velikim geometrijam, različnim ekstruzijskim sistemom in zahtevnejšemu temperaturnemu okolju."
+              eyebrow={editor.text("s08.f041", "04 / Industrijska zasnova")}
+              title={editor.text("s08.f042", "Mehanika, krmiljenje in termični koncept kot en sistem.")}
+              text={editor.text("s08.f043", "Lasten razvoj omogoča prilagoditev posameznega podsistema velikim geometrijam, različnim ekstruzijskim sistemom in zahtevnejšemu temperaturnemu okolju.")}
             />
             <ImageSequence
-              ariaLabel="Konstrukcijski, električni in termični sistemi platforme LINEX HT v1"
-              items={[
+              ariaLabel={editor.text("s08.f044", "Konstrukcijski, električni in termični sistemi platforme LINEX HT v1")}
+              items={editor.data("s08.f045", [
                 {
                   image: linexCadAssembly,
                   alt: "Konstrukcijski sestav industrijske platforme LINEX HT v1",
@@ -370,16 +360,16 @@ export default async function LinexPage() {
                   title: "Razvoj ogrevane komore",
                   text: "Zaščita vodil in komponent vročega območja pri postopnem razvoju visokotemperaturnega termičnega okolja.",
                 },
-              ]}
+              ])}
             />
           </div>
         </section>
 
         <section id="gibanje" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="05 / Neposredni linearni pogon"
-            title="20-kilogramski portal na linearnih servo motorjih."
-            text="Osi temeljijo na brezkontaktnih SMJ ironless linearnih motorjih, industrijskih servo pogonih INVT DA-300 in linearnih enkoderjih z ločljivostjo 10 µm. Os Y poganjata dva sinhronizirana motorja."
+            eyebrow={editor.text("s09.f046", "05 / Neposredni linearni pogon")}
+            title={editor.text("s09.f047", "20-kilogramski portal na linearnih servo motorjih.")}
+            text={editor.text("s09.f048", "Osi temeljijo na brezkontaktnih SMJ ironless linearnih motorjih, industrijskih servo pogonih INVT DA-300 in linearnih enkoderjih z ločljivostjo 10 µm. Os Y poganjata dva sinhronizirana motorja.")}
           />
           <figure className="lt-product-media">
             <video
@@ -391,52 +381,35 @@ export default async function LinexPage() {
               preload="metadata"
               aria-label="Preizkušanje linearnega gibanja industrijske platforme LINEX HT v1"
             >
-              <source src="/videos/linex-ht-v1-gibanje.mp4" type="video/mp4" />
-              Vaš brskalnik ne podpira videa.{" "}
-              <a href="/videos/linex-ht-v1-gibanje.mp4">Prenesite video</a>.
-            </video>
-            <figcaption>
-              Linearni servo pogon / konfiguriran pomik do 1000 mm/s / pospešek do 12.000 mm/s²
-            </figcaption>
+              <source src={editor.text("s09.f049", "/videos/linex-ht-v1-gibanje.mp4")} type="video/mp4" />{editor.text("s09.f050", "Vaš brskalnik ne podpira videa.")}{" "}
+              <a href={editor.text("s09.f051", "/videos/linex-ht-v1-gibanje.mp4")}>{editor.text("s09.f052", "Prenesite video")}</a>{editor.text("s09.f053", ".")}</video>
+            <figcaption>{editor.text("s09.f054", "Linearni servo pogon / konfiguriran pomik do 1000 mm/s / pospešek do 12.000 mm/s²")}</figcaption>
           </figure>
         </section>
 
         <section id="temperatura-materiali" className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="06 / Komora in materiali"
-              title="Visokotemperaturna zasnova z jasno ločenimi potrjenimi in ciljnimi zmogljivostmi."
-              text="Temperatura tiskalne glave je samo eden od pogojev. Za stabilen proces so ključni tudi sušenje, oblika surovine, šoba, miza, komora, geometrija izdelka in validirane nastavitve."
+              eyebrow={editor.text("s02.f055", "06 / Komora in materiali")}
+              title={editor.text("s02.f056", "Visokotemperaturna zasnova z jasno ločenimi potrjenimi in ciljnimi zmogljivostmi.")}
+              text={editor.text("s02.f057", "Temperatura tiskalne glave je samo eden od pogojev. Za stabilen proces so ključni tudi sušenje, oblika surovine, šoba, miza, komora, geometrija izdelka in validirane nastavitve.")}
             />
             <div className="lt-editorial-rows">
               <article>
-                <span className="lt-index">TRENUTNO POTRJENO</span>
-                <h3>Komora pri približno 75–80 °C</h3>
-                <p>
-                  Ta temperatura je bila dosežena pri dosedanjih testih. Komora
-                  je še v fazi tehničnih dodelav in postopnega zviševanja
-                  temperature, zato še ni v polnem visokotemperaturnem
-                  obratovanju.
-                </p>
+                <span className="lt-index">{editor.text("s02.f058", "TRENUTNO POTRJENO")}</span>
+                <h3>{editor.text("s02.f059", "Komora pri približno 75–80 °C")}</h3>
+                <p>{editor.text("s02.f060", "Ta temperatura je bila dosežena pri dosedanjih testih. Komora je še v fazi tehničnih dodelav in postopnega zviševanja temperature, zato še ni v polnem visokotemperaturnem obratovanju.")}</p>
               </article>
               <article>
-                <span className="lt-index">RAZVOJNI CILJ</span>
-                <h3>Do 200 °C po končni validaciji</h3>
-                <p>
-                  Ciljna zmogljivost je vezana na dokončanje vročega območja,
-                  vgradnjo vseh ustreznih visokotemperaturnih komponent in
-                  potrditev celotnega termičnega sistema.
-                </p>
+                <span className="lt-index">{editor.text("s02.f061", "RAZVOJNI CILJ")}</span>
+                <h3>{editor.text("s02.f062", "Do 200 °C po končni validaciji")}</h3>
+                {editor.text("s02.developmentNotes", linex?.developmentNotes || "") && <p>{editor.text("s02.developmentNotes", linex?.developmentNotes || "")}</p>}
+                <p>{editor.text("s02.f063", "Ciljna zmogljivost je vezana na dokončanje vročega območja, vgradnjo vseh ustreznih visokotemperaturnih komponent in potrditev celotnega termičnega sistema.")}</p>
               </article>
               <article>
-                <span className="lt-index">PREIZKUŠENI MATERIALI</span>
+                <span className="lt-index">{editor.text("s02.f064", "PREIZKUŠENI MATERIALI")}</span>
                 <h3>{testedMaterials.join(" / ")}</h3>
-                <p>
-                  Glavi omogočata nadaljnji razvoj tudi za PA6-GF, PA11-CF,
-                  PA12-CF, PPA-CF, PPS-CF, PEI in PEEK, vendar najzahtevnejši
-                  materiali zahtevajo dokončano in validirano komoro ter lasten
-                  potrjen procesni profil.
-                </p>
+                <p>{editor.text("s02.f065", "Glavi omogočata nadaljnji razvoj tudi za PA6-GF, PA11-CF, PA12-CF, PPA-CF, PPS-CF, PEI in PEEK, vendar najzahtevnejši materiali zahtevajo dokončano in validirano komoro ter lasten potrjen procesni profil.")}</p>
               </article>
             </div>
           </div>
@@ -444,38 +417,38 @@ export default async function LinexPage() {
 
         <section className="lt-container lt-section lt-media-split">
           <TechnicalImage
-            image={fgfPelletPrint}
-            alt="FGF 3D tisk neposredno iz termoplastičnega granulata na platformi LINEX HT v1"
-            label="FGF / GRANULAT"
-            caption="Visoko pretočna izdelava neposredno iz termoplastičnega granulata"
+            image={editor.image("s10.f066", fgfPelletPrint)}
+            alt={editor.text("s10.f067", "FGF 3D tisk neposredno iz termoplastičnega granulata na platformi LINEX HT v1")}
+            label={editor.text("s10.f068", "FGF / GRANULAT")}
+            caption={editor.text("s10.f069", "Visoko pretočna izdelava neposredno iz termoplastičnega granulata")}
           />
           <SectionHeading
-            eyebrow="07 / Proces"
-            title="Velik kos zahteva več kot samo velik tiskalnik."
-            text="Pri velikih komponentah so odločilni priprava modela za aditivno izdelavo, upravljanje toplotnih obremenitev, pravilno sušenje, stabilen pretok in nadzor dolgega proizvodnega cikla."
+            eyebrow={editor.text("s10.f070", "07 / Proces")}
+            title={editor.text("s10.f071", "Velik kos zahteva več kot samo velik tiskalnik.")}
+            text={editor.text("s10.f072", "Pri velikih komponentah so odločilni priprava modela za aditivno izdelavo, upravljanje toplotnih obremenitev, pravilno sušenje, stabilen pretok in nadzor dolgega proizvodnega cikla.")}
           />
         </section>
 
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="08 / Merjenje in kompenzacija"
-              title="800 merilnih točk za enakomerno prvo plast."
-              text="Duet 3 Scanning Z Probe omogoča hitro brezkontaktno merjenje kovinske tiskalne površine. Izmerjena višinska karta se uporablja za programsko kompenzacijo celotne velike mize."
+              eyebrow={editor.text("s11.f073", "08 / Merjenje in kompenzacija")}
+              title={editor.text("s11.f074", "800 merilnih točk za enakomerno prvo plast.")}
+              text={editor.text("s11.f075", "Duet 3 Scanning Z Probe omogoča hitro brezkontaktno merjenje kovinske tiskalne površine. Izmerjena višinska karta se uporablja za programsko kompenzacijo celotne velike mize.")}
             />
             <dl className="lt-metrics">
               <Metric
-                label="Razpon izmerjene površine"
+                label={editor.text("s11.f076", "Razpon izmerjene površine")}
                 value="−0,182 do +0,177 mm"
                 note="najmanjše in največje odstopanje izvedene višinske mreže"
               />
               <Metric
-                label="Povprečje / standardni odklon"
+                label={editor.text("s11.f077", "Povprečje / standardni odklon")}
                 value="+0,025 / 0,085 mm"
                 note="rezultati meritve z 800 točkami"
               />
               <Metric
-                label="Ponovljivost sondiranja"
+                label={editor.text("s11.f078", "Ponovljivost sondiranja")}
                 value="≈ 0,009 mm RMS"
                 note="izmerjena ponovljivost sistema sondiranja"
               />
@@ -485,21 +458,21 @@ export default async function LinexPage() {
 
         <section id="specifikacije" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="09 / Tehnični podatki"
-            title="Specifikacije LINEX HT v1."
-            text="Vrednosti opisujejo trenutno konfiguracijo stroja. Ciljna temperatura komore je posebej označena in ne predstavlja še potrjenega rednega obratovanja."
+            eyebrow={editor.text("s12.f079", "09 / Tehnični podatki")}
+            title={editor.text("s12.f080", "Specifikacije LINEX HT v1.")}
+            text={editor.text("s12.f081", "Vrednosti opisujejo trenutno konfiguracijo stroja. Ciljna temperatura komore je posebej označena in ne predstavlja še potrjenega rednega obratovanja.")}
           />
           <div className="lt-table-scroll">
             <table className="lt-table lt-linex-spec-table">
-              <caption>Tehnične specifikacije industrijske platforme LINEX HT v1</caption>
+              <caption>{editor.text("s12.f082", "Tehnične specifikacije industrijske platforme LINEX HT v1")}</caption>
               <thead>
                 <tr>
-                  <th scope="col">Lastnost</th>
-                  <th scope="col">Specifikacija</th>
+                  <th scope="col">{editor.text("s12.f083", "Lastnost")}</th>
+                  <th scope="col">{editor.text("s12.f084", "Specifikacija")}</th>
                 </tr>
               </thead>
               <tbody>
-                {technicalSpecs.map(([label, value]) => (
+                {displayedSpecs.map(([label, value]) => (
                   <tr key={label}>
                     <th scope="row">{label}</th>
                     <td>{value}</td>
@@ -508,61 +481,47 @@ export default async function LinexPage() {
               </tbody>
             </table>
           </div>
-          <p className="lt-linex-trademark-note">
-            Navedene blagovne znamke so uporabljene za identifikacijo vgrajenih
-            komponent. LINEX HT v1 uporablja komponente Duet3D, vendar ni razvit
-            v sodelovanju z družbo Duet3D.
-          </p>
+          <p className="lt-linex-trademark-note">{editor.text("s12.f085", "Navedene blagovne znamke so uporabljene za identifikacijo vgrajenih komponent. LINEX HT v1 uporablja komponente Duet3D, vendar ni razvit v sodelovanju z družbo Duet3D.")}</p>
         </section>
 
         <section id="aplikacije" className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="10 / Aplikacije"
-              title="Za velike kose in resnične razvojne izzive."
-              text="Izvedljivost se presoja glede na geometrijo, material, obremenitve, tolerančne zahteve, količino in namen uporabe."
+              eyebrow={editor.text("s13.f086", "10 / Aplikacije")}
+              title={editor.text("s13.f087", "Za velike kose in resnične razvojne izzive.")}
+              text={editor.text("s13.f088", "Izvedljivost se presoja glede na geometrijo, material, obremenitve, tolerančne zahteve, količino in namen uporabe.")}
             />
-            <CapabilityGrid items={useCases} />
+            <CapabilityGrid items={displayedUseCases} />
           </div>
         </section>
 
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="11 / Povezane storitve"
-            title="Od modela in materiala do končnega kosa."
-            text="LINEX je del širšega razvojnega procesa. Po potrebi projekt vključuje konstruiranje, izbor materiala, izdelavo prototipa in validacijo fizične komponente."
+            eyebrow={editor.text("s14.f089", "11 / Povezane storitve")}
+            title={editor.text("s14.f090", "Od modela in materiala do končnega kosa.")}
+            text={editor.text("s14.f091", "LINEX je del širšega razvojnega procesa. Po potrebi projekt vključuje konstruiranje, izbor materiala, izdelavo prototipa in validacijo fizične komponente.")}
           />
           <div className="lt-grid lt-grid-two">
             <article className="lt-card">
-              <span className="lt-index">01 / IZDELAVA</span>
-              <h3>Industrijski 3D tisk</h3>
-              <p className="lt-card-copy">
-                Priprava modela, izbira tehnologije, materiala, orientacije in
-                procesnih parametrov za funkcionalno izdelavo.
-              </p>
-              <Link className="lt-text-link" href="/storitve/industrijski-3d-tisk">
-                Več o industrijskem 3D tisku →
-              </Link>
+              <span className="lt-index">{editor.text("s14.f092", "01 / IZDELAVA")}</span>
+              <h3>{editor.text("s14.f093", "Industrijski 3D tisk")}</h3>
+              <p className="lt-card-copy">{editor.text("s14.f094", "Priprava modela, izbira tehnologije, materiala, orientacije in procesnih parametrov za funkcionalno izdelavo.")}</p>
+              <Link className="lt-text-link" href={editor.text("s14.f095", "/storitve/industrijski-3d-tisk")}>{editor.text("s14.f096", "Več o industrijskem 3D tisku →")}</Link>
             </article>
             <article className="lt-card">
-              <span className="lt-index">02 / MATERIAL</span>
-              <h3>Tehnični polimeri in kompoziti</h3>
-              <p className="lt-card-copy">
-                Material se izbere glede na temperaturo, obremenitev, okolje,
-                zahtevano togost in ekonomiko izdelave.
-              </p>
-              <Link className="lt-text-link" href="/materiali">
-                Pregled materialov →
-              </Link>
+              <span className="lt-index">{editor.text("s14.f097", "02 / MATERIAL")}</span>
+              <h3>{editor.text("s14.f098", "Tehnični polimeri in kompoziti")}</h3>
+              <p className="lt-card-copy">{editor.text("s14.f099", "Material se izbere glede na temperaturo, obremenitev, okolje, zahtevano togost in ekonomiko izdelave.")}</p>
+              <Link className="lt-text-link" href={editor.text("s14.f100", "/materiali")}>{editor.text("s14.f101", "Pregled materialov →")}</Link>
             </article>
           </div>
         </section>
 
         <section id="pogosta-vprasanja" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="12 / Pogosta vprašanja"
-            title="Kaj je pomembno pred začetkom velikega tiska?"
-            text="Najhitrejša pot do realne ocene je tehnični pregled modela, dimenzij, materiala in namena uporabe."
+            eyebrow={editor.text("s03.f102", "12 / Pogosta vprašanja")}
+            title={editor.text("s03.f103", "Kaj je pomembno pred začetkom velikega tiska?")}
+            text={editor.text("s03.f104", "Najhitrejša pot do realne ocene je tehnični pregled modela, dimenzij, materiala in namena uporabe.")}
           />
           <div className="lt-faq-list">
             {faqItems.map((item) => (
@@ -575,9 +534,9 @@ export default async function LinexPage() {
         </section>
 
         <CTASection
-          title="Imate velik kos ali zahteven materialni izziv?"
-          text="Pošljite CAD ali STL model, mere, namen uporabe, količino in želene lastnosti. Preverimo geometrijo, material, orientacijo in realno izvedljivost izdelave na platformi LINEX."
-          action="Pošljite tehnično povpraševanje"
+          title={editor.text("s15.f105", "Imate velik kos ali zahteven materialni izziv?")}
+          text={editor.text("s15.f106", "Pošljite CAD ali STL model, mere, namen uporabe, količino in želene lastnosti. Preverimo geometrijo, material, orientacijo in realno izvedljivost izdelave na platformi LINEX.")}
+          action={editor.text("s15.f107", "Pošljite tehnično povpraševanje")}
         />
 
         <JsonLd

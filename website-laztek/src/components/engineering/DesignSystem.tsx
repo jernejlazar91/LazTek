@@ -284,7 +284,7 @@ export function TechnicalImage({
       <Image
         src={image}
         alt={alt}
-        placeholder="blur"
+        placeholder={image.blurDataURL ? "blur" : "empty"}
         priority={priority}
         sizes="(max-width: 800px) 100vw, (max-width: 1200px) 50vw, 620px"
         style={position ? { objectPosition: position } : undefined}

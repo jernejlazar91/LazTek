@@ -1,8 +1,10 @@
-import SiteHeader from '@/components/SiteHeader'
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import SiteHeader from '@/components/CmsSiteHeader'
 import {staticProjects} from '@/data/projects'
 import {pageMetadata} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
+import {textOr} from '@/sanity/content'
 
 async function getProjectsPageData() {
   return client.fetch(`{
@@ -19,9 +21,10 @@ async function getProjectsPageData() {
       description,
       featuredImage,
       videoUrl,
-      publishedAt
+      publishedAt,
+      useCmsContent
     }
-  }`)
+  }`, {}, {next: {revalidate: 60}})
 }
 
 import CollectionExplorer from '@/components/engineering/CollectionExplorer'
@@ -37,6 +40,7 @@ type CmsProjectCard = {
   featuredImage?: {alt?: string} & Record<string, unknown>
   publishedAt?: string
   videoUrl?: string
+  useCmsContent?: boolean
 }
 
 type ProjectsPageData = {
@@ -45,18 +49,26 @@ type ProjectsPageData = {
 }
 
 export default async function Page() {
+  const editor = await getPageEditor("/projekti");
+  
+
   const data = (await getProjectsPageData()) as ProjectsPageData
   const site = data?.siteSettings
-  const staticItems = staticProjects.map((item) => ({
+  const activeCms = new Map((data?.projects || []).filter(item => item.useCmsContent === true && item.slug).map(item => [item.slug, item]))
+  const staticItems = await Promise.all(staticProjects.map(async (originalItem) => {
+    const projectEditor = await getPageEditor(`/projekti/${originalItem.slug}`)
+    const item = projectEditor.data("project", originalItem)
+    const cms = projectEditor.exists ? undefined : activeCms.get(item.slug)
+    return ({
     id: `static-${item.slug}`,
-    title: item.title,
+    title: textOr(cms?.title, item.title),
     href: `/projekti/${item.slug}`,
-    excerpt: item.excerpt,
-    category: item.category,
-    image: item.featuredImage.src,
-    imageSmall: item.featuredImage.src,
-    alt: item.featuredAlt,
-  }))
+    excerpt: textOr(cms?.excerpt, item.excerpt),
+    category: textOr(cms?.category, item.category),
+    image: cms?.featuredImage?.asset ? urlFor(cms.featuredImage).width(1200).height(750).auto('format').url() : item.featuredImage.src,
+    imageSmall: cms?.featuredImage?.asset ? urlFor(cms.featuredImage).width(600).height(375).auto('format').url() : item.featuredImage.src,
+    alt: textOr(cms?.featuredImage?.alt, item.featuredAlt),
+  })}))
   const staticSlugs = new Set(staticProjects.map(({slug}) => slug))
   const cmsItems = (data?.projects || [])
     .filter(
@@ -89,24 +101,24 @@ export default async function Page() {
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme">
         <PageHero
-          eyebrow="Projekti / LazTek Engineering"
+          eyebrow={editor.text("s01.f001", "Projekti / LazTek Engineering")}
           breadcrumb="Projekti"
-          title="Resnični projekti. Merljivi koraki."
-          description="Oglejte si, kako iz fizičnega kosa, 3D-skena ali začetne ideje nastane uporabna digitalna geometrija, prototip oziroma končna komponenta."
+          title={editor.text("s01.f002", "Resnični projekti. Merljivi koraki.")}
+          description={editor.text("s01.f003", "Oglejte si, kako iz fizičnega kosa, 3D-skena ali začetne ideje nastane uporabna digitalna geometrija, prototip oziroma končna komponenta.")}
           variant="editorial"
           action={false}
         />
         <section className="lt-container lt-section" aria-label="Projekti">
           <CollectionExplorer items={items} kind="projects" />
         </section>
-        <CTASection title="Imate podoben tehnični izziv?" />
+        <CTASection title={editor.text("s02.f004", "Imate podoben tehnični izziv?")} text={editor.text("s02.ctatext", "Pošljite model, osnovne mere ali opis uporabe. Skupaj določimo smiselno pot do izdelave.")} action={editor.text("s02.ctaaction", "Predstavite projekt")} />
       </main>
     </>
   )
 }
 
-export const metadata = pageMetadata(
+export async function generateMetadata() { return editableMetadata("/projekti", pageMetadata(
   'Projekti 3D-tiska, skeniranja in razvoja',
   'Resnični projekti LazTek Engineering: industrijski 3D-tisk, 3D-skeniranje, reverse engineering, CAD-rekonstrukcija, prototipi in funkcionalne komponente.',
   '/projekti',
-)
+)); }

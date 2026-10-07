@@ -7,9 +7,10 @@ export default defineCliConfig({
   },
   deployment: {
     /**
-     * Enable auto-updates for studios.
+     * Studio updates are installed deliberately with the project dependencies.
      * Learn more at https://www.sanity.io/docs/studio/latest-version-of-sanity#k47faf43faf56
      */
-    autoUpdates: true,
+    // Use the Studio version verified with this project and its lockfile.
+    autoUpdates: false,
   }
 })

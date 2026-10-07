@@ -1,4 +1,6 @@
-import SiteHeader from "@/components/SiteHeader";
+import {getStaticProject} from '@/data/projects';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import SiteHeader from "@/components/CmsSiteHeader";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { urlFor } from "@/sanity/image";
@@ -26,6 +28,8 @@ type HomeProject = {
   category?: string;
   excerpt?: string;
   featuredImage?: unknown;
+  imageUrl?: string;
+  path?: string;
 };
 
 async function getPageData() {
@@ -45,7 +49,8 @@ async function getPageData() {
       heroText,
       badges
     },
-    "projects": *[_type == "project"] | order(publishedAt desc)[0...3]{
+    "homeSelection": *[_id == "website.home"][0].s06.selection[]->{_id,title,path,"slug":slug.current,category,excerpt,featuredImage},
+    "projects": *[_type == "project" && defined(slug.current)] | order(isFeatured desc, publishedAt desc)[0...3]{
       _id,
       title,
       "slug": slug.current,
@@ -54,10 +59,10 @@ async function getPageData() {
       featuredImage,
       publishedAt
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const serviceCards = [
+const defaultServiceCards = [
   {
     title: "Industrijski 3D tisk",
     text: "Funkcionalni prototipi, veliki tehnični kosi, manjše serije in zahtevni materiali za realno uporabo.",
@@ -84,14 +89,14 @@ const serviceCards = [
   },
 ];
 
-const whyItems = [
+const defaultWhyItems = [
   "Inženirski pristop: kos ni samo natisnjen, ampak zasnovan za realno obremenitev in uporabo.",
   "Možnost kombinacije 3D skeniranja, CAD modeliranja, reverse engineeringa in izdelave novega dela.",
   "Fokus na tehnične materiale, funkcionalne prototipe, obnovo plastičnih kosov in manjše serije.",
   "Lasten razvoj platforme LINEX in praktične izkušnje z velikimi formati ter procesnimi izzivi.",
 ];
 
-const processSteps = [
+const defaultProcessSteps = [
   {
     title: "1. Pošljete problem ali model",
     text: "Slike, mere, poškodovan kos, STL/STEP datoteko ali samo opis, kaj mora kos opravljati.",
@@ -111,22 +116,36 @@ const previousHeroTitle =
 const conciseHeroTitle = "Industrijski 3D tisk in razvoj komponent.";
 
 export default async function Home() {
+  const editor = await getPageEditor("/");
+  const serviceCards = editor.data("s01.f001", defaultServiceCards);
+  const whyItems = editor.data("s02.f002", defaultWhyItems);
+  const processSteps = editor.data("s03.f003", defaultProcessSteps);
+
   const data = await getPageData();
 
   const site = data?.siteSettings;
   const home = data?.homePage;
-  const projects = data?.projects || [];
+  const selectedProjects: HomeProject[] = Array.isArray(data?.homeSelection) ? data.homeSelection.filter(Boolean) : data?.projects || [];
+  const projects = await Promise.all(selectedProjects.map(async (item) => {
+    const slug = item.slug || item.path?.split('/').pop() || '';
+    const original = getStaticProject(slug);
+    if (!original) return {...item, slug};
+    const projectEditor = await getPageEditor(`/projekti/${slug}`);
+    if (!projectEditor.exists) return {...item, slug};
+    const edited = projectEditor.data('project', original);
+    return {...item, slug, title: edited.title, excerpt: edited.excerpt, category: edited.category, imageUrl: edited.featuredImage.src};
+  }));
   const cmsHeroTitle = home?.heroTitle?.trim();
   const heroTitle =
-    !cmsHeroTitle || cmsHeroTitle === previousHeroTitle
+    editor.text("s04.f040", !cmsHeroTitle || cmsHeroTitle === previousHeroTitle
       ? conciseHeroTitle
-      : cmsHeroTitle;
-  const heroAlt =
-    "Lastno razvita velikoformatna FDM in FGF platforma LINEX HT v delavnici LazTek Engineering";
+      : cmsHeroTitle);
+  const heroAlt = editor.text("s04.heroAlt", "Lastno razvita velikoformatna FDM in FGF platforma LINEX HT v delavnici LazTek Engineering");
+  const badges = editor.data<{label?: string; value?: string}[]>("s04.badges", home?.badges || []);
   const {
     props: { srcSet: heroDesktopSrcSet },
   } = getImageProps({
-    src: heroDesktop,
+    src: editor.image("s04.f041", heroDesktop),
     alt: heroAlt,
     width: heroDesktop.width,
     height: heroDesktop.height,
@@ -134,7 +153,7 @@ export default async function Home() {
     quality: 82,
   });
   const { props: heroMobileProps } = getImageProps({
-    src: heroMobile,
+    src: editor.image("s04.f042", heroMobile),
     alt: heroAlt,
     width: heroMobile.width,
     height: heroMobile.height,
@@ -175,8 +194,8 @@ export default async function Home() {
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/70 bg-white/[0.76] px-4 py-2 text-sm font-semibold text-[#0F5D7A] shadow-[0_8px_30px_rgba(56,189,248,0.10)] backdrop-blur-md">
                   <Sparkles size={16} className="text-cyan-500" />
 
-                  {home?.eyebrow ||
-                    "Industrijski razvoj, 3D tisk in reverse engineering"}
+                  {editor.text("s04.f004", home?.eyebrow ||
+                    "Industrijski razvoj, 3D tisk in reverse engineering")}
                 </div>
 
                 <h1 className="max-w-[660px] text-[2.35rem] font-semibold leading-[1.08] tracking-tight text-[#082A4B] sm:text-[2.85rem] lg:text-[3.15rem] xl:text-[3.55rem]">
@@ -184,30 +203,26 @@ export default async function Home() {
                 </h1>
 
                 <p className="mt-6 max-w-xl text-base leading-8 text-[#425F74] sm:text-lg">
-                  {home?.heroText ||
-                    "Združujemo konstruiranje, 3D skeniranje, reverse engineering, industrijski 3D tisk in prototipizacijo za podjetja, ki potrebujejo uporabne in tehnično smiselne rešitve."}
+                  {editor.text("s04.f005", home?.heroText ||
+                    "Združujemo konstruiranje, 3D skeniranje, reverse engineering, industrijski 3D tisk in prototipizacijo za podjetja, ki potrebujejo uporabne in tehnično smiselne rešitve.")}
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link
-                    href="/kontakt"
+                    href={editor.text("s04.f006", "/kontakt")}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-7 py-3.5 text-sm font-bold text-[#06253D] shadow-[0_12px_32px_rgba(14,165,233,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(14,165,233,0.28)]"
-                  >
-                    Pošlji povpraševanje
-                    <ArrowRight size={16} />
+                  >{editor.text("s04.f007", "Pošlji povpraševanje")}<ArrowRight size={16} />
                   </Link>
 
                   <Link
-                    href="/storitve"
+                    href={editor.text("s04.f008", "/storitve")}
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200/90 bg-white/[0.88] px-7 py-3.5 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(15,74,105,0.08)] backdrop-blur-md transition hover:border-cyan-300 hover:bg-white"
-                  >
-                    Poglej storitve
-                  </Link>
+                  >{editor.text("s04.f009", "Poglej storitve")}</Link>
                 </div>
 
-                {home?.badges?.length ? (
+                {badges.length ? (
                   <div className="mt-10 grid max-w-[650px] gap-4 sm:grid-cols-3">
-                    {home.badges.map(
+                    {badges.map(
                       (
                         item: {
                           label?: string;
@@ -242,9 +257,7 @@ export default async function Home() {
                     className="block aspect-[8/5] h-auto w-full rounded-xl object-cover object-center max-md:aspect-[4/5]"
                   />
                 </picture>
-                <div className="pointer-events-none absolute inset-x-2 bottom-2 rounded-b-xl bg-gradient-to-t from-[#061f31]/80 via-[#061f31]/25 to-transparent px-4 pb-4 pt-16 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
-                  LINEX HT / Lasten razvoj / Rovte
-                </div>
+                <div className="pointer-events-none absolute inset-x-2 bottom-2 rounded-b-xl bg-gradient-to-t from-[#061f31]/80 via-[#061f31]/25 to-transparent px-4 pb-4 pt-16 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">{editor.text("s04.f010", "LINEX HT / Lasten razvoj / Rovte")}</div>
               </div>
             </div>
           </section>
@@ -256,9 +269,9 @@ export default async function Home() {
 
               <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <SectionHeading
-                  eyebrow="Storitve"
-                  title="Oglejte si, kaj lahko storimo za vas"
-                  text="Ne glede na to, ali imate idejo, poškodovan kos, obstoječ izdelek ali že pripravljeno datoteko, vam lahko pomagamo pri izbiri prave poti od zasnove do uporabnega tehničnega izdelka."
+                  eyebrow={editor.text("s01.f011", "Storitve")}
+                  title={editor.text("s01.f012", "Oglejte si, kaj lahko storimo za vas")}
+                  text={editor.text("s01.f013", "Ne glede na to, ali imate idejo, poškodovan kos, obstoječ izdelek ali že pripravljeno datoteko, vam lahko pomagamo pri izbiri prave poti od zasnove do uporabnega tehničnega izdelka.")}
                   centered
                 />
 
@@ -286,9 +299,7 @@ export default async function Home() {
                           {service.text}
                         </p>
 
-                        <div className="relative mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-[#087EA5] transition group-hover:gap-3">
-                          Več o storitvi
-                          <ArrowRight size={15} />
+                        <div className="relative mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-[#087EA5] transition group-hover:gap-3">{editor.text("s01.f014", "Več o storitvi")}<ArrowRight size={15} />
                         </div>
                       </Link>
                     );
@@ -304,9 +315,9 @@ export default async function Home() {
               <SectionAura side="left" tone="turquoise" />
               <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
                 <SectionHeading
-                  eyebrow="Dejansko delo"
-                  title="Resnični deli. Resnični procesi."
-                  text="Fotografije prikazujejo dejansko digitalizacijo, izdelavo in končne tehnične komponente iz delavnice LazTek Engineering."
+                  eyebrow={editor.text("s05.f015", "Dejansko delo")}
+                  title={editor.text("s05.f016", "Resnični deli. Resnični procesi.")}
+                  text={editor.text("s05.f017", "Fotografije prikazujejo dejansko digitalizacijo, izdelavo in končne tehnične komponente iz delavnice LazTek Engineering.")}
                   centered
                 />
                 <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -369,9 +380,9 @@ export default async function Home() {
                 <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                   <div className="rounded-xl border border-white/90 bg-white/[0.72] p-7 shadow-[0_18px_50px_rgba(24,86,122,0.08)] backdrop-blur-xl lg:p-9">
                     <SectionHeading
-                      eyebrow="Zakaj LazTek"
-                      title="Več kot 3D tisk: tehnični razvojni partner."
-                      text="Največja vrednost je kombinacija prakse, konstrukcijskega razmišljanja in izdelave. Cilj ni samo lep kos, ampak kos, ki opravi svojo nalogo."
+                      eyebrow={editor.text("s02.f018", "Zakaj LazTek")}
+                      title={editor.text("s02.f019", "Več kot 3D tisk: tehnični razvojni partner.")}
+                      text={editor.text("s02.f020", "Največja vrednost je kombinacija prakse, konstrukcijskega razmišljanja in izdelave. Cilj ni samo lep kos, ampak kos, ki opravi svojo nalogo.")}
                     />
                   </div>
 
@@ -400,9 +411,9 @@ export default async function Home() {
               <SectionAura side="left" tone="blue" />
               <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <SectionHeading
-                  eyebrow="Potek sodelovanja"
-                  title="Od problema do uporabnega kosa"
-                  text="Za povpraševanje ne rabi biti vse pripravljeno. Dovolj je opis problema, slika kosa, obstoječa datoteka ali osnovne mere."
+                  eyebrow={editor.text("s03.f021", "Potek sodelovanja")}
+                  title={editor.text("s03.f022", "Od problema do uporabnega kosa")}
+                  text={editor.text("s03.f023", "Za povpraševanje ne rabi biti vse pripravljeno. Dovolj je opis problema, slika kosa, obstoječa datoteka ali osnovne mere.")}
                   centered
                 />
 
@@ -441,17 +452,15 @@ export default async function Home() {
                 <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <SectionHeading
-                      eyebrow="Projekti"
-                      title="Izbrani razvojni in proizvodni projekti"
-                      text="Izbrani primeri razvoja in izdelave tehničnih komponent: izhodišče, uporabljeni postopki in rezultat."
+                      eyebrow={editor.text("s06.f024", "Projekti")}
+                      title={editor.text("s06.f025", "Izbrani razvojni in proizvodni projekti")}
+                      text={editor.text("s06.f026", "Izbrani primeri razvoja in izdelave tehničnih komponent: izhodišče, uporabljeni postopki in rezultat.")}
                     />
 
                     <Link
-                      href="/projekti"
+                      href={editor.text("s06.f027", "/projekti")}
                       className="inline-flex shrink-0 self-start items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/85 px-6 py-3 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(24,86,122,0.07)] backdrop-blur transition hover:border-cyan-300 hover:bg-white lg:self-center"
-                    >
-                      Vsi projekti
-                      <ArrowRight size={16} />
+                    >{editor.text("s06.f028", "Vsi projekti")}<ArrowRight size={16} />
                     </Link>
                   </div>
 
@@ -462,9 +471,9 @@ export default async function Home() {
                         key={project._id}
                         className="group block overflow-hidden rounded-xl border border-white/90 bg-white/[0.78] shadow-[0_18px_48px_rgba(24,86,122,0.10)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(24,86,122,0.14)]"
                       >
-                        {project.featuredImage ? (
+                        {project.imageUrl || project.featuredImage ? (
                           <Image
-                            src={urlFor(project.featuredImage)
+                            src={project.imageUrl || urlFor(project.featuredImage)
                               .width(720)
                               .height(450)
                               .format("webp")
@@ -473,16 +482,11 @@ export default async function Home() {
                             width={720}
                             height={450}
                             sizes="(max-width: 1023px) calc(100vw - 2rem), 33vw"
-                            alt={
-                              project.title ||
-                              "Izvedba projekta LazTek Engineering"
-                            }
+                            alt={project.title || "Izvedba projekta LazTek Engineering"}
                             className="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.025]"
                           />
                         ) : (
-                          <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-cyan-100 via-sky-50 to-blue-100 text-center text-sm text-slate-500">
-                            Projekt
-                          </div>
+                          <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-cyan-100 via-sky-50 to-blue-100 text-center text-sm text-slate-500">{editor.text("s06.f030", "Projekt")}</div>
                         )}
 
                         <div className="p-6">
@@ -515,46 +519,28 @@ export default async function Home() {
                 <div className="lt-home-cta overflow-hidden rounded-[2.25rem] border border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.88)_0%,rgba(232,249,252,0.86)_48%,rgba(230,240,253,0.88)_100%)] shadow-[0_26px_76px_rgba(24,86,122,0.13)] backdrop-blur-2xl">
                   <div className="grid lg:grid-cols-[1.15fr_0.85fr]">
                     <div className="p-7 sm:p-9 lg:p-12">
-                      <div className="mb-4 inline-flex rounded-full border border-cyan-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-[#087EA5]">
-                        Povpraševanje
-                      </div>
+                      <div className="mb-4 inline-flex rounded-full border border-cyan-200 bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-[#087EA5]">{editor.text("s07.f031", "Povpraševanje")}</div>
 
-                      <h2 className="text-3xl font-semibold tracking-tight text-[#0B2B4C] sm:text-4xl">
-                        Imate poškodovan kos, prototip, model ali idejo?
-                      </h2>
+                      <h2 className="text-3xl font-semibold tracking-tight text-[#0B2B4C] sm:text-4xl">{editor.text("s07.f032", "Imate poškodovan kos, prototip, model ali idejo?")}</h2>
 
-                      <p className="mt-5 max-w-2xl text-sm leading-8 text-[#587082] sm:text-base">
-                        Pošljite slike, mere, obstoječo datoteko ali opis
-                        problema. Skupaj določimo, ali je najbolj smiselna
-                        izdelava, skeniranje, reverse engineering,
-                        konstrukcijska izboljšava ali kombinacija postopkov.
-                      </p>
+                      <p className="mt-5 max-w-2xl text-sm leading-8 text-[#587082] sm:text-base">{editor.text("s07.f033", "Pošljite slike, mere, obstoječo datoteko ali opis problema. Skupaj določimo, ali je najbolj smiselna izdelava, skeniranje, reverse engineering, konstrukcijska izboljšava ali kombinacija postopkov.")}</p>
                     </div>
 
                     <div className="flex flex-col justify-center gap-4 border-t border-sky-200/70 bg-white/55 p-7 backdrop-blur-md sm:p-9 lg:border-l lg:border-t-0 lg:p-12">
-                      <div className="text-sm font-bold uppercase tracking-[0.18em] text-[#087EA5]">
-                        Začnimo projekt
-                      </div>
+                      <div className="text-sm font-bold uppercase tracking-[0.18em] text-[#087EA5]">{editor.text("s07.f034", "Začnimo projekt")}</div>
 
-                      <p className="max-w-md text-sm leading-7 text-[#587082]">
-                        Za prvo oceno pogosto zadostujejo že fotografija,
-                        osnovne mere in kratek opis problema.
-                      </p>
+                      <p className="max-w-md text-sm leading-7 text-[#587082]">{editor.text("s07.f035", "Za prvo oceno pogosto zadostujejo že fotografija, osnovne mere in kratek opis problema.")}</p>
 
                       <Link
-                        href="/kontakt"
+                        href={editor.text("s07.f036", "/kontakt")}
                         className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 px-7 py-3.5 text-sm font-bold text-[#06253D] shadow-[0_12px_30px_rgba(14,165,233,0.22)] transition hover:-translate-y-0.5"
-                      >
-                        Oddaj povpraševanje
-                        <ArrowRight size={16} />
+                      >{editor.text("s07.f037", "Oddaj povpraševanje")}<ArrowRight size={16} />
                       </Link>
 
                       <Link
-                        href="/o-podjetju"
+                        href={editor.text("s07.f038", "/o-podjetju")}
                         className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/80 px-7 py-3.5 text-sm font-semibold text-[#123A57] transition hover:border-cyan-300 hover:bg-white"
-                      >
-                        Več o podjetju
-                      </Link>
+                      >{editor.text("s07.f039", "Več o podjetju")}</Link>
                     </div>
                   </div>
                 </div>
@@ -654,8 +640,8 @@ function MetricCard({
     </div>
   );
 }
-export const metadata = pageMetadata(
+export async function generateMetadata() { return editableMetadata("/", pageMetadata(
   "Industrijski 3D tisk, 3D skeniranje in razvoj",
   "LazTek Engineering: industrijski 3D tisk, 3D skeniranje, CAD razvoj in izdelava funkcionalnih tehničnih komponent.",
   "/",
-);
+)); }

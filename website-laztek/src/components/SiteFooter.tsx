@@ -1,19 +1,11 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import {ArrowRight, Mail, MapPin, Phone} from 'lucide-react'
-import {client} from '@/sanity/client'
+import {getSiteSettings} from '@/sanity/siteSettings'
+import {urlFor} from '@/sanity/image'
+import {safeWebUrl} from '@/lib/seo'
 import laztekLogo from '@/assets/brand/laztek-logo.webp'
 
-async function getFooterData() {
-  return client.fetch(`*[_type == "siteSettings"][0]{
-    siteTitle,
-    brandName,
-    tagline,
-    email,
-    phone,
-    location
-  }`)
-}
 
 const serviceLinks = [
   {label: 'Industrijski 3D tisk', href: '/storitve/industrijski-3d-tisk'},
@@ -96,7 +88,7 @@ function FooterIndustrialHex() {
 }
 
 export default async function SiteFooter() {
-  const site = await getFooterData()
+  const site = await getSiteSettings()
 
   const brandName = site?.brandName || site?.siteTitle || 'LazTek Engineering'
   const email = site?.email || 'jernej.lazar91@gmail.com'
@@ -128,7 +120,9 @@ export default async function SiteFooter() {
           <div className="xl:col-span-2">
             <Link href="/" className="inline-flex max-w-[300px] items-center rounded-[1.25rem] border border-cyan-200/[0.09] bg-[linear-gradient(135deg,rgba(12,45,61,0.48),rgba(7,25,38,0.34))] px-4 py-3 transition hover:border-cyan-300/17 hover:bg-cyan-300/[0.045]">
               <Image
-                src={laztekLogo}
+                src={site?.headerLogo?.asset ? urlFor(site.headerLogo).width(1200).auto('format').url() : laztekLogo}
+                width={laztekLogo.width}
+                height={laztekLogo.height}
                 alt="LazTek Engineering"
                 loading="lazy"
                 sizes="300px"
@@ -137,10 +131,13 @@ export default async function SiteFooter() {
             </Link>
 
             <p className="mt-4 max-w-md text-sm leading-7 text-white/56">
-              {site?.tagline ||
+              {site?.footerText || site?.tagline ||
                 'Industrijski 3D tisk, 3D skeniranje, reverse engineering, CAD konstruiranje in funkcionalna prototipizacija za tehnične kose.'}
             </p>
 
+            {site?.socialLinks?.some(link=>safeWebUrl(link.url)) && <div className="mt-4 flex flex-wrap gap-4 text-sm">
+              {site.socialLinks.filter(link=>safeWebUrl(link.url)).map((link,index)=><a key={index} href={safeWebUrl(link.url)} target="_blank" rel="noopener noreferrer">{link.label || link.url}</a>)}
+            </div>}
             <div className="mt-5 space-y-2.5 text-sm text-white/58">
               {email ? (
                 <a href={`mailto:${email}`} className="group flex items-center gap-3 transition hover:text-cyan-100">

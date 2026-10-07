@@ -4,6 +4,7 @@ export function pageMetadata(
   title: string,
   description: string,
   path: string,
+  image?: string,
 ): Metadata {
   return {
     title,
@@ -16,13 +17,13 @@ export function pageMetadata(
       type: 'website',
       locale: 'sl_SI',
       siteName: 'LazTek Engineering',
-      images: [{url: '/opengraph-image', width: 1200, height: 630}],
+      images: [{url: image || '/opengraph-image', width: 1200, height: 630}],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} | LazTek Engineering`,
       description,
-      images: ['/opengraph-image'],
+      images: [image || '/opengraph-image'],
     },
   }
 }

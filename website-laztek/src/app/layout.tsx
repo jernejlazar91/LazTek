@@ -1,3 +1,5 @@
+import {getSiteSettings} from '@/sanity/siteSettings';
+import {urlFor} from '@/sanity/image';
 import JsonLd from "@/components/engineering/JsonLd";
 import ScrollToTop from "@/components/ScrollToTop";
 import SiteFooter from "@/components/SiteFooter";
@@ -384,11 +386,12 @@ function LaztekBackground() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const site = await getSiteSettings();
   return (
     <html
       lang="sl"
@@ -415,9 +418,13 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Organization",
             "@id": "https://laztek.si/#organization",
-            name: "LazTek Engineering",
+            name: site?.brandName || "LazTek Engineering",
+            legalName: site?.legalName,
+            email: site?.email,
+            telephone: site?.phone,
+            address: site?.address || site?.location,
             url: "https://laztek.si",
-            logo: "https://laztek.si/laztek-logo.png",
+            logo: site?.headerLogo?.asset ? urlFor(site.headerLogo).width(1200).url() : "https://laztek.si/laztek-logo.png",
           }}
         />
 

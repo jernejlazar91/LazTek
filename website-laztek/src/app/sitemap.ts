@@ -1,3 +1,4 @@
+import pageRoutes from '@/sanity/pageRoutes.json'
 import {client} from '@/sanity/client'
 import {staticProjects} from '@/data/projects'
 import type {MetadataRoute} from 'next'
@@ -10,24 +11,28 @@ type SanityItem = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://laztek.si'
 
-  const [projects, blogPosts, galleryItems] = await Promise.all([
+  const [projects, blogPosts, galleryItems, editedPages] = await Promise.all([
     client.fetch<SanityItem[]>(`
       *[_type == "project" && defined(slug.current)]{
         "slug": slug.current,
         _updatedAt
       }
-    `),
+    `, {}, {next: {revalidate: 60}}),
 
     client.fetch<SanityItem[]>(`
       *[_type == "blogPost" && defined(slug.current)]{
         "slug": slug.current,
         _updatedAt
       }
-    `),
+    `, {}, {next: {revalidate: 60}}),
     client.fetch<{_id: string; _updatedAt?: string}[]>(
-      `*[_type == "galleryItem"]{_id, _updatedAt}`,
+      `*[_type == "galleryItem"]{_id, _updatedAt}`, {}, {next: {revalidate: 60}},
+    ),
+    client.fetch<{path: string; _updatedAt: string}[]>(
+      `*[_type in $types]{path,_updatedAt}`, {types: pageRoutes.map(page=>page.type)}, {next:{revalidate:60}},
     ),
   ])
+  const editedDates = new Map(editedPages.filter(page=>pageRoutes.some(route=>route.path===page.path)).map(page=>[new URL(page.path,baseUrl).href,page._updatedAt]))
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -154,5 +159,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...projectPages,
     ...blogPages,
     ...galleryPages,
-  ]
+  ].map(page=>({...page,lastModified:editedDates.get(page.url) || page.lastModified}))
 }

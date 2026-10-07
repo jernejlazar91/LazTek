@@ -1,0 +1,127 @@
+[
+  {
+    "path": "/",
+    "type": "web_home",
+    "id": "website.home"
+  },
+  {
+    "path": "/storitve",
+    "type": "web_storitve",
+    "id": "website.storitve"
+  },
+  {
+    "path": "/storitve/industrijski-3d-tisk",
+    "type": "web_storitve_industrijski_3d_tisk",
+    "id": "website.storitve.industrijski-3d-tisk"
+  },
+  {
+    "path": "/storitve/velikoformatni-3d-tisk",
+    "type": "web_storitve_velikoformatni_3d_tisk",
+    "id": "website.storitve.velikoformatni-3d-tisk"
+  },
+  {
+    "path": "/storitve/fgf-3d-tisk-granulat",
+    "type": "web_storitve_fgf_3d_tisk_granulat",
+    "id": "website.storitve.fgf-3d-tisk-granulat"
+  },
+  {
+    "path": "/storitve/3d-skeniranje-reverse-engineering",
+    "type": "web_storitve_3d_skeniranje_reverse_engineering",
+    "id": "website.storitve.3d-skeniranje-reverse-engineering"
+  },
+  {
+    "path": "/storitve/obnova-plasticnih-kosov",
+    "type": "web_storitve_obnova_plasticnih_kosov",
+    "id": "website.storitve.obnova-plasticnih-kosov"
+  },
+  {
+    "path": "/storitve/konstruiranje-3d-modeliranje",
+    "type": "web_storitve_konstruiranje_3d_modeliranje",
+    "id": "website.storitve.konstruiranje-3d-modeliranje"
+  },
+  {
+    "path": "/storitve/prototipizacija",
+    "type": "web_storitve_prototipizacija",
+    "id": "website.storitve.prototipizacija"
+  },
+  {
+    "path": "/linex",
+    "type": "web_linex",
+    "id": "website.linex"
+  },
+  {
+    "path": "/materiali",
+    "type": "web_materiali",
+    "id": "website.materiali"
+  },
+  {
+    "path": "/projekti",
+    "type": "web_projekti",
+    "id": "website.projekti"
+  },
+  {
+    "path": "/galerija",
+    "type": "web_galerija",
+    "id": "website.galerija"
+  },
+  {
+    "path": "/blog",
+    "type": "web_blog",
+    "id": "website.blog"
+  },
+  {
+    "path": "/o-podjetju",
+    "type": "web_o_podjetju",
+    "id": "website.o-podjetju"
+  },
+  {
+    "path": "/kontakt",
+    "type": "web_kontakt",
+    "id": "website.kontakt"
+  },
+  {
+    "path": "/politika-zasebnosti",
+    "type": "web_politika_zasebnosti",
+    "id": "website.politika-zasebnosti"
+  },
+  {
+    "path": "/projekti/mrezice-renault-clio-197",
+    "type": "web_project_mrezice_renault_clio_197",
+    "id": "website.projekti.mrezice-renault-clio-197"
+  },
+  {
+    "path": "/projekti/bmw-komponenta-od-skena-do-prototipa",
+    "type": "web_project_bmw_komponenta_od_skena_do_prototipa",
+    "id": "website.projekti.bmw-komponenta-od-skena-do-prototipa"
+  },
+  {
+    "path": "/projekti/reverse-engineering-sprednjega-blatnika-tomos-bt",
+    "type": "web_project_reverse_engineering_sprednjega_blatnika_tomos_bt",
+    "id": "website.projekti.reverse-engineering-sprednjega-blatnika-tomos-bt"
+  },
+  {
+    "path": "/projekti/tomos-atx-maska-rekonstrukcija",
+    "type": "web_project_tomos_atx_maska_rekonstrukcija",
+    "id": "website.projekti.tomos-atx-maska-rekonstrukcija"
+  },
+  {
+    "path": "/projekti/3d-skeniranje-dirkalnega-vozila-60l",
+    "type": "web_project_3d_skeniranje_dirkalnega_vozila_60l",
+    "id": "website.projekti.3d-skeniranje-dirkalnega-vozila-60l"
+  },
+  {
+    "path": "/projekti/linex-ht-v1-razvoj-platforme",
+    "type": "web_project_linex_ht_v1_razvoj_platforme",
+    "id": "website.projekti.linex-ht-v1-razvoj-platforme"
+  },
+  {
+    "path": "/projekti/nadomestni-element-prezracevanja",
+    "type": "web_project_nadomestni_element_prezracevanja",
+    "id": "website.projekti.nadomestni-element-prezracevanja"
+  },
+  {
+    "path": "/projekti/razvoj-prototipne-resetke",
+    "type": "web_project_razvoj_prototipne_resetke",
+    "id": "website.projekti.razvoj-prototipne-resetke"
+  }
+]

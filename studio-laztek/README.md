@@ -1,9 +1,19 @@
-# Sanity Clean Content Studio
+# LazTek – urejanje spletne strani
 
-Congratulations, you have now installed the Sanity Content Studio, an open-source real-time content editing environment connected to the Sanity backend.
+Meni sledi dejanskim stranem. Odpri stran, spremeni vsebino in klikni Publish.
+Pripravljene strani imajo izpolnjene vsebine; stare sekcije so skrite.
 
-Now you can do the following things:
+```cmd
+npm ci
+npm run typecheck
+npm run lint
+npm run schema:validate
+npm run build
+npm run dev
+```
 
-- [Read “getting started” in the docs](https://www.sanity.io/docs/introduction/getting-started?utm_source=readme)
-- [Join the Sanity community](https://www.sanity.io/community/join?utm_source=readme)
-- [Extend and build plugins](https://www.sanity.io/docs/content-studio/extending?utm_source=readme)
+Lokalni naslov: http://localhost:3333
+
+Kopiraj tudi priložene spremembe website-laztek. Podrobna navodila so v
+PREBERI-NAJPREJ.md v ZIP-u. Dataset je production; Publish objavi vsebino v CMS.
+Zavihek Odpri stran odpre objavljeno vsebino; ne prikazuje osnutka v živo.

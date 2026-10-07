@@ -1,5 +1,9 @@
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import {CmsPageHero, CmsServiceBody} from '@/components/engineering/CmsContent';
+import {getEditablePage, serviceMetadata} from '@/sanity/content';
 import JsonLd from "@/components/engineering/JsonLd";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader from "@/components/CmsSiteHeader";
 import clioCad from "@/assets/laztek/clio-cad.webp";
 import clioFinishedSet from "@/assets/laztek-v2/projects/clio-197/clio-grille-final-set.webp";
 import clioScan from "@/assets/laztek-v2/projects/clio-197/clio-grille-scan.webp";
@@ -12,7 +16,6 @@ import fenderCadModel from "@/assets/laztek-v2/projects/blatnik/fender-cad-model
 import vehicle60L from "@/assets/laztek-v2/projects/60l/60l-vehicle.webp";
 import scan60L from "@/assets/laztek-v2/projects/60l/60l-full-scan.webp";
 import reconstructed60L from "@/assets/laztek-v2/projects/60l/60l-reconstructed-geometry.webp";
-import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import {
   FileScan,
@@ -23,11 +26,13 @@ import {
   Wrench,
 } from "lucide-react";
 
-export const metadata = pageMetadata(
-  "3D skeniranje, reverse engineering in obnova plastičnih kosov",
-  "3D skeniranje, reverse engineering, CAD rekonstrukcija, obnova poškodovanih plastičnih kosov in izdelava nadomestnih delov.",
-  "/storitve/3d-skeniranje-reverse-engineering",
-);
+export async function generateMetadata() {
+  return editableMetadata("/storitve/3d-skeniranje-reverse-engineering", await serviceMetadata(
+    "3D skeniranje, reverse engineering in obnova plastičnih kosov",
+    "3D skeniranje, reverse engineering, CAD rekonstrukcija, obnova poškodovanih plastičnih kosov in izdelava nadomestnih delov.",
+    "/storitve/3d-skeniranje-reverse-engineering",
+  ));
+}
 
 async function getPageData() {
   return client.fetch(`{
@@ -38,10 +43,10 @@ async function getPageData() {
       location,
       logo
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const useCases = [
+const defaultUseCases = [
   {
     title: "Kos obstaja, dokumentacije pa ni",
     text: "Obstoječ del se izmeri, skenira in pretvori v digitalni model, ki ga lahko uporabimo za ponovno izdelavo ali nadaljnje spremembe.",
@@ -59,7 +64,7 @@ const useCases = [
   },
 ];
 
-const comparison = [
+const defaultComparison = [
   {
     title: "3D skeniranje",
     text: "Najbolj uporabno za organske oblike, ulite kose, ohišja, pokrove in dele, kjer je veliko krivin ali površin, ki jih je težko ročno izmeriti.",
@@ -77,7 +82,7 @@ const comparison = [
   },
 ];
 
-const deliverables = [
+const defaultDeliverables = [
   "STL za 3D tisk",
   "STEP model za nadaljnjo konstrukcijo",
   "popravljen ali izboljšan CAD model",
@@ -90,12 +95,17 @@ import {
   CapabilityGrid,
   CTASection,
   ImageSequence,
-  PageHero,
   SectionHeading,
   TechnicalCard,
 } from "@/components/engineering/DesignSystem";
 
 export default async function ScanningReverseEngineeringPage() {
+  const editor = await getPageEditor("/storitve/3d-skeniranje-reverse-engineering");
+  const useCases = editor.data("s01.f001", defaultUseCases);
+  const comparison = editor.data("s02.f002", defaultComparison);
+  const deliverables = editor.data("s03.f003", defaultDeliverables);
+
+  const service = await getEditablePage('servicePage', '3d-skeniranje-reverse-engineering');
   const data = await getPageData();
   const site = data?.siteSettings;
   return (
@@ -106,20 +116,16 @@ export default async function ScanningReverseEngineeringPage() {
         tabIndex={-1}
         className="lt-theme lt-3d-skeniranje-reverse-engineering"
       >
-        <PageHero
-          eyebrow="Digitalizacija / Povratni inženiring"
+        <CmsPageHero page={editor.exists ? null : service}
+          eyebrow={editor.text("s04.f004", "Digitalizacija / Povratni inženiring")}
           breadcrumb="3D skeniranje in reverse engineering"
           title={
-            <>
-              Od fizičnega kosa
-              <br />
-              <em>do uporabnega CAD-a.</em>
-            </>
+            <EditableTitle first={editor.text("s04.f005", "Od fizičnega kosa")} second={editor.text("s04.f006", "do uporabnega CAD-a.")} />
           }
-          description="3D skeniranje in reverse engineering povežeta fizično geometrijo z uporabnim CAD modelom. Za ponovno izdelavo, spremembe ali razvoj nadomestnega dela."
+          description={editor.text("s04.f007", "3D skeniranje in reverse engineering povežeta fizično geometrijo z uporabnim CAD modelom. Za ponovno izdelavo, spremembe ali razvoj nadomestnega dela.")}
           visual={
             <figure className="lt-technical-image lt-technical-video">
-              <span className="lt-media-label">3D SCAN / LIVE CAPTURE</span>
+              <span className="lt-media-label">{editor.text("s04.f008", "3D SCAN / LIVE CAPTURE")}</span>
               <video
                 autoPlay
                 loop
@@ -130,28 +136,24 @@ export default async function ScanningReverseEngineeringPage() {
                 aria-label="Praktični zajem avtomobilske mrežice z ročnim 3D skenerjem"
               >
                 <source
-                  src="/videos/3d-scan-clio-197.mp4"
+                  src={editor.text("s04.f009", "/videos/3d-scan-clio-197.mp4")}
                   type="video/mp4"
-                />
-                Vaš brskalnik ne podpira predvajanja videa.
-              </video>
-              <figcaption>
-                Zajem fizične geometrije / referenčni markerji / ročno 3D
-                skeniranje
-              </figcaption>
+                />{editor.text("s04.f010", "Vaš brskalnik ne podpira predvajanja videa.")}</video>
+              <figcaption>{editor.text("s04.f011", "Zajem fizične geometrije / referenčni markerji / ročno 3D skeniranje")}</figcaption>
             </figure>
           }
-          action="Predstavite kos"
+          action={editor.text("s04.f012", "Predstavite kos")}
         />
+        <CmsServiceBody page={editor.exists ? null : service}>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="01 / Realni projekt"
-            title="Od fizičnega kosa do uporabnega CAD modela."
-            text="Na konkretnem delu najprej zajamemo obstoječo geometrijo, nato pa iz skena izdelamo čist in konstrukcijsko uporaben model za spremembe ali ponovno izdelavo."
+            eyebrow={editor.text("s05.f013", "01 / Realni projekt")}
+            title={editor.text("s05.f014", "Od fizičnega kosa do uporabnega CAD modela.")}
+            text={editor.text("s05.f015", "Na konkretnem delu najprej zajamemo obstoječo geometrijo, nato pa iz skena izdelamo čist in konstrukcijsko uporaben model za spremembe ali ponovno izdelavo.")}
           />
           <ImageSequence
-            ariaLabel="Reverse engineering projekta ohišja ATX od fizičnega kosa do CAD rekonstrukcije"
-            items={[
+            ariaLabel={editor.text("s05.f016", "Reverse engineering projekta ohišja ATX od fizičnega kosa do CAD rekonstrukcije")}
+            items={editor.data("s05.f017", [
               {
                 image: atxOriginalPart,
                 alt: "Originalno rdeče plastično ohišje ATX pred 3D skeniranjem",
@@ -173,15 +175,15 @@ export default async function ScanningReverseEngineeringPage() {
                 title: "Čist model za nadaljnjo uporabo",
                 text: "Rekonstruirana geometrija je pripravljena za konstrukcijske spremembe, preverjanje in ponovno izdelavo.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="02 / Metoda"
-              title="Sken za obliko. Meritve za funkcijo."
-              text="Kritične naležne površine, pritrditve in tolerance določimo v okviru projekta. Zajeta površina je izhodišče za konstrukcijsko presojo."
+              eyebrow={editor.text("s02.f018", "02 / Metoda")}
+              title={editor.text("s02.f019", "Sken za obliko. Meritve za funkcijo.")}
+              text={editor.text("s02.f020", "Kritične naležne površine, pritrditve in tolerance določimo v okviru projekta. Zajeta površina je izhodišče za konstrukcijsko presojo.")}
             />
             <div className="lt-editorial-rows">
               {comparison.map((item) => (
@@ -195,13 +197,13 @@ export default async function ScanningReverseEngineeringPage() {
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="03 / Primer procesa"
-            title="Renault Clio 197: od zajete geometrije do kompleta mrežic."
-            text="Projekt prikazuje razliko med zajetim scanom, rekonstruiranim CAD modelom in fizičnim rezultatom, pripravljenim za uporabo."
+            eyebrow={editor.text("s06.f021", "03 / Primer procesa")}
+            title={editor.text("s06.f022", "Renault Clio 197: od zajete geometrije do kompleta mrežic.")}
+            text={editor.text("s06.f023", "Projekt prikazuje razliko med zajetim scanom, rekonstruiranim CAD modelom in fizičnim rezultatom, pripravljenim za uporabo.")}
           />
           <ImageSequence
-            ariaLabel="Reverse engineering proces mrežic Renault Clio 197"
-            items={[
+            ariaLabel={editor.text("s06.f024", "Reverse engineering proces mrežic Renault Clio 197")}
+            items={editor.data("s06.f025", [
               {
                 image: clioScan,
                 alt: "3D scan mrežice odbijača Renault Clio 197",
@@ -223,13 +225,13 @@ export default async function ScanningReverseEngineeringPage() {
                 title: "Fizični komplet komponent",
                 text: "Rekonstruirani modeli so pretvorjeni v ponovljiv komplet funkcionalnih delov.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="04 / Primeri uporabe"
-            title="Ko dokumentacije ni ali geometrija potrebuje spremembo."
+            eyebrow={editor.text("s01.f026", "04 / Primeri uporabe")}
+            title={editor.text("s01.f027", "Ko dokumentacije ni ali geometrija potrebuje spremembo.")}
           />
           <div className="lt-grid">
             {useCases.map((item, i) => (
@@ -246,13 +248,13 @@ export default async function ScanningReverseEngineeringPage() {
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="05 / Zajem zahtevne površine"
-              title="Blatnik: od fizičnega kosa do urejene geometrije."
-              text="Referenčni markerji povežejo posamezne zajeme kompleksne površine. Digitalni rezultat se nato uporabi kot osnova za rekonstrukcijo in nadaljnji razvoj."
+              eyebrow={editor.text("s07.f028", "05 / Zajem zahtevne površine")}
+              title={editor.text("s07.f029", "Blatnik: od fizičnega kosa do urejene geometrije.")}
+              text={editor.text("s07.f030", "Referenčni markerji povežejo posamezne zajeme kompleksne površine. Digitalni rezultat se nato uporabi kot osnova za rekonstrukcijo in nadaljnji razvoj.")}
             />
             <ImageSequence
-              ariaLabel="Proces 3D skeniranja in rekonstrukcije blatnika"
-              items={[
+              ariaLabel={editor.text("s07.f031", "Proces 3D skeniranja in rekonstrukcije blatnika")}
+              items={editor.data("s07.f032", [
                 {
                   image: fenderReference,
                   alt: "Plastični blatnik z referenčnimi markerji pred 3D skeniranjem",
@@ -274,19 +276,19 @@ export default async function ScanningReverseEngineeringPage() {
                   title: "Model za nadaljnje delo",
                   text: "Čista geometrija je pripravljena za spremembe, preverjanje ali novo izdelavo.",
                 },
-              ]}
+              ])}
             />
           </div>
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="06 / Celovit zajem vozila"
-            title="Fiat 60L: od realnega avtomobila do rekonstruirane geometrije."
-            text="Pri večjem objektu skeniranje poteka po povezanih območjih. Celovit scan ohrani proporce in površine, rekonstruiran model pa pripravi geometrijo za nadaljnji razvoj komponent."
+            eyebrow={editor.text("s08.f033", "06 / Celovit zajem vozila")}
+            title={editor.text("s08.f034", "Fiat 60L: od realnega avtomobila do rekonstruirane geometrije.")}
+            text={editor.text("s08.f035", "Pri večjem objektu skeniranje poteka po povezanih območjih. Celovit scan ohrani proporce in površine, rekonstruiran model pa pripravi geometrijo za nadaljnji razvoj komponent.")}
           />
           <ImageSequence
-            ariaLabel="Digitalizacija in rekonstrukcija sprednjega dela avtomobila Fiat 60L"
-            items={[
+            ariaLabel={editor.text("s08.f036", "Digitalizacija in rekonstrukcija sprednjega dela avtomobila Fiat 60L")}
+            items={editor.data("s08.f037", [
               {
                 image: vehicle60L,
                 alt: "Fiat 60L kot fizično izhodišče za 3D skeniranje karoserije",
@@ -308,21 +310,22 @@ export default async function ScanningReverseEngineeringPage() {
                 title: "Osnova za nadaljnji razvoj",
                 text: "Urejena geometrija omogoča načrtovanje novih delov, preverjanje ujemanja in konstrukcijske spremembe.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="07 / Predaja"
-            title="Rezultat, uporaben v naslednjem koraku."
-            text="Obseg rekonstrukcije in format datotek določimo pred začetkom. Po potrebi razvoj nadaljujemo do izdelave fizičnega kosa."
+            eyebrow={editor.text("s03.f038", "07 / Predaja")}
+            title={editor.text("s03.f039", "Rezultat, uporaben v naslednjem koraku.")}
+            text={editor.text("s03.f040", "Obseg rekonstrukcije in format datotek določimo pred začetkom. Po potrebi razvoj nadaljujemo do izdelave fizičnega kosa.")}
           />
           <CapabilityGrid items={deliverables} />
         </section>
+        </CmsServiceBody>
         <CTASection
-          title="Imate kos brez uporabnega CAD modela?"
-          text="Pošljite fotografije, približne mere in namen uporabe. Ocenimo zajem, rekonstrukcijo in naslednje korake."
-        />
+          title={editor.text("s09.f041", service?.ctaTitle?.trim() || "Imate kos brez uporabnega CAD modela?")}
+          text={editor.text("s09.f042", service?.ctaText?.trim() || "Pošljite fotografije, približne mere in namen uporabe. Ocenimo zajem, rekonstrukcijo in naslednje korake.")}
+        action={editor.text("s09.ctaaction", "Predstavite projekt")} />
 
         <JsonLd
           data={{

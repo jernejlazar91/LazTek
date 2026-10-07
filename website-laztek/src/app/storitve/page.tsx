@@ -1,4 +1,5 @@
-import SiteHeader from "@/components/SiteHeader";
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import SiteHeader from "@/components/CmsSiteHeader";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import {
@@ -21,11 +22,12 @@ async function getServicesPageData() {
       phone,
       location,
       logo
-    }
-  }`);
+    },
+    "serviceSection": *[_type == "serviceSection"][0]{title, text, useCmsContent}
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const serviceGroups = [
+const defaultServiceGroups = [
   {
     eyebrow: "FDM / FGF / veliki format",
     title: "Industrijski 3D tisk",
@@ -117,7 +119,7 @@ const serviceGroups = [
   },
 ];
 
-const workflow = [
+const defaultWorkflow = [
   "Pošljete opis, slike, mere ali obstoječe datoteke STEP/STL.",
   "Skupaj določimo namen kosa, obremenitve, material in pričakovani rezultat.",
   "Pripravimo model, proces, prototip ali rekonstrukcijo obstoječega dela.",
@@ -133,30 +135,32 @@ import {
 } from "@/components/engineering/DesignSystem";
 
 export default async function ServicesPage() {
+  const editor = await getPageEditor("/storitve");
+  const serviceGroups = editor.data("s01.f001", defaultServiceGroups);
+  const workflow = editor.data("s02.f002", defaultWorkflow);
+
   const data = await getServicesPageData();
   const site = data?.siteSettings;
+  const overview = data?.serviceSection?.useCmsContent === true ? data.serviceSection : null;
   return (
     <>
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme lt-storitve">
         <PageHero
-          eyebrow="Integrirano inženirstvo / LazTek"
+          eyebrow={editor.text("s03.f003", "Integrirano inženirstvo / LazTek")}
           breadcrumb="Storitve"
           title={
-            <>
-              Od izziva
-              <br />
-              do <em>rešitve.</em>
+            overview?.title?.trim() || <>{editor.text("s03.f004", "Od izziva")}<br />{editor.text("s03.f005", "do")}{" "}<em>{editor.text("s03.f006", "rešitve.")}</em>
             </>
           }
-          description="Industrijski 3D tisk, digitalizacija in razvoj v povezanem procesu. Začnemo tam, kjer ste: z modelom, fizičnim kosom ali jasno zahtevo."
+          description={editor.text("s03.f007", overview?.text?.trim() || "Industrijski 3D tisk, digitalizacija in razvoj v povezanem procesu. Začnemo tam, kjer ste: z modelom, fizičnim kosom ali jasno zahtevo.")}
           variant="editorial"
-          secondary={{ href: "#pregled", label: "Raziščite storitve" }}
+          secondary={editor.data("s03.f008", { href: "#pregled", label: "Raziščite storitve" })}
         />
         <section id="pregled" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="01 / Storitve"
-            title="Izberite izhodišče svojega projekta."
+            eyebrow={editor.text("s01.f009", "01 / Storitve")}
+            title={editor.text("s01.f010", "Izberite izhodišče svojega projekta.")}
           />
           {[
             {
@@ -190,8 +194,7 @@ export default async function ServicesPage() {
                           <li key={bullet}>{bullet}</li>
                         ))}
                       </ul>
-                      <span className="lt-service-card-link">
-                        Več o storitvi{" "}
+                      <span className="lt-service-card-link">{editor.text("s01.f011", "Več o storitvi")}{" "}
                         <ArrowRight size={16} aria-hidden="true" />
                       </span>
                     </Link>
@@ -204,21 +207,21 @@ export default async function ServicesPage() {
         <section className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="02 / Povezan proces"
-              title="En projekt. Smiselno povezane tehnologije."
-              text="Skeniranje, CAD in izdelava so koraki istega razvoja. Kombinacijo prilagodimo geometriji, obremenitvam in namenu uporabe."
+              eyebrow={editor.text("s02.f012", "02 / Povezan proces")}
+              title={editor.text("s02.f013", "En projekt. Smiselno povezane tehnologije.")}
+              text={editor.text("s02.f014", "Skeniranje, CAD in izdelava so koraki istega razvoja. Kombinacijo prilagodimo geometriji, obremenitvam in namenu uporabe.")}
             />
             <ProcessFlow steps={workflow} vertical />
           </div>
         </section>
-        <CTASection title="Imate model, fizični kos ali šele idejo?" />
+        <CTASection title={editor.text("s04.f015", "Imate model, fizični kos ali šele idejo?")} text={editor.text("s04.ctatext", "Pošljite model, osnovne mere ali opis uporabe. Skupaj določimo smiselno pot do izdelave.")} action={editor.text("s04.ctaaction", "Predstavite projekt")} />
       </main>
     </>
   );
 }
 
-export const metadata = pageMetadata(
+export async function generateMetadata() { return editableMetadata("/storitve", pageMetadata(
   "Inženirske storitve",
   "Industrijski FDM in FGF 3D tisk, 3D skeniranje, povratni inženiring, konstruiranje in prototipizacija.",
   "/storitve",
-);
+)); }

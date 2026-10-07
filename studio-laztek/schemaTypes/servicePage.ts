@@ -1,24 +1,26 @@
+import {imageFields, cmsActivation} from '../lib/content'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const servicePage = defineType({
   name: 'servicePage',
   title: 'Stran storitve',
   type: 'document',
+  groups: [{name: 'basic', title: 'Osnovno', default: true}, {name: 'media', title: 'Fotografije in video'}, {name: 'content', title: 'Vsebina'}, {name: 'conversion', title: 'Povpraševanje'}, {name: 'seo', title: 'SEO'}],
   fields: [
-    defineField({
+    defineField({group: 'basic', 
       name: 'title',
       title: 'Naziv storitve',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'slug',
       title: 'URL slug',
       type: 'slug',
       options: {source: 'title', maxLength: 96},
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'pageType',
       title: 'Tip strani',
       type: 'string',
@@ -26,6 +28,8 @@ export const servicePage = defineType({
         layout: 'dropdown',
         list: [
           {title: 'Industrijski 3D tisk', value: 'industrial-printing'},
+          {title: 'Velikoformatni 3D tisk', value: 'large-format-printing'},
+          {title: 'FGF tisk iz granulata', value: 'fgf-printing'},
           {title: '3D skeniranje & reverse engineering', value: 'scanning-reverse'},
           {title: 'Obnova plastičnih kosov', value: 'plastic-restoration'},
           {title: 'Konstruiranje & 3D modeliranje', value: 'engineering-modeling'},
@@ -33,30 +37,30 @@ export const servicePage = defineType({
         ],
       },
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'eyebrow',
       title: 'Majhen napis nad naslovom',
       type: 'string',
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'heroTitle',
       title: 'Glavni naslov',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'heroText',
       title: 'Uvodni opis',
       type: 'text',
       rows: 4,
     }),
-    defineField({
+    defineField({fields: imageFields, group: 'media', 
       name: 'heroImage',
       title: 'Glavna slika',
       type: 'image',
       options: {hotspot: true},
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'summaryCards',
       title: 'Kratke poudarjene kartice',
       type: 'array',
@@ -73,7 +77,7 @@ export const servicePage = defineType({
         }),
       ],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'sections',
       title: 'Vsebinski sklopi',
       type: 'array',
@@ -97,19 +101,19 @@ export const servicePage = defineType({
         }),
       ],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'suitableFor',
       title: 'Primerno za',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'notIdealFor',
       title: 'Ni najboljša izbira za',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'processSteps',
       title: 'Potek dela',
       type: 'array',
@@ -126,30 +130,33 @@ export const servicePage = defineType({
         }),
       ],
     }),
-    defineField({
+    defineField({group: 'conversion', 
       name: 'ctaTitle',
       title: 'CTA naslov',
       type: 'string',
     }),
-    defineField({
+    defineField({group: 'conversion', 
       name: 'ctaText',
       title: 'CTA opis',
       type: 'text',
       rows: 3,
     }),
-    defineField({
+    defineField({group: 'seo', 
       name: 'seoTitle',
       title: 'SEO naslov',
       type: 'string',
       validation: (Rule) => Rule.max(70),
     }),
-    defineField({
+    defineField({group: 'seo', 
       name: 'seoDescription',
       title: 'SEO opis',
       type: 'text',
       rows: 3,
       validation: (Rule) => Rule.max(170),
     }),
+  
+    cmsActivation,
+    defineField({name: 'replaceBody', title: 'Zamenjaj vsebinske sklope s spodnjo vsebino', type: 'boolean', group: 'content', initialValue: false, description: 'Vklopi samo, če želiš zamenjati pripravljene tehnične sklope. Uvod, slike v uvodu, navigacija in CTA ostanejo v obstoječi zasnovi. Če so sklopi prazni, se ohrani pripravljena vsebina.'}),
   ],
   preview: {
     select: {title: 'title', subtitle: 'slug.current', media: 'heroImage'},

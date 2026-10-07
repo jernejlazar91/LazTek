@@ -1,14 +1,16 @@
-import SiteHeader from "@/components/SiteHeader";
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import SiteHeader from "@/components/CmsSiteHeader";
 import engineeringWorkshop from "@/assets/laztek-v2/linex/linex-development-stage.webp";
 import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { Cpu, DraftingCompass, ScanLine, Wrench } from "lucide-react";
 
-export const metadata = pageMetadata(
+export async function generateMetadata() { return editableMetadata("/o-podjetju", pageMetadata(
   "O podjetju",
   "Laztek Engineering združuje strojniško konstruiranje, 3D tisk, reverse engineering, 3D skeniranje in prototipizacijo za funkcionalne tehnične kose.",
   "/o-podjetju",
-);
+)); }
 
 async function getPageData() {
   return client.fetch(`{
@@ -25,10 +27,10 @@ async function getPageData() {
       text2,
       highlights
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const pillars = [
+const defaultPillars = [
   {
     title: "Inženirski pristop",
     text: "Fokus ni samo na lepem modelu ali hitrem tisku, ampak na funkcionalnem kosu, ki ima smiseln material, geometrijo in namen uporabe.",
@@ -51,7 +53,7 @@ const pillars = [
   },
 ];
 
-const differentiators = [
+const defaultDifferentiators = [
   "lastna velikoformatna FDM/FGF platforma LINEX HT v1",
   "razvoj mehansko in temperaturno obremenjenih polimernih komponent",
   "scan → CAD → redesign → proizvodnja workflow",
@@ -60,7 +62,7 @@ const differentiators = [
   "razvoj funkcionalnih prototipov in maloserijskih tehničnih kosov",
 ];
 
-const workFlow = [
+const defaultWorkFlow = [
   "razumevanje problema, kosa ali aplikacije",
   "izbira tehnologije, materiala in konstrukcijske smeri",
   "CAD priprava, skeniranje, modeliranje ali optimizacija",
@@ -81,53 +83,49 @@ import {
 } from "@/components/engineering/DesignSystem";
 
 export default async function AboutPage() {
+  const editor = await getPageEditor("/o-podjetju");
+  const pillars = editor.data("s01.f001", defaultPillars);
+  const differentiators = editor.data("s02.f002", defaultDifferentiators);
+  const workFlow = editor.data("s03.f003", defaultWorkFlow);
+
   const data = await getPageData();
   const site = data?.siteSettings;
-  const about = data?.aboutSection;
+  const about = editor.exists ? null : data?.aboutSection;
   return (
     <>
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme lt-o-podjetju">
         <PageHero
-          eyebrow="LazTek Engineering / Rovte"
+          eyebrow={editor.text("s04.f004", "LazTek Engineering / Rovte")}
           breadcrumb="O podjetju"
           title={
             about?.title || (
-              <>
-                Od razvoja
-                <br />
-                <em>do izvedbe.</em>
-              </>
+              <EditableTitle first={editor.text("s04.f005", "Od razvoja")} second={editor.text("s04.f006", "do izvedbe.")} />
             )
           }
-          description={
-            about?.text1 ||
-            "Združujemo strojniško konstruiranje, 3D skeniranje, povratni inženiring in aditivno izdelavo funkcionalnih delov."
-          }
+          description={editor.text("s04.f007", about?.text1 ||
+            "Združujemo strojniško konstruiranje, 3D skeniranje, povratni inženiring in aditivno izdelavo funkcionalnih delov.")}
           visual={
             <TechnicalImage
-              image={engineeringWorkshop}
-              alt="Razvoj platforme LINEX v delavnici LazTek Engineering v Rovtah"
-              label="ROVTE / DEVELOPMENT WORKSHOP"
-              caption="Lasten razvoj, konstrukcija in aditivna izdelava na enem mestu"
+              image={editor.image("s04.f008", engineeringWorkshop)}
+              alt={editor.text("s04.f009", "Razvoj platforme LINEX v delavnici LazTek Engineering v Rovtah")}
+              label={editor.text("s04.f010", "ROVTE / DEVELOPMENT WORKSHOP")}
+              caption={editor.text("s04.f011", "Lasten razvoj, konstrukcija in aditivna izdelava na enem mestu")}
               priority
             />
           }
-          secondary={{ href: "/projekti", label: "Oglejte si projekte" }}
+          secondary={editor.data("s04.f012", { href: "/projekti", label: "Oglejte si projekte" })}
         />
         <section className="lt-container lt-section lt-split">
           <div>
-            <TechnicalBadge>01 / Pristop</TechnicalBadge>
-            <h2 className="lt-statement">
-              Od razumevanja problema do kosa, ki opravi svojo nalogo.
-            </h2>
+            <TechnicalBadge>{editor.text("s03.f013", "01 / Pristop")}</TechnicalBadge>
+            <h2 className="lt-statement">{editor.text("s03.f014", "Od razumevanja problema do kosa, ki opravi svojo nalogo.")}</h2>
             <p className="lt-muted">
-              {about?.text2 ||
-                "Najprej razumemo namen kosa. Nato izberemo tehnologijo, material in konstrukcijsko rešitev."}
+              {editor.text("s03.f015", about?.text2 ||
+                "Najprej razumemo namen kosa. Nato izberemo tehnologijo, material in konstrukcijsko rešitev.")}
             </p>
-            <p className="lt-signature">
-              Jernej Lazar{" "}
-              <span>Lazar engineering Tech s.p. / LazTek Engineering</span>
+            <p className="lt-signature">{editor.text("s03.f016", "Jernej Lazar")}{" "}
+              <span>{editor.text("s03.f017", "Lazar engineering Tech s.p. / LazTek Engineering")}</span>
             </p>
           </div>
           <ProcessFlow steps={workFlow} vertical />
@@ -135,8 +133,8 @@ export default async function AboutPage() {
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="02 / Inženirska osnova"
-              title="Znanje konstrukcije. Razumevanje materiala. Lastna izvedba."
+              eyebrow={editor.text("s01.f018", "02 / Inženirska osnova")}
+              title={editor.text("s01.f019", "Znanje konstrukcije. Razumevanje materiala. Lastna izvedba.")}
             />
             <div className="lt-grid lt-grid-two">
               {pillars.map((item, i) => (
@@ -154,13 +152,11 @@ export default async function AboutPage() {
         <section className="lt-container lt-section lt-split">
           <div>
             <SectionHeading
-              eyebrow="03 / Lasten razvoj"
-              title="LINEX povezuje razvoj stroja in razvoj procesa."
-              text="Praktične izkušnje z lastno FDM / FGF platformo uporabljamo pri pripravi tehničnih komponent."
+              eyebrow={editor.text("s02.f020", "03 / Lasten razvoj")}
+              title={editor.text("s02.f021", "LINEX povezuje razvoj stroja in razvoj procesa.")}
+              text={editor.text("s02.f022", "Praktične izkušnje z lastno FDM / FGF platformo uporabljamo pri pripravi tehničnih komponent.")}
             />
-            <ActionLink href="/linex" secondary>
-              Spoznajte LINEX
-            </ActionLink>
+            <ActionLink href={editor.text("s02.f023", "/linex")} secondary>{editor.text("s02.f024", "Spoznajte LINEX")}</ActionLink>
           </div>
           <CapabilityGrid
             items={
@@ -173,7 +169,7 @@ export default async function AboutPage() {
             }
           />
         </section>
-        <CTASection title="Pogovorimo se o vašem tehničnem izzivu." />
+        <CTASection title={editor.text("s05.f025", "Pogovorimo se o vašem tehničnem izzivu.")} text={editor.text("s05.ctatext", "Pošljite model, osnovne mere ali opis uporabe. Skupaj določimo smiselno pot do izdelave.")} action={editor.text("s05.ctaaction", "Predstavite projekt")} />
       </main>
     </>
   );

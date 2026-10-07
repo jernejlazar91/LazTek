@@ -1,5 +1,9 @@
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import {CmsPageHero, CmsServiceBody} from '@/components/engineering/CmsContent';
+import {getEditablePage, serviceMetadata} from '@/sanity/content';
 import JsonLd from "@/components/engineering/JsonLd";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader from "@/components/CmsSiteHeader";
 import machineSubassembly from "@/assets/laztek/machine-subassembly.webp";
 import generativeDesign from "@/assets/laztek-v2/services/engineering/generative-geometry.webp";
 import topologyOptimization from "@/assets/laztek-v2/services/engineering/topology-optimized-part.webp";
@@ -7,7 +11,6 @@ import linexCadAssembly from "@/assets/laztek-v2/linex/linex-cad-assembly.webp";
 import bmwComponentScan from "@/assets/laztek-v2/projects/bmw/bmw-component-scan.webp";
 import bmwComponentSolid from "@/assets/laztek-v2/projects/bmw/bmw-component-solid.webp";
 import bmwComponentPrototypes from "@/assets/laztek-v2/projects/bmw/bmw-component-prototypes.webp";
-import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import {
   Boxes,
@@ -18,11 +21,13 @@ import {
   Wrench,
 } from "lucide-react";
 
-export const metadata = pageMetadata(
-  "Konstruiranje in 3D modeliranje",
-  "CAD konstruiranje, 3D modeliranje, generative design, topology optimization, tehnični razvoj, optimizacija geometrije, priprava modelov za 3D tisk in izdelavo funkcionalnih tehničnih kosov.",
-  "/storitve/konstruiranje-3d-modeliranje",
-);
+export async function generateMetadata() {
+  return editableMetadata("/storitve/konstruiranje-3d-modeliranje", await serviceMetadata(
+    "Konstruiranje in 3D modeliranje",
+    "CAD konstruiranje, 3D modeliranje, generative design, topology optimization, tehnični razvoj, optimizacija geometrije, priprava modelov za 3D tisk in izdelavo funkcionalnih tehničnih kosov.",
+    "/storitve/konstruiranje-3d-modeliranje",
+  ));
+}
 
 async function getPageData() {
   return client.fetch(`{
@@ -33,10 +38,10 @@ async function getPageData() {
       location,
       logo
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const projectTypes = [
+const defaultProjectTypes = [
   {
     icon: DraftingCompass,
     title: "Celoten sestav stroja",
@@ -60,7 +65,7 @@ const projectTypes = [
   },
 ];
 
-const advancedMethods = [
+const defaultAdvancedMethods = [
   {
     icon: Sparkles,
     title: "Generative design",
@@ -78,7 +83,7 @@ const advancedMethods = [
   },
 ];
 
-const deliverables = [
+const defaultDeliverables = [
   "STEP model za nadaljnjo uporabo ali proizvodnjo",
   "STL/3MF model pripravljen za 3D tisk",
   "popravljena ali optimizirana geometrija obstoječega kosa",
@@ -87,7 +92,7 @@ const deliverables = [
   "model pripravljen za prototip, test ali manjšo serijo",
 ];
 
-const process = [
+const defaultProcess = [
   {
     title: "Razumevanje problema",
     text: "Najprej določimo, kaj mora kos delati: kje je vgrajen, kaj drži, kaj se premika, kakšne so obremenitve in omejitve prostora.",
@@ -110,13 +115,19 @@ import {
   CapabilityGrid,
   CTASection,
   ImageSequence,
-  PageHero,
   ProcessFlow,
   SectionHeading,
   TechnicalImage,
 } from "@/components/engineering/DesignSystem";
 
 export default async function CADModelingPage() {
+  const editor = await getPageEditor("/storitve/konstruiranje-3d-modeliranje");
+  const projectTypes = editor.data("s01.f001", defaultProjectTypes);
+  const advancedMethods = editor.data("s02.f002", defaultAdvancedMethods);
+  const deliverables = editor.data("s03.f003", defaultDeliverables);
+  const process = editor.data("s04.f004", defaultProcess);
+
+  const service = await getEditablePage('servicePage', 'konstruiranje-3d-modeliranje');
   const data = await getPageData();
   const site = data?.siteSettings;
   return (
@@ -127,34 +138,31 @@ export default async function CADModelingPage() {
         tabIndex={-1}
         className="lt-theme lt-konstruiranje-3d-modeliranje"
       >
-        <PageHero
-          eyebrow="CAD / Razvoj / DfAM"
+        <CmsPageHero page={editor.exists ? null : service}
+          eyebrow={editor.text("s05.f005", "CAD / Razvoj / DfAM")}
           breadcrumb="Konstruiranje in 3D modeliranje"
           title={
-            <>
-              Razvoj, pripravljen
-              <br />
-              <em>za izvedbo.</em>
-            </>
+            <EditableTitle first={editor.text("s05.f006", "Razvoj, pripravljen")} second={editor.text("s05.f007", "za izvedbo.")} />
           }
-          description="Od posamezne komponente do podsklopa ali sestava. CAD razvoj povežemo z materialom, obremenitvami, montažo in izbrano tehnologijo izdelave."
+          description={editor.text("s05.f008", "Od posamezne komponente do podsklopa ali sestava. CAD razvoj povežemo z materialom, obremenitvami, montažo in izbrano tehnologijo izdelave.")}
           visual={
             <TechnicalImage
-              image={linexCadAssembly}
-              alt="Celoten CAD sestav razvojne platforme LINEX"
-              label="CAD / MACHINE DEVELOPMENT"
-              caption="Konstrukcija sestava, vodil, nosilcev in delovnega območja"
+              image={editor.image("s05.f009", linexCadAssembly)}
+              alt={editor.text("s05.f010", "Celoten CAD sestav razvojne platforme LINEX")}
+              label={editor.text("s05.f011", "CAD / MACHINE DEVELOPMENT")}
+              caption={editor.text("s05.f012", "Konstrukcija sestava, vodil, nosilcev in delovnega območja")}
               contain
               priority
             />
           }
-          action="Predstavite razvojni izziv"
-          secondary={{ href: "#razvoj", label: "Področja razvoja" }}
+          action={editor.text("s05.f013", "Predstavite razvojni izziv")}
+          secondary={editor.data("s05.f014", { href: "#razvoj", label: "Področja razvoja" })}
         />
+        <CmsServiceBody page={editor.exists ? null : service}>
         <section id="razvoj" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="01 / Področja razvoja"
-            title="Od sestava stroja do optimizirane komponente."
+            eyebrow={editor.text("s01.f015", "01 / Področja razvoja")}
+            title={editor.text("s01.f016", "Od sestava stroja do optimizirane komponente.")}
           />
           {projectTypes.map((item, i) => (
             <article className="lt-feature-row" key={item.title}>
@@ -165,7 +173,7 @@ export default async function CADModelingPage() {
                 contain
               />
               <div>
-                <span className="lt-index">0{i + 1} / CAD DEVELOPMENT</span>
+                <span className="lt-index">{editor.text("s01.f017", "0")}{i + 1}{" "}{editor.text("s01.f018", "/ CAD DEVELOPMENT")}</span>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
               </div>
@@ -175,9 +183,9 @@ export default async function CADModelingPage() {
         <section className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="02 / Optimizacija"
-              title="Manj materiala. Smiselno ohranjena funkcija."
-              text="Generativno načrtovanje in topološka optimizacija sta orodji za razvoj. Rezultat preverimo z vidika izdelave, montaže in uporabe."
+              eyebrow={editor.text("s02.f019", "02 / Optimizacija")}
+              title={editor.text("s02.f020", "Manj materiala. Smiselno ohranjena funkcija.")}
+              text={editor.text("s02.f021", "Generativno načrtovanje in topološka optimizacija sta orodji za razvoj. Rezultat preverimo z vidika izdelave, montaže in uporabe.")}
             />
             <div className="lt-editorial-rows">
               {advancedMethods.map((item) => (
@@ -191,13 +199,13 @@ export default async function CADModelingPage() {
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="03 / Napredna optimizacija"
-            title="Organska oblika postane uporabna šele po inženirski presoji."
-            text="Generativni rezultat in topološka optimizacija sta razvojni izhodišči. Končno geometrijo prilagodimo obremenitvam, materialu, izdelavi in montaži."
+            eyebrow={editor.text("s06.f022", "03 / Napredna optimizacija")}
+            title={editor.text("s06.f023", "Organska oblika postane uporabna šele po inženirski presoji.")}
+            text={editor.text("s06.f024", "Generativni rezultat in topološka optimizacija sta razvojni izhodišči. Končno geometrijo prilagodimo obremenitvam, materialu, izdelavi in montaži.")}
           />
           <ImageSequence
-            ariaLabel="Primer generativnega načrtovanja in topološke optimizacije"
-            items={[
+            ariaLabel={editor.text("s06.f025", "Primer generativnega načrtovanja in topološke optimizacije")}
+            items={editor.data("s06.f026", [
               {
                 image: generativeDesign,
                 alt: "Generativno oblikovan tehnični nosilec",
@@ -219,18 +227,18 @@ export default async function CADModelingPage() {
                 title: "Izvedljiva strojna rešitev",
                 text: "Končni model upošteva standardne komponente, sestavljivost, servis in realno izdelavo.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="04 / Primer razvoja komponente"
-            title="Od zajete oblike do fizičnega prototipa."
-            text="Scan poda prostorsko referenco, urejen solid model omogoči nadzor geometrije, fizični prototip pa potrdi prileganje in izdelovalnost."
+            eyebrow={editor.text("s07.f027", "04 / Primer razvoja komponente")}
+            title={editor.text("s07.f028", "Od zajete oblike do fizičnega prototipa.")}
+            text={editor.text("s07.f029", "Scan poda prostorsko referenco, urejen solid model omogoči nadzor geometrije, fizični prototip pa potrdi prileganje in izdelovalnost.")}
           />
           <ImageSequence
-            ariaLabel="Razvojni proces komponente od 3D skena do fizičnega prototipa"
-            items={[
+            ariaLabel={editor.text("s07.f030", "Razvojni proces komponente od 3D skena do fizičnega prototipa")}
+            items={editor.data("s07.f031", [
               {
                 image: bmwComponentScan,
                 alt: "Zajeta površinska geometrija avtomobilske komponente",
@@ -252,28 +260,29 @@ export default async function CADModelingPage() {
                 title: "Fizično preverjanje",
                 text: "Izdelana prototipa omogočita pregled oblike, površine in realne uporabe.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="05 / Razvojni proces"
-            title="Zahteva → konstrukcija → preverjanje → izdelava."
+            eyebrow={editor.text("s04.f032", "05 / Razvojni proces")}
+            title={editor.text("s04.f033", "Zahteva → konstrukcija → preverjanje → izdelava.")}
           />
           <ProcessFlow steps={process} />
         </section>
         <section className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="06 / Predaja"
-            title="Dokumentacija za nadaljnjo uporabo."
-            text="Obseg modelov, risb in prototipov prilagodimo fazi vašega projekta."
+            eyebrow={editor.text("s03.f034", "06 / Predaja")}
+            title={editor.text("s03.f035", "Dokumentacija za nadaljnjo uporabo.")}
+            text={editor.text("s03.f036", "Obseg modelov, risb in prototipov prilagodimo fazi vašega projekta.")}
           />
           <CapabilityGrid items={deliverables} />
         </section>
+        </CmsServiceBody>
         <CTASection
-          title="Imate zahtevo, skico ali obstoječ model?"
-          text="Opišite funkcijo, prostor vgradnje in pričakovane obremenitve. Skupaj določimo razvojni obseg."
-        />
+          title={editor.text("s08.f037", service?.ctaTitle?.trim() || "Imate zahtevo, skico ali obstoječ model?")}
+          text={editor.text("s08.f038", service?.ctaText?.trim() || "Opišite funkcijo, prostor vgradnje in pričakovane obremenitve. Skupaj določimo razvojni obseg.")}
+        action={editor.text("s08.ctaaction", "Predstavite projekt")} />
 
         <JsonLd
           data={{

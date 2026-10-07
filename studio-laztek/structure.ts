@@ -1,102 +1,44 @@
 import type {StructureResolver} from 'sanity/structure'
+import {websitePages} from './schemaTypes/websitePages'
+import {PublishedPage} from './components/PublishedPage'
 
-export const structure: StructureResolver = (S) =>
-  S.list()
-    .title('LazTek vsebina')
-    .items([
-      S.listItem()
-        .title('Osnovne nastavitve')
-        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
-
-      S.divider(),
-
-      S.listItem()
-        .title('Strani')
-        .child(
-          S.list()
-            .title('Strani')
-            .items([
-              S.listItem()
-                .title('Domov')
-                .child(S.document().schemaType('homePage').documentId('homePage')),
-              S.listItem()
-                .title('Storitve - pregled')
-                .child(S.document().schemaType('serviceSection').documentId('serviceSection')),
-              S.listItem()
-                .title('Strani storitev')
-                .child(
-                  S.documentTypeList('servicePage')
-                    .title('Strani storitev')
-                    .defaultOrdering([{field: 'title', direction: 'asc'}]),
-                ),
-              S.listItem()
-                .title('Materiali - uvod')
-                .child(S.document().schemaType('materialsSection').documentId('materialsSection')),
-              S.listItem()
-                .title('LINEX')
-                .child(S.document().schemaType('linexPage').documentId('linexPage')),
-              S.listItem()
-                .title('O podjetju')
-                .child(S.document().schemaType('aboutSection').documentId('aboutSection')),
-              S.listItem()
-                .title('Kontakt')
-                .child(S.document().schemaType('contactSection').documentId('contactSection')),
-            ]),
-        ),
-
-      S.listItem()
-        .title('Materiali')
-        .child(
-          S.documentTypeList('materialGroup')
-            .title('Materialne skupine')
-            .defaultOrdering([{field: 'sortOrder', direction: 'asc'}]),
-        ),
-
-      S.listItem()
-        .title('Projekti')
-        .child(
-          S.documentTypeList('project')
-            .title('Projekti / case studies')
-            .defaultOrdering([{field: 'publishedAt', direction: 'desc'}]),
-        ),
-
-      S.listItem()
-        .title('Galerija')
-        .child(
-          S.documentTypeList('galleryItem')
-            .title('Galerija')
-            .defaultOrdering([{field: 'sortOrder', direction: 'asc'}]),
-        ),
-
-      S.listItem()
-        .title('Blog')
-        .child(
-          S.documentTypeList('blogPost')
-            .title('Blog objave')
-            .defaultOrdering([{field: 'publishedAt', direction: 'desc'}]),
-        ),
-
-      S.divider(),
-
-      S.listItem()
-        .title('Stare sekcije / arhiv homepagea')
-        .child(
-          S.list()
-            .title('Stare sekcije')
-            .items([
-              S.listItem()
-                .title('3D tisk - stara sekcija')
-                .child(S.document().schemaType('printingSection').documentId('printingSection')),
-              S.listItem()
-                .title('Industrijska platforma - stara sekcija')
-                .child(S.document().schemaType('platformSection').documentId('platformSection')),
-              S.listItem()
-                .title('Konstruiranje in razvoj - stara sekcija')
-                .child(S.document().schemaType('engineeringSection').documentId('engineeringSection')),
-              S.listItem()
-                .title('3D skeniranje - stara sekcija')
-                .child(S.document().schemaType('scanningSection').documentId('scanningSection')),
-              S.documentTypeListItem('serviceItem').title('Kartice storitev'),
-            ]),
-        ),
-    ])
+export const structure: StructureResolver = (S) => {
+  const page = (path: string, title?: string) => {
+    const item = websitePages.find(p=>p.path===path)!
+    return S.listItem().title(title || item.title).child(
+      S.document().schemaType(item.type).documentId(item.id).title(item.title)
+        .views([S.view.form().title('Urejanje'),S.view.component(PublishedPage).title('Odpri stran')]),
+    )
+  }
+  return S.list().title('LazTek – urejanje spletne strani').items([
+    page('/'),
+    S.listItem().title('Storitve').child(S.list().title('Storitve').items([
+      page('/storitve','Pregled storitev'),
+      ...websitePages.filter(p=>p.path.startsWith('/storitve/')).map(p=>page(p.path)),
+    ])),
+    page('/linex'),
+    page('/materiali'),
+    S.listItem().title('Projekti').child(S.list().title('Projekti').items([
+      page('/projekti','Uvodna stran projektov'),
+      ...websitePages.filter(p=>p.path.startsWith('/projekti/')).map(p=>page(p.path)),
+      S.documentTypeListItem('project').title('Drugi projekti / dodaj nov projekt').child(
+        S.documentTypeList('project').title('Drugi projekti').filter('_type == "project" && !(slug.current in $slugs)')
+          .params({slugs:websitePages.filter(p=>p.path.startsWith('/projekti/')).map(p=>p.path.split('/').pop())})
+          .defaultOrdering([{field:'publishedAt',direction:'desc'}]),
+      ),
+    ])),
+    S.listItem().title('Galerija').child(S.list().title('Galerija').items([
+      page('/galerija','Uvodna stran galerije'),
+      S.documentTypeListItem('galleryItem').title('Fotografije in videi').child(S.documentTypeList('galleryItem').title('Fotografije in videi').defaultOrdering([{field:'sortOrder',direction:'asc'}])),
+    ])),
+    S.listItem().title('Članki').child(S.list().title('Članki').items([
+      page('/blog','Uvodna stran člankov'),
+      S.documentTypeListItem('blogPost').title('Članki / dodaj članek').child(S.documentTypeList('blogPost').title('Članki').defaultOrdering([{field:'publishedAt',direction:'desc'}])),
+    ])),
+    page('/o-podjetju'),
+    page('/kontakt'),
+    S.divider(),
+    S.listItem().title('Podatki podjetja').child(S.document().schemaType('siteSettings').documentId('siteSettings').title('Podatki podjetja')),
+    page('/politika-zasebnosti'),
+  ])
+}

@@ -5,7 +5,7 @@ import {
 } from '@/components/engineering/DesignSystem'
 import JsonLd from '@/components/engineering/JsonLd'
 import RichText from '@/components/engineering/RichText'
-import SiteHeader from '@/components/SiteHeader'
+import SiteHeader from '@/components/CmsSiteHeader'
 import {pageMetadata} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
@@ -13,16 +13,36 @@ import type {Metadata} from 'next'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {cache} from 'react'
+import {CmsFigure, RelatedServices} from '@/components/engineering/CmsContent'
+import {textOr, type CmsImage} from '@/sanity/content'
+import type {ComponentProps} from 'react'
+
+type BlogPost = {
+  _id: string
+  title: string
+  slug: string
+  excerpt?: string
+  category?: string
+  tags?: string[]
+  authorName?: string
+  services?: string[]
+  coverImage?: CmsImage
+  publishedAt?: string
+  _updatedAt?: string
+  content?: ComponentProps<typeof RichText>['value']
+  seoTitle?: string
+  seoDescription?: string
+}
 
 async function getSiteSettings() {
   return client.fetch(`*[_type == "siteSettings"][0]{
     brandName,
     logo
-  }`)
+  }`, {}, {next: {revalidate: 60}})
 }
 
 const getPost = cache(async (slug: string) => {
-  return client.fetch(
+  return client.fetch<BlogPost | null>(
     `*[_type == "blogPost" && slug.current == $slug][0]{
       _id,
       title,
@@ -30,9 +50,16 @@ const getPost = cache(async (slug: string) => {
       excerpt,
       coverImage,
       publishedAt,
-      content
+      _updatedAt,
+      content,
+      category,
+      tags,
+      authorName,
+      services,
+      seoTitle,
+      seoDescription
     }`,
-    {slug},
+    {slug}, {next: {revalidate: 60}},
   )
 })
 
@@ -46,9 +73,10 @@ export async function generateMetadata({
   if (!item)
     return {title: 'Vsebina ni najdena', robots: {index: false, follow: false}}
   return pageMetadata(
-    item.title,
-    item.excerpt || 'Blog LazTek Engineering.',
+    textOr(item.seoTitle, item.title),
+    textOr(item.seoDescription, item.excerpt || 'Blog LazTek Engineering.'),
     `/blog/${encodeURIComponent(slug)}`,
+    item.coverImage?.asset ? urlFor(item.coverImage).width(1200).height(630).fit('crop').url() : undefined,
   )
 }
 export default async function DetailPage({
@@ -74,6 +102,7 @@ export default async function DetailPage({
               </TechnicalBadge>
               <h1>{post.title}</h1>
               <p className="lt-lead">{post.excerpt}</p>
+              {post.authorName?.trim() && <p className="lt-published">Avtor: {post.authorName}</p>}
               {post.publishedAt &&
                 !Number.isNaN(Date.parse(post.publishedAt)) && (
                   <time className="lt-published" dateTime={post.publishedAt}>
@@ -86,15 +115,9 @@ export default async function DetailPage({
                   </time>
                 )}
             </header>
-            {post.coverImage && (
-              <img
-                className="lt-article-cover"
-                src={urlFor(post.coverImage).width(1600).auto('format').url()}
-                alt={post.coverImage.alt || post.title}
-                fetchPriority="high"
-              />
-            )}
+            {post.coverImage?.asset && <CmsFigure image={post.coverImage} priority className="lt-article-cover" fallbackAlt={post.title} />}
             <RichText value={post.content || []} />
+            <RelatedServices values={post.services} />
 
             <Link href="/blog" className="lt-text-link">
               ← Nazaj: blog
@@ -110,6 +133,8 @@ export default async function DetailPage({
             description: post.excerpt,
             url: `https://laztek.si/blog/${encodeURIComponent(slug)}`,
             datePublished: post.publishedAt,
+            dateModified: post._updatedAt,
+            author: post.authorName?.trim() ? {'@type': 'Person', name: post.authorName} : undefined,
             publisher: {
               '@type': 'Organization',
               name: 'LazTek Engineering',

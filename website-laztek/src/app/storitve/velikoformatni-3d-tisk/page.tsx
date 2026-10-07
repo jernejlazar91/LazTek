@@ -1,3 +1,7 @@
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import {CmsPageHero, CmsServiceBody} from '@/components/engineering/CmsContent';
+import {getEditablePage, serviceMetadata} from '@/sanity/content';
 import fgfPelletPrint from "@/assets/laztek-v2/services/industrial-print/fgf-granulate-print.webp";
 import largePartInfill from "@/assets/laztek-v2/services/industrial-print/large-part-infill.webp";
 import linexPlatform from "@/assets/laztek-v2/linex/linex-ht-platform.webp";
@@ -7,28 +11,28 @@ import {
   ImageSequence,
   JumpNav,
   Metric,
-  PageHero,
   ProcessFlow,
   SectionHeading,
   TechnicalCard,
   TechnicalImage,
 } from "@/components/engineering/DesignSystem";
 import JsonLd from "@/components/engineering/JsonLd";
-import SiteHeader from "@/components/SiteHeader";
-import { pageMetadata } from "@/lib/seo";
+import SiteHeader from "@/components/CmsSiteHeader";
 import { client } from "@/sanity/client";
 
-export const metadata = pageMetadata(
-  "Velikoformatni 3D tisk velikih kosov",
-  "Velikoformatni industrijski 3D tisk velikih prototipov, ohišij, kalupov, priprav in funkcionalnih komponent do 1030 × 737 × 715 mm.",
-  "/storitve/velikoformatni-3d-tisk",
-);
-
-async function getPageData() {
-  return client.fetch(`*[_type == "siteSettings"][0]{brandName}`);
+export async function generateMetadata() {
+  return editableMetadata("/storitve/velikoformatni-3d-tisk", await serviceMetadata(
+    "Velikoformatni 3D tisk velikih kosov",
+    "Velikoformatni industrijski 3D tisk velikih prototipov, ohišij, kalupov, priprav in funkcionalnih komponent do 1030 × 737 × 715 mm.",
+    "/storitve/velikoformatni-3d-tisk",
+  ));
 }
 
-const applications = [
+async function getPageData() {
+  return client.fetch(`*[_type == "siteSettings"][0]{brandName}`, {}, {next: {revalidate: 60}});
+}
+
+const defaultApplications = [
   "veliki funkcionalni prototipi in preverjanje sestave",
   "ohišja, pokrovi, zaščite in kanali",
   "kalupi, modeli in orodja za nadaljnje postopke",
@@ -37,7 +41,7 @@ const applications = [
   "unikatne in maloserijske tehnične komponente",
 ];
 
-const process = [
+const defaultProcess = [
   {
     title: "Pregled geometrije in namena",
     text: "Preverimo mere, obremenitve, montažo, vidne površine, količino in okolje uporabe.",
@@ -56,7 +60,7 @@ const process = [
   },
 ];
 
-const limits = [
+const defaultLimits = [
   "Največji volumen ne pomeni, da je vsaka geometrija avtomatično izvedljiva v enem kosu.",
   "Pri velikih tehničnih delih so krčenje, ravnost, smer slojev in temperaturna stabilnost pomembnejši od same zunanje mere.",
   "Tesne tolerance, izvrtine, naležne površine in navoji lahko zahtevajo konstrukcijski dodatek ali naknadno obdelavo.",
@@ -64,64 +68,67 @@ const limits = [
 ];
 
 export default async function LargeFormatPrintingPage() {
+  const editor = await getPageEditor("/storitve/velikoformatni-3d-tisk");
+  const applications = editor.data("s01.f001", defaultApplications);
+  const process = editor.data("s02.f002", defaultProcess);
+  const limits = editor.data("s03.f003", defaultLimits);
+
+  const service = await getEditablePage('servicePage', 'velikoformatni-3d-tisk');
   const site = await getPageData();
 
   return (
     <>
       <SiteHeader brandName={site?.brandName} basePath="/" />
       <main id="vsebina" tabIndex={-1} className="lt-theme">
-        <PageHero
-          eyebrow="Veliki tehnični kosi / FDM + FGF"
+        <CmsPageHero page={editor.exists ? null : service}
+          eyebrow={editor.text("s04.f004", "Veliki tehnični kosi / FDM + FGF")}
           breadcrumb="Velikoformatni 3D tisk"
           title={
-            <>
-              Velikoformatni 3D tisk.
-              <br />
-              <em>Velikost z inženirsko pripravo.</em>
-            </>
+            <EditableTitle first={editor.text("s04.f005", "Velikoformatni 3D tisk.")} second={editor.text("s04.f006", "Velikost z inženirsko pripravo.")} />
           }
-          description="Izdelava večjih prototipov in funkcionalnih komponent na lastni platformi LINEX HT v1. Geometrijo, material in proces določimo glede na uporabo kosa, ne samo glede na njegove zunanje mere."
+          description={editor.text("s04.f007", "Izdelava večjih prototipov in funkcionalnih komponent na lastni platformi LINEX HT v1. Geometrijo, material in proces določimo glede na uporabo kosa, ne samo glede na njegove zunanje mere.")}
           visual={
             <TechnicalImage
-              image={linexPlatform}
-              alt="Velikoformatna industrijska 3D platforma LINEX HT v1 v delavnici LazTek Engineering"
-              label="LINEX HT v1 / VELIKI FORMAT"
-              caption="Lastna razvojna platforma za FDM in FGF izdelavo"
+              image={editor.image("s04.f008", linexPlatform)}
+              alt={editor.text("s04.f009", "Velikoformatna industrijska 3D platforma LINEX HT v1 v delavnici LazTek Engineering")}
+              label={editor.text("s04.f010", "LINEX HT v1 / VELIKI FORMAT")}
+              caption={editor.text("s04.f011", "Lastna razvojna platforma za FDM in FGF izdelavo")}
               priority
             />
           }
-          action="Pošljite model velikega kosa"
-          secondary={{ href: "/linex", label: "Tehnične specifikacije" }}
+          action={editor.text("s04.f012", "Pošljite model velikega kosa")}
+          secondary={editor.data("s04.f013", { href: "/linex", label: "Tehnične specifikacije" })}
         />
+        <CmsServiceBody page={editor.exists ? null : service}>
 
         <JumpNav
-          items={[
+          items={editor.data("s04.f014", [
             { id: "volumen", label: "Delovni volumen" },
             { id: "uporaba", label: "Uporaba" },
             { id: "priprava", label: "Priprava kosa" },
             { id: "omejitve", label: "Realne omejitve" },
-          ]}
+          ])}
         />
 
         <section id="volumen" className="lt-container lt-section">
           <SectionHeading
-            eyebrow="01 / Zmogljivost"
-            title="Delovni volumen nad enim metrom."
-            text="Na voljo sta dva načina dela. MONO zagotavlja največjo širino, IDEX pa omogoča uporabo dveh neodvisnih orodij ter načina kopiranja in zrcaljenja."
+            eyebrow={editor.text("s06.f015", "01 / Zmogljivost")}
+            title={editor.text("s06.f016", "Delovni volumen nad enim metrom.")}
+            text={editor.text("s06.f017", "Na voljo sta dva načina dela. MONO zagotavlja največjo širino, IDEX pa omogoča uporabo dveh neodvisnih orodij ter načina kopiranja in zrcaljenja.")}
           />
           <dl className="lt-metrics">
             <Metric
-              label="MONO delovni volumen"
+              label={editor.text("s06.f018", "MONO delovni volumen")}
               value="1030 × 737 × 715 mm"
               note="Največji razpoložljivi volumen z enim orodjem"
             />
             <Metric
-              label="IDEX delovni volumen"
+              label={editor.text("s06.f019", "IDEX delovni volumen")}
               value="1030 × 666 × 715 mm"
               note="Dve neodvisni orodji na skupni osi"
             />
             <Metric
-              label="Tehnologiji"
+              label={editor.text("s06.f020", "Tehnologiji")}
               value="FDM / FFF + FGF"
               note="Filament ali termoplastični granulat"
             />
@@ -131,9 +138,9 @@ export default async function LargeFormatPrintingPage() {
         <section id="uporaba" className="lt-band">
           <div className="lt-container lt-section lt-split">
             <SectionHeading
-              eyebrow="02 / Primerne aplikacije"
-              title="Kadar namizni format ni več dovolj."
-              text="Velik format ima največjo poslovno vrednost pri kosih, kjer bi deljenje povečalo čas sestave, zmanjšalo togost ali otežilo preverjanje realne geometrije."
+              eyebrow={editor.text("s01.f021", "02 / Primerne aplikacije")}
+              title={editor.text("s01.f022", "Kadar namizni format ni več dovolj.")}
+              text={editor.text("s01.f023", "Velik format ima največjo poslovno vrednost pri kosih, kjer bi deljenje povečalo čas sestave, zmanjšalo togost ali otežilo preverjanje realne geometrije.")}
             />
             <CapabilityGrid items={applications} />
           </div>
@@ -141,13 +148,13 @@ export default async function LargeFormatPrintingPage() {
 
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="03 / Dejanska izdelava"
-            title="Velik kos zahteva nadzor celotnega procesa."
-            text="Fotografije prikazujejo dejanski razvoj in izdelavo na platformi LazTek."
+            eyebrow={editor.text("s07.f024", "03 / Dejanska izdelava")}
+            title={editor.text("s07.f025", "Velik kos zahteva nadzor celotnega procesa.")}
+            text={editor.text("s07.f026", "Fotografije prikazujejo dejanski razvoj in izdelavo na platformi LazTek.")}
           />
           <ImageSequence
-            ariaLabel="Velikoformatni 3D tisk na platformi LINEX HT v1"
-            items={[
+            ariaLabel={editor.text("s07.f027", "Velikoformatni 3D tisk na platformi LINEX HT v1")}
+            items={editor.data("s07.f028", [
               {
                 image: fgfPelletPrint,
                 alt: "FGF 3D tisk velike komponente neposredno iz termoplastičnega granulata",
@@ -162,15 +169,15 @@ export default async function LargeFormatPrintingPage() {
                 title: "Struktura se prilagodi obremenitvi",
                 text: "Stene, rebra, polnilo in smer izdelave se določijo glede na funkcijo komponente.",
               },
-            ]}
+            ])}
           />
         </section>
 
         <section id="priprava" className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="04 / Potek"
-              title="Od velikega CAD-modela do uporabnega kosa."
+              eyebrow={editor.text("s02.f029", "04 / Potek")}
+              title={editor.text("s02.f030", "Od velikega CAD-modela do uporabnega kosa.")}
             />
             <ProcessFlow steps={process} />
           </div>
@@ -178,9 +185,9 @@ export default async function LargeFormatPrintingPage() {
 
         <section id="omejitve" className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="05 / Inženirska presoja"
-            title="Velikost je samo eden od pogojev."
-            text="Pred ponudbo preverimo, ali je smiselna izdelava v enem kosu, segmentiranje ali drugačen postopek."
+            eyebrow={editor.text("s03.f031", "05 / Inženirska presoja")}
+            title={editor.text("s03.f032", "Velikost je samo eden od pogojev.")}
+            text={editor.text("s03.f033", "Pred ponudbo preverimo, ali je smiselna izdelava v enem kosu, segmentiranje ali drugačen postopek.")}
           />
           <div className="lt-grid lt-grid-two">
             {limits.map((text, index) => (
@@ -195,10 +202,11 @@ export default async function LargeFormatPrintingPage() {
           </div>
         </section>
 
+        </CmsServiceBody>
         <CTASection
-          title="Potrebujete večji prototip ali funkcionalni del?"
-          text="Pošljite STEP ali STL, zunanje mere, namen uporabe, količino in okolje delovanja. Preverimo izvedljivost, material ter smiselno orientacijo izdelave."
-          action="Pošljite datoteko za oceno"
+          title={editor.text("s08.f034", service?.ctaTitle?.trim() || "Potrebujete večji prototip ali funkcionalni del?")}
+          text={editor.text("s08.f035", service?.ctaText?.trim() || "Pošljite STEP ali STL, zunanje mere, namen uporabe, količino in okolje delovanja. Preverimo izvedljivost, material ter smiselno orientacijo izdelave.")}
+          action={editor.text("s08.f036", "Pošljite datoteko za oceno")}
         />
 
         <JsonLd

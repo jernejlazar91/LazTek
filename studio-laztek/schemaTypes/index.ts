@@ -1,3 +1,4 @@
+import {websitePageSchemas} from './websitePages'
 import {aboutSection} from './aboutSection'
 import {blogPost} from './blogPost'
 import {contactSection} from './contactSection'
@@ -17,6 +18,7 @@ import {serviceSection} from './serviceSection'
 import {siteSettings} from './siteSettings'
 
 export const schemaTypes = [
+  ...websitePageSchemas,
   siteSettings,
   homePage,
   serviceItem,
@@ -34,4 +36,7 @@ export const schemaTypes = [
   galleryItem,
   project,
   blogPost,
-]
+].map(type => [
+  'homePage','serviceItem','servicePage','serviceSection','printingSection','platformSection',
+  'linexPage','materialsSection','materialGroup','engineeringSection','scanningSection','aboutSection','contactSection',
+].includes(type.name) ? {...type, __experimental_omnisearch_visibility:false} : type)

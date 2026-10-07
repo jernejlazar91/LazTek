@@ -1,71 +1,79 @@
+import {cmsActivation} from '../lib/content'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const materialGroup = defineType({
   name: 'materialGroup',
   title: 'Materialna skupina',
   type: 'document',
+  groups: [{name: 'basic', title: 'Osnovno', default: true}, {name: 'content', title: 'Vsebina'}],
   fields: [
-    defineField({
+    defineField({group: 'basic', 
       name: 'title',
       title: 'Naziv materialne skupine',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'slug',
       title: 'URL slug',
       type: 'slug',
       options: {source: 'title', maxLength: 96},
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'variants',
       title: 'Različice / oznake',
       description: 'Primer: PA6, PA6 CF, PA6 GF',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'shortDescription',
       title: 'Kratek opis',
       type: 'text',
       rows: 3,
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'keyProperties',
       title: 'Ključne lastnosti',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'suitableFor',
       title: 'Primerno za',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'watchOut',
       title: 'Pozor / omejitve',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'content', 
       name: 'processingNotes',
       title: 'Opombe za proces / tisk',
       type: 'text',
       rows: 4,
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'sortOrder',
       title: 'Vrstni red',
       type: 'number',
       initialValue: 100,
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'isVisible',
       title: 'Prikaži v seznamih',
       type: 'boolean',
       initialValue: true,
     }),
+  
+    cmsActivation,
+    defineField({name: 'family', title: 'Družina materiala', type: 'string', group: 'basic'}),
+    defineField({name: 'tags', title: 'Oznake za filtre', type: 'array', group: 'basic', of: [defineArrayMember({type: 'string'})], options: {layout: 'tags'}, description: 'Filtri uporabljajo oznake: kompoziti, poliamidi, višja temperatura, zunanja uporaba, fleksibilni deli.'}),
+    defineField({name: 'examples', title: 'Primeri uporabe', type: 'array', group: 'content', of: [defineArrayMember({type: 'string'})]}),
+    defineField({name: 'profile', title: 'Primerjalni profil', type: 'array', group: 'content', of: [defineArrayMember({type: 'object', fields: [defineField({name: 'label', title: 'Lastnost', type: 'string'}), defineField({name: 'value', title: 'Primerjalna ocena', type: 'string'})], preview: {select: {title: 'label', subtitle: 'value'}}})]}),
   ],
   orderings: [
     {

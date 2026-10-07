@@ -1,26 +1,28 @@
+import {PageImageInput} from '../components/PageImageInput'
 import {defineField, defineType} from 'sanity'
 
 export const siteSettings = defineType({
   name: 'siteSettings',
-  title: 'Nastavitve strani',
+  title: 'Podatki podjetja',
   type: 'document',
   fields: [
     defineField({
-      name: 'siteTitle',
+      name: 'siteTitle', hidden:true,
       title: 'Naslov strani',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({name: 'brandName', title: 'Ime znamke', type: 'string'}),
     defineField({name: 'legalName', title: 'Uradno ime podjetja', type: 'string'}),
     defineField({name: 'tagline', title: 'Kratek slogan', type: 'string'}),
-    defineField({name: 'logo', title: 'Logo', type: 'image', options: {hotspot: true}}),
+    defineField({hidden:true,name: 'logo', title: 'Logo', type: 'image', options: {hotspot: true}}),
+    defineField({name:'headerLogo',title:'Logotip v glavi in nogi strani',type:'image',options:{hotspot:true,...{defaultPreview:'/static/editor-images/laztek-logo.webp'}},components:{input:PageImageInput}}),
+    defineField({name:'mapLocation',title:'Položaj delavnice na zemljevidu',type:'geopoint',initialValue:{lat:45.98020087787109,lng:14.1705128253313},description:'Uporablja se na kontaktni strani in pri povezavi za navigacijo.'}),
     defineField({name: 'email', title: 'Email', type: 'string'}),
     defineField({name: 'phone', title: 'Telefon', type: 'string'}),
-    defineField({name: 'website', title: 'Spletna stran', type: 'url'}),
-    defineField({name: 'location', title: 'Lokacija - kratek prikaz', type: 'string'}),
-    defineField({name: 'address', title: 'Naslov', type: 'text', rows: 2}),
-    defineField({name: 'footerText', title: 'Kratek tekst za footer', type: 'text', rows: 3}),
+    defineField({hidden:true,name: 'website', title: 'Spletna stran', type: 'url'}),
+    defineField({name: 'location', title: 'Naslov v glavi strani', type: 'string'}),
+    defineField({name: 'address', title: 'Polni naslov delavnice', type: 'text', rows: 2}),
+    defineField({name: 'footerText', title: 'Opis podjetja v nogi strani', type: 'text', rows: 3}),
     defineField({
       name: 'socialLinks',
       title: 'Družbena omrežja / zunanji linki',

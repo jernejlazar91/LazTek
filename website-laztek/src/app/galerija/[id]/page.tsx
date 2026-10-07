@@ -1,4 +1,4 @@
-import SiteHeader from '@/components/SiteHeader'
+import SiteHeader from '@/components/CmsSiteHeader'
 import {pageMetadata, safeWebUrl} from '@/lib/seo'
 import {client} from '@/sanity/client'
 import {urlFor} from '@/sanity/image'
@@ -6,35 +6,41 @@ import type {Metadata} from 'next'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {cache} from 'react'
+import {textOr, type CmsGalleryItem} from '@/sanity/content'
 
 async function getSiteSettings() {
   return client.fetch(`*[_type == "siteSettings"][0]{
     brandName,
     logo
-  }`)
+  }`, {}, {next: {revalidate: 60}})
 }
 
 const getGalleryItem = cache(async (id: string) => {
-  return client.fetch(
+  return client.fetch<CmsGalleryItem | null>(
     `*[_type == "galleryItem" && _id == $id][0]{
       _id,
       title,
       category,
       image,
       videoUrl,
-      description
+      description,
+      material,
+      technology,
+      seoTitle,
+      seoDescription,
+      relatedProject->{title, "slug": slug.current}
     }`,
-    {id},
+    {id}, {next: {revalidate: 60}},
   )
 })
 
 async function getAllGalleryItems() {
-  return client.fetch(`*[_type == "galleryItem"] | order(_createdAt desc){
+  return client.fetch<CmsGalleryItem[]>(`*[_type == "galleryItem"] | order(isFeatured desc, sortOrder asc, _createdAt desc){
     _id,
     title,
     category,
     image
-  }`)
+  }`, {}, {next: {revalidate: 60}})
 }
 
 export async function generateMetadata({
@@ -47,9 +53,10 @@ export async function generateMetadata({
   if (!item)
     return {title: 'Vsebina ni najdena', robots: {index: false, follow: false}}
   return pageMetadata(
-    item.title || 'Galerija',
-    item.description || 'Izvedba LazTek Engineering.',
+    textOr(item.seoTitle, item.title || 'Galerija'),
+    textOr(item.seoDescription, item.description || 'Izvedba LazTek Engineering.'),
     `/galerija/${encodeURIComponent(id)}`,
+    item.image?.asset ? urlFor(item.image).width(1200).height(630).fit('crop').url() : undefined,
   )
 }
 
@@ -109,11 +116,15 @@ export default async function GalleryDetailPage({
                   loading="lazy"
                   decoding="async"
                   src={urlFor(item.image).width(2000).height(1400).url()}
-                  alt={item.title || 'Izvedba LazTek Engineering'}
+                  alt={item.image.alt || item.title || 'Izvedba LazTek Engineering'}
                   className="w-full object-contain"
                 />
               </div>
             ) : null}
+
+            {item.image?.caption && <p className="mt-3 text-sm">{item.image.caption}</p>}
+            {[item.material, item.technology].filter(Boolean).length > 0 && <p className="mt-4">{[item.material, item.technology].filter(Boolean).join(' · ')}</p>}
+            {item.relatedProject?.slug && <p className="mt-4"><Link className="lt-text-link" href={`/projekti/${encodeURIComponent(item.relatedProject.slug)}`}>Projekt: {item.relatedProject.title} →</Link></p>}
 
             {safeWebUrl(item.videoUrl) ? (
               <div className="mt-6">
@@ -133,8 +144,8 @@ export default async function GalleryDetailPage({
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {allItems
-                  .filter((galleryItem: any) => galleryItem._id !== item._id)
-                  .map((galleryItem: any) => (
+                  .filter((galleryItem) => galleryItem._id !== item._id)
+                  .map((galleryItem) => (
                     <Link
                       key={galleryItem._id}
                       href={`/galerija/${galleryItem._id}`}
@@ -149,7 +160,7 @@ export default async function GalleryDetailPage({
                             .height(600)
                             .url()}
                           alt={
-                            galleryItem.title || 'Izvedba LazTek Engineering'
+                            galleryItem.image?.alt || galleryItem.title || 'Izvedba LazTek Engineering'
                           }
                           className="aspect-[16/10] w-full object-cover"
                         />

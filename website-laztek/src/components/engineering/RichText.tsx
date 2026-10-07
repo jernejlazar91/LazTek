@@ -1,6 +1,6 @@
-import {urlFor} from '@/sanity/image'
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import type {ComponentProps} from 'react'
+import {CmsFigure} from './CmsContent'
 
 const components: PortableTextComponents = {
   block: {
@@ -9,15 +9,7 @@ const components: PortableTextComponents = {
   types: {
     image: ({value}) =>
       value?.asset ? (
-        <figure>
-          <img
-            src={urlFor(value).width(1400).auto('format').url()}
-            alt={value.alt || value.caption || 'Ilustracija tehničnega zapisa'}
-            loading="lazy"
-            decoding="async"
-          />
-          {value.caption && <figcaption>{value.caption}</figcaption>}
-        </figure>
+        <CmsFigure image={value} fallbackAlt={value.caption || 'Ilustracija tehničnega zapisa'} />
       ) : null,
   },
   marks: {

@@ -1,41 +1,43 @@
+import {imageFields} from '../lib/content'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const homePage = defineType({
   name: 'homePage',
-  title: 'Home Page',
+  title: "Domača stran",
   type: 'document',
+  groups: [{name: 'basic', title: 'Osnovno', default: true}, {name: 'archive', title: 'Arhiv / pripravljeno v kodi'}],
   fields: [
-    defineField({
+    defineField({group: 'basic', 
       name: 'eyebrow',
-      title: 'Eyebrow',
+      title: "Majhen napis nad naslovom",
       type: 'string',
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'heroTitle',
-      title: 'Hero title',
+      title: "Glavni naslov",
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'heroText',
-      title: 'Hero text',
+      title: "Uvodni opis",
       type: 'text',
       rows: 4,
     }),
-    defineField({
+    defineField({fields: imageFields, readOnly: true, description: 'Spletna stran uporablja pripravljeno vsebino iz kode; to polje je ohranjeno zaradi obstoječih podatkov.', group: 'archive', 
       name: 'heroImage',
-      title: 'Hero image',
+      title: "Stara uvodna slika",
       type: 'image',
       options: {hotspot: true},
     }),
-    defineField({
+    defineField({readOnly: true, description: 'Spletna stran uporablja pripravljeno vsebino iz kode; to polje je ohranjeno zaradi obstoječih podatkov.', group: 'archive', 
       name: 'heroVideoUrl',
-      title: 'Hero video URL',
+      title: "Stari uvodni video",
       type: 'url',
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'badges',
-      title: 'Hero badges',
+      title: "Poudarki ob naslovu",
       type: 'array',
       of: [
         defineArrayMember({

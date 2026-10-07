@@ -1429,6 +1429,19 @@
   background: #06151f;
   margin-top: 36px;
 }
+.lt-cms-figure.lt-article-cover {
+  max-height: none;
+}
+.lt-cms-figure.lt-article-cover img {
+  display: block;
+  max-height: 650px;
+  object-fit: contain;
+}
+.lt-cms-figure figcaption {
+  color: var(--lt-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
 .lt-project-article {
   padding-bottom: 36px;
 }

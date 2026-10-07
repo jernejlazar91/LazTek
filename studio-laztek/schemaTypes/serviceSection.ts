@@ -1,24 +1,26 @@
+import {cmsActivation} from '../lib/content'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const serviceSection = defineType({
   name: 'serviceSection',
-  title: 'Services Section',
+  title: "Storitve – pregled",
   type: 'document',
+  groups: [{name: 'basic', title: 'Osnovno', default: true}, {name: 'archive', title: 'Arhiv / pripravljeno v kodi'}],
   fields: [
-    defineField({
+    defineField({group: 'basic', 
       name: 'title',
-      title: 'Section title',
+      title: "Glavni naslov",
       type: 'string',
     }),
-    defineField({
+    defineField({group: 'basic', 
       name: 'text',
-      title: 'Section text',
+      title: "Uvodni opis",
       type: 'text',
       rows: 3,
     }),
-    defineField({
+    defineField({readOnly: true, description: 'Spletna stran uporablja pripravljeno vsebino iz kode; to polje je ohranjeno zaradi obstoječih podatkov.', group: 'archive', 
       name: 'items',
-      title: 'Service items',
+      title: "Stare kartice storitev",
       type: 'array',
       of: [
         defineArrayMember({
@@ -27,5 +29,7 @@ export const serviceSection = defineType({
         }),
       ],
     }),
+  
+    cmsActivation,
   ],
 })

@@ -1,20 +1,25 @@
+import {EditableTitle} from '@/components/engineering/CmsContent';
+import {getPageEditor, editableMetadata} from '@/sanity/pageEditor';
+import {CmsPageHero, CmsServiceBody} from '@/components/engineering/CmsContent';
+import {getEditablePage, serviceMetadata} from '@/sanity/content';
 import JsonLd from "@/components/engineering/JsonLd";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader from "@/components/CmsSiteHeader";
 import atxCad from "@/assets/laztek-v2/projects/atx/atx-engineered-model.webp";
 import atxOriginal from "@/assets/laztek-v2/projects/atx/atx-original-part.webp";
 import atxReconstruction from "@/assets/laztek-v2/projects/atx/atx-scan-model.webp";
 import airVentPrintedPart from "@/assets/laztek-v2/projects/klima/air-vent-printed-part.webp";
 import airVentPrintedPartDetail from "@/assets/laztek-v2/projects/klima/air-vent-printed-part-detail.webp";
-import { pageMetadata } from "@/lib/seo";
 import { client } from "@/sanity/client";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export const metadata = pageMetadata(
-  "Obnova plastičnih kosov",
-  "Obnova polomljenih, poškodovanih in nedobavljivih plastičnih kosov z 3D skeniranjem, reverse engineeringom, CAD rekonstrukcijo in 3D tiskom.",
-  "/storitve/obnova-plasticnih-kosov",
-);
+export async function generateMetadata() {
+  return editableMetadata("/storitve/obnova-plasticnih-kosov", await serviceMetadata(
+    "Obnova plastičnih kosov",
+    "Obnova polomljenih, poškodovanih in nedobavljivih plastičnih kosov z 3D skeniranjem, reverse engineeringom, CAD rekonstrukcijo in 3D tiskom.",
+    "/storitve/obnova-plasticnih-kosov",
+  ));
+}
 
 async function getPageData() {
   return client.fetch(`{
@@ -25,10 +30,10 @@ async function getPageData() {
       location,
       logo
     }
-  }`);
+  }`, {}, {next: {revalidate: 60}});
 }
 
-const suitableParts = [
+const defaultSuitableParts = [
   "polomljeni nosilci, pokrovi, ohišja in zaščite",
   "plastični deli, ki jih ni več možno kupiti kot rezervni del",
   "kosi, pri katerih originalna dokumentacija ne obstaja",
@@ -37,13 +42,13 @@ const suitableParts = [
   "majhne serije nadomestnih delov za stroje, naprave ali opremo",
 ];
 
-const limits = [
+const defaultLimits = [
   "del mora biti tehnično smiseln za obnovo ali ponovno izdelavo",
   "pri zelo obremenjenih varnostnih delih je potreben dodatni tehnični pregled",
   "material se izbere glede na temperaturo, udarce, kemikalije in namen uporabe",
 ];
 
-const process = [
+const defaultProcess = [
   {
     title: "1. Pregled kosa",
     text: "Pošljete slike, mere ali fizični kos. Najprej ocenimo, ali je boljša obnova, kopija ali izboljšan nadomestni del.",
@@ -62,7 +67,7 @@ const process = [
   },
 ];
 
-const materialExamples = [
+const defaultMaterialExamples = [
   "PETG / PCTG za robustne splošne tehnične dele",
   "ASA za zunanje dele in UV obstojnost",
   "PA6 CF/GF za bolj toga in temperaturno odporna ojačana ohišja ali nosilce",
@@ -74,12 +79,18 @@ import {
   CTASection,
   EngineeringVisual,
   ImageSequence,
-  PageHero,
   ProcessFlow,
   SectionHeading,
 } from "@/components/engineering/DesignSystem";
 
 export default async function PlasticPartRepairPage() {
+  const editor = await getPageEditor("/storitve/obnova-plasticnih-kosov");
+  const suitableParts = editor.data("s01.f001", defaultSuitableParts);
+  const limits = editor.data("s02.f002", defaultLimits);
+  const process = editor.data("s03.f003", defaultProcess);
+  const materialExamples = editor.data("s02.f004", defaultMaterialExamples);
+
+  const service = await getEditablePage('servicePage', 'obnova-plasticnih-kosov');
   const data = await getPageData();
   const site = data?.siteSettings;
   return (
@@ -90,46 +101,43 @@ export default async function PlasticPartRepairPage() {
         tabIndex={-1}
         className="lt-theme lt-obnova-plasticnih-kosov"
       >
-        <PageHero
-          eyebrow="Rekonstrukcija / Nadomestni deli"
+        <CmsPageHero page={editor.exists ? null : service}
+          eyebrow={editor.text("s04.f005", "Rekonstrukcija / Nadomestni deli")}
           breadcrumb="Obnova plastičnih kosov"
           title={
-            <>
-              Ko originala ni več.
-              <br />
-              <em>Nastane nov del.</em>
-            </>
+            <EditableTitle first={editor.text("s04.f006", "Ko originala ni več.")} second={editor.text("s04.f007", "Nastane nov del.")} />
           }
-          description="Poškodovan ali nedobavljiv plastični kos je lahko izhodišče za novo izdelavo. Rekonstruiramo geometrijo, preverimo šibke točke in izberemo primeren material."
+          description={editor.text("s04.f008", "Poškodovan ali nedobavljiv plastični kos je lahko izhodišče za novo izdelavo. Rekonstruiramo geometrijo, preverimo šibke točke in izberemo primeren material.")}
           visual={<EngineeringVisual mode="repair" />}
-          action="Opišite poškodbo ali kos"
+          action={editor.text("s04.f009", "Opišite poškodbo ali kos")}
         />
+        <CmsServiceBody page={editor.exists ? null : service}>
         <section className="lt-container lt-section lt-split">
           <SectionHeading
-            eyebrow="01 / Izhodišče"
-            title="Ohranimo funkcijo. Izboljšamo kritična mesta."
-            text="Naležne površine in montaža ostanejo izhodišče. Po potrebi prilagodimo rebra, radije, debeline sten ali material."
+            eyebrow={editor.text("s01.f010", "01 / Izhodišče")}
+            title={editor.text("s01.f011", "Ohranimo funkcijo. Izboljšamo kritična mesta.")}
+            text={editor.text("s01.f012", "Naležne površine in montaža ostanejo izhodišče. Po potrebi prilagodimo rebra, radije, debeline sten ali material.")}
           />
           <CapabilityGrid items={suitableParts} />
         </section>
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="02 / Rekonstrukcija"
-              title="Od poškodbe do novega kosa."
+              eyebrow={editor.text("s03.f013", "02 / Rekonstrukcija")}
+              title={editor.text("s03.f014", "Od poškodbe do novega kosa.")}
             />
             <ProcessFlow steps={process} />
           </div>
         </section>
         <section className="lt-container lt-section">
           <SectionHeading
-            eyebrow="03 / Primer rekonstrukcije"
-            title="Tomos ATX: original kot osnova za novo geometrijo."
-            text="Tudi obrabljen ali deformiran kos lahko zagotovi ključne reference. Scan se očisti, geometrija se simetrizira in pripravi kot konstrukcijsko uporaben model."
+            eyebrow={editor.text("s05.f015", "03 / Primer rekonstrukcije")}
+            title={editor.text("s05.f016", "Tomos ATX: original kot osnova za novo geometrijo.")}
+            text={editor.text("s05.f017", "Tudi obrabljen ali deformiran kos lahko zagotovi ključne reference. Scan se očisti, geometrija se simetrizira in pripravi kot konstrukcijsko uporaben model.")}
           />
           <ImageSequence
-            ariaLabel="Rekonstrukcija sprednje maske Tomos ATX"
-            items={[
+            ariaLabel={editor.text("s05.f018", "Rekonstrukcija sprednje maske Tomos ATX")}
+            items={editor.data("s05.f019", [
               {
                 image: atxOriginal,
                 alt: "Obstoječa rdeča sprednja maska Tomos ATX pred rekonstrukcijo",
@@ -151,19 +159,19 @@ export default async function PlasticPartRepairPage() {
                 title: "Model za naslednji korak",
                 text: "Čist CAD model je osnova za prototip, orodje ali izdelavo novega dela.",
               },
-            ]}
+            ])}
           />
         </section>
         <section className="lt-band">
           <div className="lt-container lt-section">
             <SectionHeading
-              eyebrow="04 / Od modela do nadomestnega dela"
-              title="Klima element: izdelan nadomestni kos in realna površina."
-              text="Fotografiji prikazujeta isti fizični klima element iz dveh zornih kotov. Vidni ostanejo dejanska geometrija, struktura slojev in površina brez retuširanja."
+              eyebrow={editor.text("s06.f020", "04 / Od modela do nadomestnega dela")}
+              title={editor.text("s06.f021", "Klima element: izdelan nadomestni kos in realna površina.")}
+              text={editor.text("s06.f022", "Fotografiji prikazujeta isti fizični klima element iz dveh zornih kotov. Vidni ostanejo dejanska geometrija, struktura slojev in površina brez retuširanja.")}
             />
             <ImageSequence
-              ariaLabel="Izdelan nadomestni klima element in detajl njegove površine"
-              items={[
+              ariaLabel={editor.text("s06.f023", "Izdelan nadomestni klima element in detajl njegove površine")}
+              items={editor.data("s06.f024", [
                 {
                   image: airVentPrintedPart,
                   alt: "3D natisnjen nadomestni klima element",
@@ -178,24 +186,23 @@ export default async function PlasticPartRepairPage() {
                   title: "Realna površina izdelka",
                   text: "Fotografija ohranja dejansko teksturo, robove in vidne sloje končnega kosa.",
                 },
-              ]}
+              ])}
             />
           </div>
         </section>
         <section className="lt-container lt-section lt-split">
           <div>
             <SectionHeading
-              eyebrow="05 / Material in izvedljivost"
-              title="Nadomestni del mora ustrezati uporabi."
+              eyebrow={editor.text("s02.f025", "05 / Material in izvedljivost")}
+              title={editor.text("s02.f026", "Nadomestni del mora ustrezati uporabi.")}
             />
-            <Link href="/materiali" className="lt-text-link">
-              Pregled tehničnih materialov <ArrowRight size={16} />
+            <Link href={editor.text("s02.f027", "/materiali")} className="lt-text-link">{editor.text("s02.f028", "Pregled tehničnih materialov")}{" "}<ArrowRight size={16} />
             </Link>
           </div>
           <div>
             <CapabilityGrid items={materialExamples} />
             <div className="lt-note">
-              <h3>Pred izdelavo preverimo</h3>
+              <h3>{editor.text("s02.f029", "Pred izdelavo preverimo")}</h3>
               <ul>
                 {limits.map((x) => (
                   <li key={x}>{x}</li>
@@ -204,10 +211,11 @@ export default async function PlasticPartRepairPage() {
             </div>
           </div>
         </section>
+        </CmsServiceBody>
         <CTASection
-          title="Začnimo z obstoječim kosom."
-          text="V povpraševanju opišite poškodbo, uporabo, obremenitve in osnovne mere. Fotografije lahko pošljete tudi po e-pošti."
-        />
+          title={editor.text("s07.f030", service?.ctaTitle?.trim() || "Začnimo z obstoječim kosom.")}
+          text={editor.text("s07.f031", service?.ctaText?.trim() || "V povpraševanju opišite poškodbo, uporabo, obremenitve in osnovne mere. Fotografije lahko pošljete tudi po e-pošti.")}
+        action={editor.text("s07.ctaaction", "Predstavite projekt")} />
 
         <JsonLd
           data={{

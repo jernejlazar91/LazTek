@@ -1,20 +1,22 @@
+import {imageFields, cmsActivation} from '../lib/content'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const linexPage = defineType({
   name: 'linexPage',
   title: 'LINEX stran',
   type: 'document',
+  groups: [{name: 'basic', title: 'Osnovno', default: true}, {name: 'media', title: 'Fotografije in video'}, {name: 'technical', title: 'Tehnični podatki'}, {name: 'seo', title: 'SEO'}],
   fields: [
-    defineField({name: 'eyebrow', title: 'Majhen napis nad naslovom', type: 'string'}),
-    defineField({
+    defineField({group: 'basic', name: 'eyebrow', title: 'Majhen napis nad naslovom', type: 'string'}),
+    defineField({group: 'basic', 
       name: 'heroTitle',
       title: 'Glavni naslov',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    defineField({name: 'heroText', title: 'Uvodni opis', type: 'text', rows: 4}),
-    defineField({name: 'heroImage', title: 'Glavna slika', type: 'image', options: {hotspot: true}}),
-    defineField({
+    defineField({group: 'basic', name: 'heroText', title: 'Uvodni opis', type: 'text', rows: 4}),
+    defineField({fields: imageFields, group: 'media', name: 'heroImage', title: 'Glavna slika', type: 'image', options: {hotspot: true}}),
+    defineField({group: 'technical', 
       name: 'capabilities',
       title: 'Zmogljivosti',
       type: 'array',
@@ -30,26 +32,29 @@ export const linexPage = defineType({
         }),
       ],
     }),
-    defineField({
+    defineField({group: 'technical', 
       name: 'technologyPoints',
       title: 'Tehnološki poudarki',
       type: 'array',
       of: [defineArrayMember({type: 'string'})],
     }),
-    defineField({
+    defineField({group: 'technical', 
       name: 'developmentNotes',
       title: 'Opombe o razvoju / statusu',
       description: 'Uporabi za funkcije v izgradnji, da na strani ne zvenijo kot dokončane.',
       type: 'text',
       rows: 4,
     }),
-    defineField({name: 'seoTitle', title: 'SEO naslov', type: 'string', validation: (Rule) => Rule.max(70)}),
-    defineField({
+    defineField({group: 'seo', name: 'seoTitle', title: 'SEO naslov', type: 'string', validation: (Rule) => Rule.max(70)}),
+    defineField({group: 'seo', 
       name: 'seoDescription',
       title: 'SEO opis',
       type: 'text',
       rows: 3,
       validation: (Rule) => Rule.max(170),
     }),
+  
+    cmsActivation,
+    defineField({name: 'technicalSpecs', title: 'Tabela tehničnih specifikacij', type: 'array', group: 'technical', description: 'Neobvezno. Prazno ohrani obstoječo tabelo. Pri spremembah uskladi tudi zmogljivosti in opombe o razvoju.', of: [defineArrayMember({type: 'object', fields: [defineField({name: 'label', title: 'Podatek', type: 'string'}), defineField({name: 'value', title: 'Vrednost', type: 'string'})], preview: {select: {title: 'label', subtitle: 'value'}}})]}),
   ],
 })
