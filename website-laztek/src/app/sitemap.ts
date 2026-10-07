@@ -51,6 +51,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/storitve/velikoformatni-3d-tisk`,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/storitve/fgf-3d-tisk-granulat`,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/storitve/3d-skeniranje-reverse-engineering`,
       changeFrequency: 'monthly',
       priority: 0.9,

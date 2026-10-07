@@ -30,6 +30,15 @@
   --laztek-border: rgba(105, 190, 205, 0.14);
   --laztek-glass: rgba(7, 25, 39, 0.72);
   --laztek-glass-2: rgba(10, 34, 50, 0.58);
+
+  /* Shared type hierarchy; Geist remains the only proportional font. */
+  --lt-display-weight: 650;
+  --lt-heading-weight: 600;
+  --lt-display-tracking: -0.03em;
+  --lt-heading-tracking: -0.025em;
+  --lt-card-tracking: -0.015em;
+  --lt-display-leading: 1.12;
+  --lt-heading-leading: 1.22;
 }
 
 /*
@@ -157,17 +166,25 @@ html[data-theme="dark"] .lt-home {
   color: #edf4f5;
 }
 
-html[data-theme="dark"] .lt-home [class*="text-[#0B2B4C]"],
-html[data-theme="dark"] .lt-home [class*="text-[#082A4B]"],
-html[data-theme="dark"] .lt-home [class*="text-[#123A57]"] {
+html[data-theme="dark"] .lt-home [class*="text-[#0B2B4C]"]:not(h1, h2, h3),
+html[data-theme="dark"] .lt-home [class*="text-[#082A4B]"]:not(h1, h2, h3),
+html[data-theme="dark"] .lt-home [class*="text-[#123A57]"]:not(h1, h2, h3) {
   color: #edf4f5 !important;
 }
 
 html[data-theme="dark"] .lt-home [class*="text-[#425F74]"],
 html[data-theme="dark"] .lt-home [class*="text-[#4F687A]"],
 html[data-theme="dark"] .lt-home [class*="text-[#587082]"],
+html[data-theme="dark"] .lt-home [class*="text-[#405A6A]"],
 html[data-theme="dark"] .lt-home [class*="text-[#6A8292]"] {
   color: #b2c3cc !important;
+}
+
+/* Small labels and hero badges must not retain light-mode ink on dark cards. */
+html[data-theme="dark"] .lt-home [class*="text-[#0F5D7A]"],
+html[data-theme="dark"] .lt-home [class*="text-[#087EA5]"],
+html[data-theme="dark"] .lt-home [class*="text-[#1596C0]"] {
+  color: #8dd9e2 !important;
 }
 
 html[data-theme="dark"] .lt-home [class*="bg-white"] {
@@ -262,6 +279,90 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
+}
+
+/* Content typography is scoped so the approved header and footer keep their
+   own type treatment. Home and subpage headings share the same hierarchy. */
+.lt-home {
+  --lt-title-color: #0f5d7a;
+  --lt-section-title-color: #0f5d7a;
+  --lt-card-title-color: #123a57;
+  --lt-title-gradient-start: #0f5d7a;
+  --lt-title-gradient-end: #166b7a;
+}
+
+html[data-theme="dark"] .lt-home {
+  --lt-title-color: #cfe9ef;
+  --lt-section-title-color: #8dd9e2;
+  --lt-card-title-color: #d3e7ee;
+  --lt-title-gradient-start: #d7eef3;
+  --lt-title-gradient-end: #78cbd3;
+}
+
+.lt-home :is(h1, h2, h3) {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.lt-home h1 {
+  color: var(--lt-title-color);
+  font-weight: var(--lt-display-weight);
+  letter-spacing: var(--lt-display-tracking);
+  line-height: var(--lt-display-leading);
+}
+
+.lt-home h2 {
+  color: var(--lt-section-title-color);
+  font-weight: var(--lt-heading-weight);
+  letter-spacing: var(--lt-heading-tracking);
+  line-height: var(--lt-heading-leading);
+}
+
+.lt-home h3 {
+  color: var(--lt-card-title-color);
+  font-weight: var(--lt-heading-weight);
+  letter-spacing: var(--lt-card-tracking);
+  line-height: 1.35;
+}
+
+/* A solid readable colour is the fallback. The restrained gradient is used
+   only for dark-mode H1s, leaving smaller headings and body copy solid. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  html[data-theme="dark"] :is(.lt-home, .lt-theme) h1 {
+    background-image: linear-gradient(
+      110deg,
+      var(--lt-title-gradient-start) 0%,
+      var(--lt-title-gradient-start) 35%,
+      var(--lt-title-gradient-end) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@media (max-width: 520px) {
+  .lt-home h1 {
+    font-size: clamp(2.1rem, 8.8vw, 2.35rem);
+    letter-spacing: -0.02em;
+  }
+}
+
+@media (forced-colors: active) {
+  :is(.lt-home, .lt-theme) h1 {
+    background: none !important;
+    color: CanvasText !important;
+    -webkit-text-fill-color: CanvasText !important;
+  }
+}
+
+@media print {
+  :is(.lt-home, .lt-theme) :is(h1, h2, h3) {
+    background: none !important;
+    color: #000 !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
 }
 
 ::selection {

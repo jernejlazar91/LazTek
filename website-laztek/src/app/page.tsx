@@ -170,7 +170,7 @@ export default async function Home() {
             Robovi so mehki, zato se pri dnu heroja ne more pojaviti horizontalna črta. */}
             <div className="pointer-events-none absolute left-[-14%] top-[-20%] z-[3] h-[120%] w-[70%] rounded-[50%] bg-white/36 blur-[95px]" />
 
-            <div className="relative z-10 mx-auto min-h-[650px] max-w-[1440px] px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-16 lg:min-h-[690px] lg:px-8 lg:pb-20 lg:pt-20 xl:grid xl:min-h-[720px] xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:items-center xl:gap-10">
+            <div className="relative z-10 mx-auto max-w-[1440px] px-4 pb-12 pt-10 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16 lg:pt-14 xl:grid xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:items-start xl:gap-10">
               <div className="min-w-0 max-w-[680px] xl:max-w-[640px]">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/70 bg-white/[0.76] px-4 py-2 text-sm font-semibold text-[#0F5D7A] shadow-[0_8px_30px_rgba(56,189,248,0.10)] backdrop-blur-md">
                   <Sparkles size={16} className="text-cyan-500" />
@@ -225,7 +225,6 @@ export default async function Home() {
                     )}
                   </div>
                 ) : null}
-
               </div>
 
               <div className="relative z-[2] mx-auto mt-10 w-full max-w-[760px] min-w-0 overflow-hidden rounded-2xl border border-white/80 bg-white/55 p-2 shadow-[0_24px_64px_rgba(18,67,96,0.16)] xl:mt-0 xl:max-w-none">
@@ -238,6 +237,7 @@ export default async function Home() {
                     {...heroMobileProps}
                     alt={heroAlt}
                     fetchPriority="high"
+                    loading="eager"
                     decoding="async"
                     className="block aspect-[8/5] h-auto w-full rounded-xl object-cover object-center max-md:aspect-[4/5]"
                   />
@@ -254,7 +254,7 @@ export default async function Home() {
             <section className="relative z-10">
               <SectionAura side="right" tone="cyan" />
 
-              <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+              <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <SectionHeading
                   eyebrow="Storitve"
                   title="Oglejte si, kaj lahko storimo za vas"
@@ -262,7 +262,7 @@ export default async function Home() {
                   centered
                 />
 
-                <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <div className="mt-9 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                   {serviceCards.map((service) => {
                     const Icon = service.icon;
 
@@ -270,7 +270,7 @@ export default async function Home() {
                       <Link
                         key={service.href}
                         href={service.href}
-                        className="group relative overflow-hidden rounded-xl border border-sky-200/70 bg-white/[0.76] p-6 shadow-[0_14px_38px_rgba(24,86,122,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300 hover:shadow-[0_20px_48px_rgba(24,86,122,0.12)]"
+                        className="group relative flex h-full flex-col items-start overflow-hidden rounded-xl border border-sky-200/70 bg-white/[0.76] p-6 shadow-[0_14px_38px_rgba(24,86,122,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300 hover:shadow-[0_20px_48px_rgba(24,86,122,0.12)]"
                       >
                         <div className="absolute right-[-30px] top-[-30px] h-28 w-28 rounded-full bg-cyan-300/20 blur-2xl" />
 
@@ -278,15 +278,15 @@ export default async function Home() {
                           <Icon size={22} className="text-[#1596C0]" />
                         </div>
 
-                        <h2 className="relative text-xl font-semibold tracking-tight text-[#0B2B4C]">
+                        <h3 className="relative text-xl font-semibold tracking-tight text-[#0B2B4C]">
                           {service.title}
-                        </h2>
+                        </h3>
 
                         <p className="relative mt-4 text-sm leading-7 text-[#587082]">
                           {service.text}
                         </p>
 
-                        <div className="relative mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#087EA5] transition group-hover:gap-3">
+                        <div className="relative mt-auto inline-flex items-center gap-2 pt-5 text-sm font-semibold text-[#087EA5] transition group-hover:gap-3">
                           Več o storitvi
                           <ArrowRight size={15} />
                         </div>
@@ -309,48 +309,53 @@ export default async function Home() {
                   text="Fotografije prikazujejo dejansko digitalizacijo, izdelavo in končne tehnične komponente iz delavnice LazTek Engineering."
                   centered
                 />
-                <div
-                  className="mt-10 grid gap-5 md:grid-cols-3"
-                >
+                <div className="mt-10 grid gap-5 md:grid-cols-3">
                   {[
                     {
                       image: fenderReference,
                       alt: "Plastični blatnik z referenčnimi markerji, pripravljen za 3D skeniranje",
                       label: "3D skeniranje",
+                      href: "/storitve/3d-skeniranje-reverse-engineering",
                       text: "Priprava realnega kosa za natančen zajem geometrije.",
                     },
                     {
                       image: clioFinalSet,
                       alt: "Komplet štirih izdelanih zračnih mrežic za Renault Clio 197",
                       label: "Reverse engineering",
+                      href: "/storitve/3d-skeniranje-reverse-engineering",
                       text: "Končni komplet po rekonstrukciji in več razvojnih iteracijah.",
                     },
                     {
                       image: smallSeriesProduction,
                       alt: "Manjša serija črnih tehničnih komponent na delovni površini LINEX",
                       label: "Mala serija",
+                      href: "/storitve/industrijski-3d-tisk",
                       text: "Ponovljiva izdelava funkcionalnih kosov na lastni platformi.",
                     },
                   ].map((item) => (
-                    <figure
+                    <Link
+                      href={item.href}
                       key={item.label}
-                      className="group overflow-hidden rounded-xl border border-white/90 bg-white/80 shadow-[0_16px_42px_rgba(24,86,122,0.09)]"
+                      className="group block h-full overflow-hidden rounded-xl border border-white/90 bg-white/80 shadow-[0_16px_42px_rgba(24,86,122,0.09)] transition hover:-translate-y-1 hover:border-cyan-300"
                     >
-                      <Image
-                        src={item.image}
-                        alt={item.alt}
-                        sizes="(max-width: 767px) calc(100vw - 2rem), 33vw"
-                        className="aspect-[4/3] h-auto w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                      />
-                      <figcaption className="p-5">
-                        <span className="text-xs font-bold uppercase tracking-[0.16em] text-[#087EA5]">
-                          {item.label}
-                        </span>
-                        <p className="mt-2 text-sm leading-6 text-[#587082]">
-                          {item.text}
-                        </p>
-                      </figcaption>
-                    </figure>
+                      <figure>
+                        <Image
+                          src={item.image}
+                          alt={item.alt}
+                          sizes="(max-width: 767px) calc(100vw - 2rem), 33vw"
+                          className="aspect-[4/3] h-auto w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                        />
+                        <figcaption className="p-5">
+                          <span className="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-[0.16em] text-[#087EA5]">
+                            {item.label}
+                            <ArrowRight size={16} aria-hidden="true" />
+                          </span>
+                          <p className="mt-2 text-sm leading-6 text-[#587082]">
+                            {item.text}
+                          </p>
+                        </figcaption>
+                      </figure>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -360,12 +365,12 @@ export default async function Home() {
             <section className="lt-deferred-section relative z-10 overflow-hidden">
               <SectionAura side="left" tone="turquoise" />
 
-              <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+              <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
                   <div className="rounded-xl border border-white/90 bg-white/[0.72] p-7 shadow-[0_18px_50px_rgba(24,86,122,0.08)] backdrop-blur-xl lg:p-9">
                     <SectionHeading
                       eyebrow="Zakaj LazTek"
-                      title="Manj klasičen 3D print servis, bolj tehnični razvojni partner"
+                      title="Več kot 3D tisk: tehnični razvojni partner."
                       text="Največja vrednost je kombinacija prakse, konstrukcijskega razmišljanja in izdelave. Cilj ni samo lep kos, ampak kos, ki opravi svojo nalogo."
                     />
                   </div>
@@ -393,7 +398,7 @@ export default async function Home() {
             {/* POTEK SODELOVANJA */}
             <section className="lt-deferred-section relative z-10 overflow-hidden">
               <SectionAura side="left" tone="blue" />
-              <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+              <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <SectionHeading
                   eyebrow="Potek sodelovanja"
                   title="Od problema do uporabnega kosa"
@@ -413,9 +418,9 @@ export default async function Home() {
                         {index + 1}
                       </div>
 
-                      <h2 className="relative text-xl font-semibold text-[#0B2B4C]">
+                      <h3 className="relative text-xl font-semibold text-[#0B2B4C]">
                         {step.title}
-                      </h2>
+                      </h3>
 
                       <p className="relative mt-4 text-sm leading-7 text-[#587082]">
                         {step.text}
@@ -433,24 +438,24 @@ export default async function Home() {
                 <div className="absolute left-[-120px] top-1/3 h-[360px] w-[360px] rounded-full bg-cyan-200/30 blur-[100px]" />
                 <div className="absolute right-[-120px] top-[10%] h-[400px] w-[400px] rounded-full bg-blue-200/30 blur-[110px]" />
 
-                <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
-                  <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <SectionHeading
                       eyebrow="Projekti"
                       title="Izbrani razvojni in proizvodni projekti"
-                      text="Projekti bodo postopoma postali najmočnejši dokaz sposobnosti: problem, rešitev, material, tehnologija in rezultat."
+                      text="Izbrani primeri razvoja in izdelave tehničnih komponent: izhodišče, uporabljeni postopki in rezultat."
                     />
 
                     <Link
                       href="/projekti"
-                      className="inline-flex items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/85 px-6 py-3 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(24,86,122,0.07)] backdrop-blur transition hover:border-cyan-300 hover:bg-white"
+                      className="inline-flex shrink-0 self-start items-center justify-center gap-2 rounded-full border border-sky-200 bg-white/85 px-6 py-3 text-sm font-semibold text-[#123A57] shadow-[0_8px_24px_rgba(24,86,122,0.07)] backdrop-blur transition hover:border-cyan-300 hover:bg-white lg:self-center"
                     >
                       Vsi projekti
                       <ArrowRight size={16} />
                     </Link>
                   </div>
 
-                  <div className="mt-12 grid gap-6 lg:grid-cols-3">
+                  <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {projects.map((project: HomeProject) => (
                       <Link
                         href={`/projekti/${project.slug}`}
@@ -485,9 +490,9 @@ export default async function Home() {
                             {project.category}
                           </div>
 
-                          <h2 className="mt-4 text-2xl font-semibold text-[#0B2B4C]">
+                          <h3 className="mt-4 text-2xl font-semibold text-[#0B2B4C]">
                             {project.title}
-                          </h2>
+                          </h3>
 
                           <p className="mt-3 text-sm leading-7 text-[#587082]">
                             {project.excerpt}
@@ -506,7 +511,7 @@ export default async function Home() {
               <div className="absolute bottom-[-140px] left-[20%] h-[380px] w-[380px] rounded-full bg-cyan-200/25 blur-[110px]" />
               <div className="absolute right-[-120px] top-[-90px] h-[360px] w-[360px] rounded-full bg-blue-200/25 blur-[110px]" />
 
-              <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
+              <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
                 <div className="lt-home-cta overflow-hidden rounded-[2.25rem] border border-sky-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.88)_0%,rgba(232,249,252,0.86)_48%,rgba(230,240,253,0.88)_100%)] shadow-[0_26px_76px_rgba(24,86,122,0.13)] backdrop-blur-2xl">
                   <div className="grid lg:grid-cols-[1.15fr_0.85fr]">
                     <div className="p-7 sm:p-9 lg:p-12">

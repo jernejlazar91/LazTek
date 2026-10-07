@@ -35,8 +35,32 @@ const serviceGroups = [
     bullets: [
       "funkcionalni prototipi in testni vzorci",
       "večji formati in robustni tehnični deli",
-      "materiali kot PA6 CF/GF, PETG, ASA, PC, TPU in sorodni polimeri",
+      "izbira tehničnega materiala glede na uporabo kosa",
       "priprava modela za tisk, orientacija, podpore in procesne nastavitve",
+    ],
+  },
+  {
+    eyebrow: "LINEX HT v1 / veliki kosi",
+    title: "Velikoformatni 3D tisk",
+    href: "/storitve/velikoformatni-3d-tisk",
+    icon: Cpu,
+    text: "Izdelava velikih prototipov, kalupov, priprav in tehničnih komponent na lastni platformi LINEX HT v1. Obliko in postopek prilagodimo zahtevam projekta.",
+    bullets: [
+      "veliki prototipi in funkcionalne komponente",
+      "izdelava v enem kosu ali po smiselno razdeljenih sklopih",
+      "presoja geometrije, materiala in potrebne obdelave",
+    ],
+  },
+  {
+    eyebrow: "FGF / granulat",
+    title: "3D tisk iz granulata",
+    href: "/storitve/fgf-3d-tisk-granulat",
+    icon: Cpu,
+    text: "FGF izdelava s termoplastičnim granulatom. Primernost procesa določimo glede na material, velikost, geometrijo in zahtevano površino dela.",
+    bullets: [
+      "neposredna uporaba granulata namesto filamenta",
+      "priprava materiala in razvoj procesnih nastavitev",
+      "primerjava FGF in FDM za konkretno aplikacijo",
     ],
   },
   {
@@ -134,28 +158,48 @@ export default async function ServicesPage() {
             eyebrow="01 / Storitve"
             title="Izberite izhodišče svojega projekta."
           />
-          <div className="lt-service-list">
-            {serviceGroups.map((service, i) => (
-              <article className="lt-service-row" key={service.href}>
-                <span className="lt-index">0{i + 1}</span>
-                <div>
-                  <TechnicalBadge>{service.eyebrow}</TechnicalBadge>
-                  <h3>
-                    <Link href={service.href}>{service.title}</Link>
-                  </h3>
-                  <p>{service.text}</p>
-                  <Link href={service.href} className="lt-text-link">
-                    Več o storitvi <ArrowRight size={16} aria-hidden="true" />
-                  </Link>
-                </div>
-                <ul>
-                  {service.bullets.map((b) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+          {[
+            {
+              title: "Aditivna proizvodnja",
+              services: serviceGroups.slice(0, 3),
+            },
+            {
+              title: "Digitalizacija in razvoj",
+              services: serviceGroups.slice(3),
+            },
+          ].map((group) => (
+            <div className="lt-services-category" key={group.title}>
+              <h2>{group.title}</h2>
+              <div
+                className={`lt-service-cards ${group.services.length === 3 ? "lt-service-cards-three" : ""}`}
+              >
+                {group.services.map((service) => {
+                  const Icon = service.icon;
+                  return (
+                    <Link
+                      href={service.href}
+                      key={service.href}
+                      className="lt-service-card"
+                    >
+                      <Icon size={26} aria-hidden="true" />
+                      <TechnicalBadge>{service.eyebrow}</TechnicalBadge>
+                      <h3>{service.title}</h3>
+                      <p>{service.text}</p>
+                      <ul>
+                        {service.bullets.map((bullet) => (
+                          <li key={bullet}>{bullet}</li>
+                        ))}
+                      </ul>
+                      <span className="lt-service-card-link">
+                        Več o storitvi{" "}
+                        <ArrowRight size={16} aria-hidden="true" />
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </section>
         <section className="lt-band">
           <div className="lt-container lt-section lt-split">

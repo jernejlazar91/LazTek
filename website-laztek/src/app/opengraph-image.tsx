@@ -81,7 +81,6 @@ export default async function OpenGraphImage() {
             width: '100%',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
-            zIndex: 2,
           }}
         >
           {/* TEKST */}
@@ -178,7 +177,6 @@ export default async function OpenGraphImage() {
             width: '100%',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
-            zIndex: 2,
           }}
         >
           <div

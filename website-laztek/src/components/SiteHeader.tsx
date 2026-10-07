@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import laztekLogo from "@/assets/brand/laztek-logo.webp";
+import styles from "./SiteHeader.module.css";
 import {
   ArrowRight,
   Box,
@@ -38,25 +39,47 @@ const LOCATION = "Rovte 23, 1373 Rovte";
 const DIRECTIONS_URL =
   "https://www.google.com/maps/dir/?api=1&destination=45.98020087787109,14.1705128253313";
 
+const serviceGroups = [
+  {
+    label: "Aditivna proizvodnja",
+    links: [
+      { href: "/storitve/industrijski-3d-tisk", label: "Industrijski 3D tisk" },
+      {
+        href: "/storitve/velikoformatni-3d-tisk",
+        label: "Velikoformatni 3D tisk",
+      },
+      {
+        href: "/storitve/fgf-3d-tisk-granulat",
+        label: "FGF tisk iz granulata",
+      },
+    ],
+  },
+  {
+    label: "Digitalizacija in razvoj",
+    links: [
+      {
+        href: "/storitve/3d-skeniranje-reverse-engineering",
+        label: "3D skeniranje in reverse engineering",
+      },
+      {
+        href: "/storitve/konstruiranje-3d-modeliranje",
+        label: "Konstruiranje in 3D modeliranje",
+      },
+      {
+        href: "/storitve/prototipizacija",
+        label: "Prototipizacija in razvoj izdelkov",
+      },
+      {
+        href: "/storitve/obnova-plasticnih-kosov",
+        label: "Obnova plastičnih kosov",
+      },
+    ],
+  },
+];
+
 const serviceLinks = [
   { href: "/storitve", label: "Pregled vseh storitev" },
-  { href: "/storitve/industrijski-3d-tisk", label: "Industrijski 3D tisk" },
-  {
-    href: "/storitve/3d-skeniranje-reverse-engineering",
-    label: "3D skeniranje in reverse engineering",
-  },
-  {
-    href: "/storitve/obnova-plasticnih-kosov",
-    label: "Obnova plastičnih kosov",
-  },
-  {
-    href: "/storitve/konstruiranje-3d-modeliranje",
-    label: "Konstruiranje in 3D modeliranje",
-  },
-  {
-    href: "/storitve/prototipizacija",
-    label: "Prototipizacija in razvoj izdelkov",
-  },
+  ...serviceGroups.flatMap((group) => group.links),
 ];
 
 const mainLinks = [
@@ -333,17 +356,122 @@ function DesktopLogo({
   );
 }
 
-export default function SiteHeader({
-  brandName,
-  basePath = "",
-}: SiteHeaderProps) {
-  const pathname = usePathname();
+function MobileNavigation({
+  id,
+  closeMenus,
+  isActive,
+}: {
+  id: string;
+  closeMenus: () => void;
+  isActive: (href: string) => boolean;
+}) {
+  const [servicesExpanded, setServicesExpanded] = useState(
+    isActive("/storitve"),
+  );
 
+  return (
+    <nav id={id} aria-label="Mobilna navigacija" className={styles.mobileMenu}>
+      <div className={styles.mobileLinks}>
+        <Link
+          href="/"
+          onClick={closeMenus}
+          aria-current={isActive("/") ? "page" : undefined}
+        >
+          Domov
+        </Link>
+        <div className={styles.mobileServices}>
+          <div className={styles.mobileServicesHeading}>
+            <Link
+              href="/storitve"
+              onClick={closeMenus}
+              aria-current={isActive("/storitve") ? "page" : undefined}
+            >
+              Storitve
+            </Link>
+            <button
+              type="button"
+              aria-label={
+                servicesExpanded
+                  ? "Skrij posamezne storitve"
+                  : "Prikaži posamezne storitve"
+              }
+              aria-expanded={servicesExpanded}
+              aria-controls={`${id}-services`}
+              onClick={() => setServicesExpanded((value) => !value)}
+            >
+              <ChevronDown
+                size={18}
+                className={servicesExpanded ? "rotate-180" : ""}
+              />
+            </button>
+          </div>
+          <div id={`${id}-services`} hidden={!servicesExpanded}>
+            {serviceGroups.map((group) => (
+              <div key={group.label} className={styles.mobileServiceGroup}>
+                <p>{group.label}</p>
+                {group.links.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenus}
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        {mainLinks.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={closeMenus}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </Link>
+        ))}
+        <Link href="/kontakt" onClick={closeMenus} className={styles.mobileCta}>
+          <Send size={16} aria-hidden="true" />
+          Oddajte povpraševanje
+          <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+export default function SiteHeader(props: SiteHeaderProps) {
+  const pathname = usePathname();
+  // A route change remounts the interactive navigation so menus never remain
+  // open on the next page, without synchronous setState calls in an effect.
+  return (
+    <HeaderContent
+      key={pathname}
+      brandName={props.brandName}
+      pathname={pathname}
+    />
+  );
+}
+
+function HeaderContent({
+  brandName,
+  pathname,
+}: {
+  brandName?: string;
+  pathname: string;
+}) {
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [compactVisible, setCompactVisible] = useState(false);
 
+  const fullHeaderRef = useRef<HTMLElement | null>(null);
+  const compactHeaderRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const midDropdownRef = useRef<HTMLDivElement | null>(null);
+  const compactDropdownRef = useRef<HTMLDivElement | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const homeHref = "/";
@@ -378,14 +506,35 @@ export default function SiteHeader({
 
       const insideFull = dropdownRef.current?.contains(target) ?? false;
       const insideMid = midDropdownRef.current?.contains(target) ?? false;
+      const insideCompact =
+        compactDropdownRef.current?.contains(target) ?? false;
 
-      if (!insideFull && !insideMid) {
+      if (!insideFull && !insideMid && !insideCompact) {
         setServicesOpen(false);
+      }
+      if (
+        !fullHeaderRef.current?.contains(target) &&
+        !compactHeaderRef.current?.contains(target)
+      ) {
+        setMobileOpen(false);
       }
     }
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        const activeElement = document.activeElement;
+        const scope = compactHeaderRef.current ?? fullHeaderRef.current;
+        if (
+          activeElement instanceof HTMLElement &&
+          scope?.contains(activeElement)
+        ) {
+          const trigger = Array.from(
+            scope.querySelectorAll<HTMLButtonElement>(
+              'button[aria-expanded="true"]',
+            ),
+          ).find((button) => button.getClientRects().length > 0);
+          trigger?.focus();
+        }
         setServicesOpen(false);
         setMobileOpen(false);
       }
@@ -402,622 +551,699 @@ export default function SiteHeader({
   }, []);
 
   useEffect(() => {
-    closeMenus();
-  }, [pathname]);
+    const header = fullHeaderRef.current;
+    if (!header) return;
+
+    // The full 07 header stays in document flow; this observer adds a fixed
+    // navigation only after it has scrolled away. No resizing = no layout jump.
+    const observer = new IntersectionObserver(([entry]) => {
+      setCompactVisible(entry.boundingClientRect.bottom <= 0);
+      setServicesOpen(false);
+      setMobileOpen(false);
+    });
+    observer.observe(header);
+
+    const desktopQuery = window.matchMedia("(min-width: 1100px)");
+    function onBreakpointChange() {
+      setServicesOpen(false);
+      setMobileOpen(false);
+    }
+    desktopQuery.addEventListener("change", onBreakpointChange);
+    return () => {
+      observer.disconnect();
+      desktopQuery.removeEventListener("change", onBreakpointChange);
+    };
+  }, []);
 
   return (
-    <header
-      data-laztek-header
-      className="sticky top-0 z-50 border-b border-cyan-300/[0.10] shadow-[0_18px_54px_rgba(0,7,14,.34)] backdrop-blur-xl"
-    >
-      <HeaderBackdrop />
+    <>
+      <header
+        ref={fullHeaderRef}
+        data-laztek-header
+        className="relative z-50 border-b border-cyan-300/[0.10] shadow-[0_18px_54px_rgba(0,7,14,.34)] backdrop-blur-xl"
+      >
+        <HeaderBackdrop />
 
-      {/* ultra-compact contact / engineering strip */}
-      <div className="relative z-40 border-b border-white/[0.055] bg-black/[0.12]">
-        <div className="mx-auto flex h-[42px] max-w-[1880px] items-center justify-between gap-5 px-4 sm:px-6 lg:px-8">
-          <a
-            href={DIRECTIONS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-w-0 items-center gap-2.5 text-[13px] font-semibold text-white/58 transition hover:text-cyan-100"
-          >
-            <MapPin className="h-[17px] w-[17px] shrink-0 text-cyan-300/82" />
-            <span className="truncate">{LOCATION}</span>
-          </a>
-
-          <div className="hidden flex-1 items-center justify-center gap-5 lg:flex">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-300/20" />
-            <span className="text-[9px] font-semibold uppercase tracking-[0.30em] text-cyan-100/28">
-              Precision · Materials · Real solutions
-            </span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-300/20" />
-          </div>
-
-          <div className="flex shrink-0 items-center gap-4 sm:gap-6">
-            <ThemeToggle />
-
+        {/* ultra-compact contact / engineering strip */}
+        <div className="relative z-40 border-b border-white/[0.055] bg-black/[0.12]">
+          <div className="mx-auto flex h-[42px] max-w-[1880px] items-center justify-between gap-5 px-4 sm:px-6 lg:px-8">
             <a
-              href={PHONE_HREF}
-              aria-label={`Pokličite LazTek Engineering na ${PHONE_DISPLAY}`}
-              className="inline-flex items-center gap-2.5 text-[13px] font-bold text-white/68 transition hover:text-cyan-100"
+              href={DIRECTIONS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-w-0 items-center gap-2.5 text-[13px] font-semibold text-white/78 transition hover:text-cyan-100"
             >
-              <Phone className="h-[17px] w-[17px] text-cyan-300/82" />
-              <span className="hidden sm:inline">{PHONE_DISPLAY}</span>
+              <MapPin className="h-[17px] w-[17px] shrink-0 text-cyan-300/82" />
+              <span className="truncate">{LOCATION}</span>
             </a>
 
-            <a
-              href={`mailto:${EMAIL}`}
-              className="hidden items-center gap-2.5 text-[13px] font-semibold text-white/58 transition hover:text-cyan-100 md:inline-flex"
-            >
-              <Mail className="h-[17px] w-[17px] text-cyan-300/82" />
-              <span>{EMAIL}</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* DESKTOP 07 HEADER */}
-      <div className="relative z-10 hidden min-[1760px]:block">
-        <div className="mx-auto grid min-h-[128px] max-w-[1880px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[10px] px-7 min-[1750px]:gap-[16px] min-[1750px]:px-9">
-          <DesktopLogo brandName={brandName} href={homeHref} />
-
-          <nav className="flex min-w-0 items-center justify-center gap-[5px] min-[1750px]:gap-[7px]">
-            <Link
-              href={homeHref}
-              className={navButtonClass(pathname === "/")}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={pathname === "/"} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Home
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-200/90"
-                  strokeWidth={2.2}
-                />
-                Domov
+            <div className="hidden flex-1 items-center justify-center gap-5 lg:flex">
+              <span className="h-px w-12 bg-gradient-to-r from-transparent to-cyan-300/20" />
+              <span className="text-[9px] font-semibold uppercase tracking-[0.30em] text-cyan-100/68">
+                Precision · Materials · Real solutions
               </span>
-            </Link>
-
-            <Link
-              href="/o-podjetju"
-              aria-current={isActive("/o-podjetju") ? "page" : undefined}
-              className={navButtonClass(isActive("/o-podjetju"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/o-podjetju")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Building2
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                O podjetju
-              </span>
-            </Link>
-
-            <div
-              ref={dropdownRef}
-              className="relative shrink-0"
-              onMouseEnter={cancelCloseTimer}
-              onMouseLeave={startCloseTimer}
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  cancelCloseTimer();
-                  setServicesOpen((value) => !value);
-                }}
-                className={navButtonClass(
-                  isActive("/storitve") || servicesOpen,
-                )}
-                style={{ clipPath: HEX }}
-                aria-expanded={servicesOpen}
-                aria-haspopup="menu"
-              >
-                <HexFrame active={isActive("/storitve") || servicesOpen} />
-                <span className="relative z-10 flex items-center gap-2">
-                  <Wrench
-                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/76"
-                    strokeWidth={2.1}
-                  />
-                  Storitve
-                  <ChevronDown
-                    className={`h-[13px] w-[13px] transition-transform duration-200 ${
-                      servicesOpen
-                        ? "rotate-180 text-cyan-200"
-                        : "text-white/56"
-                    }`}
-                  />
-                </span>
-              </button>
-
-              {servicesOpen ? (
-                <div
-                  className="absolute left-1/2 top-full z-[250] w-[370px] -translate-x-1/2 pt-3"
-                  onMouseEnter={cancelCloseTimer}
-                  onMouseLeave={startCloseTimer}
-                >
-                  <div className="relative overflow-hidden rounded-[22px] border border-cyan-200/[0.14] bg-[#03131f]/[0.99] p-2.5 shadow-[0_28px_95px_rgba(0,5,12,.72),0_0_34px_rgba(49,183,201,.08)] backdrop-blur-2xl">
-                    <div className="pointer-events-none absolute inset-x-[11%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/75 to-transparent" />
-                    <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-cyan-400/[0.055] blur-3xl" />
-
-                    <div className="grid gap-1">
-                      {serviceLinks.map((item, index) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setServicesOpen(false)}
-                          className={[
-                            "group/item flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold tracking-[0.005em] transition",
-                            index === 0
-                              ? "bg-cyan-300/[0.08] text-cyan-100 hover:bg-cyan-300/[0.13]"
-                              : "text-white/70 hover:bg-white/[0.055] hover:text-white",
-                          ].join(" ")}
-                        >
-                          <span>{item.label}</span>
-                          <ArrowRight className="h-3.5 w-3.5 -translate-x-1 text-cyan-300/0 transition group-hover/item:translate-x-0 group-hover/item:text-cyan-300/72" />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
+              <span className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-300/20" />
             </div>
 
-            <Link
-              href="/linex"
-              aria-current={isActive("/linex") ? "page" : undefined}
-              className={navButtonClass(isActive("/linex"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/linex")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Box
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                LINEX HT v1
-              </span>
-            </Link>
+            <div className="flex shrink-0 items-center gap-4 sm:gap-6">
+              {!compactVisible ? <ThemeToggle /> : null}
 
-            <Link
-              href="/materiali"
-              aria-current={isActive("/materiali") ? "page" : undefined}
-              className={navButtonClass(isActive("/materiali"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/materiali")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Layers3
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Materiali
-              </span>
-            </Link>
-
-            <Link
-              href="/projekti"
-              aria-current={isActive("/projekti") ? "page" : undefined}
-              className={navButtonClass(isActive("/projekti"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/projekti")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Folder
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Projekti
-              </span>
-            </Link>
-
-            <Link
-              href="/galerija"
-              aria-current={isActive("/galerija") ? "page" : undefined}
-              className={navButtonClass(isActive("/galerija"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/galerija")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <ImageIcon
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Galerija
-              </span>
-            </Link>
-
-            <Link
-              href="/blog"
-              aria-current={isActive("/blog") ? "page" : undefined}
-              className={navButtonClass(isActive("/blog"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/blog")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <FileText
-                  className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Blog
-              </span>
-            </Link>
-          </nav>
-
-          <Link
-            href="/kontakt"
-            aria-current={isActive("/kontakt") ? "page" : undefined}
-            className="group relative isolate inline-flex h-[54px] min-w-[214px] min-[1750px]:min-w-[238px] shrink-0 items-center justify-center overflow-hidden px-5 min-[1750px]:px-7 text-[13px] min-[1750px]:text-[14px] font-extrabold tracking-[0.01em] text-white transition hover:-translate-y-[1px]"
-            style={{ clipPath: HEX }}
-          >
-            <HexFrame strong />
-            <span className="relative z-10 flex items-center gap-2.5 [text-shadow:0_0_14px_rgba(255,255,255,.10)]">
-              <Send
-                className="h-[17px] w-[17px] text-cyan-50"
-                strokeWidth={2.2}
-              />
-              Oddajte povpraševanje
-              <ArrowRight className="h-[16px] w-[16px] text-cyan-100 transition-transform duration-200 group-hover:translate-x-1" />
-            </span>
-          </Link>
-        </div>
-      </div>
-
-      {/* SMALLER DESKTOP / LARGE LAPTOP
-          Same 07 design, but split into two rows so no navigation item can disappear.
-      */}
-      <div className="relative z-10 hidden min-[1100px]:block min-[1760px]:hidden">
-        <div className="mx-auto max-w-[1500px] px-6 lg:px-8">
-          {/* logo + CTA row */}
-          <div className="grid min-h-[112px] grid-cols-[1fr_auto_1fr] items-center">
-            <div />
-
-            <Link
-              href={homeHref}
-              className="group relative flex h-[106px] w-[305px] items-center justify-center"
-              aria-label={brandName || "LazTek Engineering"}
-            >
-              <div className="pointer-events-none absolute inset-x-[8%] bottom-[7px] h-px bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent opacity-70 transition group-hover:via-cyan-200/55" />
-              <Image
-                src={laztekLogo}
-                alt="LazTek Engineering"
-                priority
-                sizes="305px"
-                className="relative z-10 h-full w-full object-contain drop-shadow-[0_5px_16px_rgba(0,0,0,.26)]"
-              />
-            </Link>
-
-            <div className="flex justify-end">
-              <Link
-                href="/kontakt"
-                aria-current={isActive("/kontakt") ? "page" : undefined}
-                className="group relative isolate inline-flex h-[52px] min-w-[225px] items-center justify-center overflow-hidden px-6 text-[13px] font-extrabold tracking-[0.01em] text-white transition hover:-translate-y-[1px]"
-                style={{ clipPath: HEX }}
+              <a
+                href={PHONE_HREF}
+                aria-label={`Pokličite LazTek Engineering na ${PHONE_DISPLAY}`}
+                className="inline-flex items-center gap-2.5 text-[13px] font-bold text-white/82 transition hover:text-cyan-100"
               >
-                <HexFrame strong />
-                <span className="relative z-10 flex items-center gap-2.5">
-                  <Send
-                    className="h-[17px] w-[17px] text-cyan-50"
-                    strokeWidth={2.2}
-                  />
-                  Oddajte povpraševanje
-                  <ArrowRight className="h-[16px] w-[16px] text-cyan-100 transition-transform duration-200 group-hover:translate-x-1" />
-                </span>
-              </Link>
+                <Phone className="h-[17px] w-[17px] text-cyan-300/82" />
+                <span className="hidden sm:inline">{PHONE_DISPLAY}</span>
+              </a>
+
+              <a
+                href={`mailto:${EMAIL}`}
+                className="hidden items-center gap-2.5 text-[13px] font-semibold text-white/78 transition hover:text-cyan-100 md:inline-flex"
+              >
+                <Mail className="h-[17px] w-[17px] text-cyan-300/82" />
+                <span>{EMAIL}</span>
+              </a>
             </div>
           </div>
-
-          {/* full navigation row */}
-          <nav className="flex items-center justify-center gap-[7px] pb-[16px]">
-            <Link
-              href={homeHref}
-              className={navButtonClass(pathname === "/")}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={pathname === "/"} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Home
-                  className="h-[14px] w-[14px] text-cyan-200/90"
-                  strokeWidth={2.2}
-                />
-                Domov
-              </span>
-            </Link>
-
-            <Link
-              href="/o-podjetju"
-              aria-current={isActive("/o-podjetju") ? "page" : undefined}
-              className={navButtonClass(isActive("/o-podjetju"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/o-podjetju")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Building2
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                O podjetju
-              </span>
-            </Link>
-
-            <div
-              ref={midDropdownRef}
-              className="relative shrink-0"
-              onMouseEnter={cancelCloseTimer}
-              onMouseLeave={startCloseTimer}
-            >
-              <button
-                type="button"
-                onClick={() => {
-                  cancelCloseTimer();
-                  setServicesOpen((value) => !value);
-                }}
-                className={navButtonClass(
-                  isActive("/storitve") || servicesOpen,
-                )}
-                style={{ clipPath: HEX }}
-                aria-expanded={servicesOpen}
-                aria-haspopup="menu"
-              >
-                <HexFrame active={isActive("/storitve") || servicesOpen} />
-                <span className="relative z-10 flex items-center gap-2">
-                  <Wrench
-                    className="h-[14px] w-[14px] text-cyan-100/76"
-                    strokeWidth={2.1}
-                  />
-                  Storitve
-                  <ChevronDown
-                    className={`h-[13px] w-[13px] transition-transform duration-200 ${
-                      servicesOpen
-                        ? "rotate-180 text-cyan-200"
-                        : "text-white/56"
-                    }`}
-                  />
-                </span>
-              </button>
-
-              {servicesOpen ? (
-                <div
-                  className="absolute left-1/2 top-full z-[250] w-[370px] -translate-x-1/2 pt-3"
-                  onMouseEnter={cancelCloseTimer}
-                  onMouseLeave={startCloseTimer}
-                >
-                  <div className="relative overflow-hidden rounded-[22px] border border-cyan-200/[0.14] bg-[#03131f]/[0.99] p-2.5 shadow-[0_28px_95px_rgba(0,5,12,.72),0_0_34px_rgba(49,183,201,.08)] backdrop-blur-2xl">
-                    <div className="pointer-events-none absolute inset-x-[11%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/75 to-transparent" />
-
-                    <div className="grid gap-1">
-                      {serviceLinks.map((item, index) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => setServicesOpen(false)}
-                          className={[
-                            "group/item flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold tracking-[0.005em] transition",
-                            index === 0
-                              ? "bg-cyan-300/[0.08] text-cyan-100 hover:bg-cyan-300/[0.13]"
-                              : "text-white/70 hover:bg-white/[0.055] hover:text-white",
-                          ].join(" ")}
-                        >
-                          <span>{item.label}</span>
-                          <ArrowRight className="h-3.5 w-3.5 -translate-x-1 text-cyan-300/0 transition group-hover/item:translate-x-0 group-hover/item:text-cyan-300/72" />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            <Link
-              href="/linex"
-              aria-current={isActive("/linex") ? "page" : undefined}
-              className={navButtonClass(isActive("/linex"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/linex")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Box
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                LINEX HT v1
-              </span>
-            </Link>
-
-            <Link
-              href="/materiali"
-              aria-current={isActive("/materiali") ? "page" : undefined}
-              className={navButtonClass(isActive("/materiali"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/materiali")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Layers3
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Materiali
-              </span>
-            </Link>
-
-            <Link
-              href="/projekti"
-              aria-current={isActive("/projekti") ? "page" : undefined}
-              className={navButtonClass(isActive("/projekti"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/projekti")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <Folder
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Projekti
-              </span>
-            </Link>
-
-            <Link
-              href="/galerija"
-              aria-current={isActive("/galerija") ? "page" : undefined}
-              className={navButtonClass(isActive("/galerija"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/galerija")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <ImageIcon
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Galerija
-              </span>
-            </Link>
-
-            <Link
-              href="/blog"
-              aria-current={isActive("/blog") ? "page" : undefined}
-              className={navButtonClass(isActive("/blog"))}
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame active={isActive("/blog")} />
-              <span className="relative z-10 flex items-center gap-2">
-                <FileText
-                  className="h-[14px] w-[14px] text-cyan-100/74"
-                  strokeWidth={2.1}
-                />
-                Blog
-              </span>
-            </Link>
-          </nav>
-        </div>
-      </div>
-
-      {/* TABLET + MOBILE */}
-      <div className="relative z-20 min-[1100px]:hidden">
-        <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          <Link
-            href={homeHref}
-            onClick={closeMenus}
-            className="flex h-[72px] w-[235px] items-center"
-            aria-label={brandName || "LazTek Engineering"}
-          >
-            <Image
-              src={laztekLogo}
-              alt="LazTek Engineering"
-              priority
-              sizes="140px"
-              className="h-full w-full object-contain"
-            />
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/kontakt"
-              aria-current={isActive("/kontakt") ? "page" : undefined}
-              className="group relative hidden h-[46px] items-center justify-center overflow-hidden px-5 text-xs font-extrabold text-white sm:inline-flex"
-              style={{ clipPath: HEX }}
-            >
-              <HexFrame strong />
-              <span className="relative z-10 flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                Povpraševanje
-              </span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setMobileOpen((value) => !value)}
-              className="relative isolate flex h-[46px] w-[54px] items-center justify-center overflow-hidden text-white"
-              style={{ clipPath: HEX }}
-              aria-controls="laztek-mobile-navigation"
-              aria-expanded={mobileOpen}
-              aria-label={mobileOpen ? "Zapri meni" : "Odpri meni"}
-            >
-              <HexFrame active={mobileOpen} />
-              <span className="relative z-10">
-                {mobileOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </span>
-            </button>
-          </div>
         </div>
 
-        {mobileOpen ? (
-          <div
-            id="laztek-mobile-navigation"
-            className="max-h-[calc(100dvh-130px)] overflow-y-auto border-t border-cyan-200/[0.08] bg-[#03111d]/[0.985] px-4 pb-5 pt-3 shadow-[0_28px_70px_rgba(0,4,10,.6)] backdrop-blur-2xl sm:px-6 lg:px-8"
-          >
-            <div className="mx-auto grid max-w-7xl gap-2">
+        {/* DESKTOP 07 HEADER */}
+        <div className="relative z-10 hidden min-[1760px]:block">
+          <div className="mx-auto grid min-h-[128px] max-w-[1880px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[10px] px-7 min-[1750px]:gap-[16px] min-[1750px]:px-9">
+            <DesktopLogo brandName={brandName} href={homeHref} />
+
+            <nav className="flex min-w-0 items-center justify-center gap-[5px] min-[1750px]:gap-[7px]">
               <Link
                 href={homeHref}
-                onClick={closeMenus}
-                className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-4 py-3 text-sm font-bold text-white/82"
+                className={navButtonClass(pathname === "/")}
+                style={{ clipPath: HEX }}
               >
-                Domov
+                <HexFrame active={pathname === "/"} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Home
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-200/90"
+                    strokeWidth={2.2}
+                  />
+                  Domov
+                </span>
               </Link>
 
               <Link
                 href="/o-podjetju"
                 aria-current={isActive("/o-podjetju") ? "page" : undefined}
-                onClick={closeMenus}
-                className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-4 py-3 text-sm font-bold text-white/82"
+                className={navButtonClass(isActive("/o-podjetju"))}
+                style={{ clipPath: HEX }}
               >
-                O podjetju
+                <HexFrame active={isActive("/o-podjetju")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Building2
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  O podjetju
+                </span>
               </Link>
 
-              <div className="rounded-xl border border-cyan-300/[0.10] bg-cyan-300/[0.035] p-2">
-                <Link
-                  href="/storitve"
-                  onClick={closeMenus}
-                  className="block px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.19em] text-cyan-200/74"
+              <div
+                ref={dropdownRef}
+                className="relative shrink-0"
+                onMouseEnter={cancelCloseTimer}
+                onMouseLeave={startCloseTimer}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    cancelCloseTimer();
+                    setServicesOpen((value) => !value);
+                  }}
+                  className={navButtonClass(
+                    isActive("/storitve") || servicesOpen,
+                  )}
+                  style={{ clipPath: HEX }}
+                  aria-expanded={servicesOpen}
+                  aria-controls="laztek-desktop-services"
                 >
-                  Storitve
-                </Link>
+                  <HexFrame active={isActive("/storitve") || servicesOpen} />
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Wrench
+                      className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/76"
+                      strokeWidth={2.1}
+                    />
+                    Storitve
+                    <ChevronDown
+                      className={`h-[13px] w-[13px] transition-transform duration-200 ${
+                        servicesOpen
+                          ? "rotate-180 text-cyan-200"
+                          : "text-white/56"
+                      }`}
+                    />
+                  </span>
+                </button>
 
-                <div className="grid gap-1">
-                  {serviceLinks.slice(1).map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={closeMenus}
-                      className="rounded-lg px-3 py-2.5 text-sm font-semibold text-white/64 transition hover:bg-white/[0.05] hover:text-white"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
+                {servicesOpen ? (
+                  <div
+                    id="laztek-desktop-services"
+                    className="absolute left-1/2 top-full z-[250] w-[370px] -translate-x-1/2 pt-3"
+                    onMouseEnter={cancelCloseTimer}
+                    onMouseLeave={startCloseTimer}
+                  >
+                    <div className="relative max-h-[calc(100dvh-200px)] overflow-y-auto rounded-[22px] border border-cyan-200/[0.14] bg-[#03131f]/[0.99] p-2.5 shadow-[0_28px_95px_rgba(0,5,12,.72),0_0_34px_rgba(49,183,201,.08)] backdrop-blur-2xl">
+                      <div className="pointer-events-none absolute inset-x-[11%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/75 to-transparent" />
+                      <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-cyan-400/[0.055] blur-3xl" />
+
+                      <div className="grid gap-1">
+                        {serviceLinks.map((item, index) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setServicesOpen(false)}
+                            className={[
+                              "group/item flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold tracking-[0.005em] transition",
+                              index === 0
+                                ? "bg-cyan-300/[0.08] text-cyan-100 hover:bg-cyan-300/[0.13]"
+                                : "text-white/70 hover:bg-white/[0.055] hover:text-white",
+                            ].join(" ")}
+                          >
+                            <span>{item.label}</span>
+                            <ArrowRight className="h-3.5 w-3.5 -translate-x-1 text-cyan-300/0 transition group-hover/item:translate-x-0 group-hover/item:text-cyan-300/72" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
-              {mainLinks.slice(1).map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenus}
-                  className="rounded-xl border border-white/[0.07] bg-white/[0.035] px-4 py-3 text-sm font-bold text-white/82"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              <Link
+                href="/linex"
+                aria-current={isActive("/linex") ? "page" : undefined}
+                className={navButtonClass(isActive("/linex"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/linex")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Box
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  LINEX HT v1
+                </span>
+              </Link>
 
+              <Link
+                href="/materiali"
+                aria-current={isActive("/materiali") ? "page" : undefined}
+                className={navButtonClass(isActive("/materiali"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/materiali")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Layers3
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Materiali
+                </span>
+              </Link>
+
+              <Link
+                href="/projekti"
+                aria-current={isActive("/projekti") ? "page" : undefined}
+                className={navButtonClass(isActive("/projekti"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/projekti")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Folder
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Projekti
+                </span>
+              </Link>
+
+              <Link
+                href="/galerija"
+                aria-current={isActive("/galerija") ? "page" : undefined}
+                className={navButtonClass(isActive("/galerija"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/galerija")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <ImageIcon
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Galerija
+                </span>
+              </Link>
+
+              <Link
+                href="/blog"
+                aria-current={isActive("/blog") ? "page" : undefined}
+                className={navButtonClass(isActive("/blog"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/blog")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <FileText
+                    className="h-[14px] w-[14px] min-[1750px]:h-[15px] min-[1750px]:w-[15px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Blog
+                </span>
+              </Link>
+            </nav>
+
+            <Link
+              href="/kontakt"
+              aria-current={isActive("/kontakt") ? "page" : undefined}
+              className="group relative isolate inline-flex h-[54px] min-w-[214px] min-[1750px]:min-w-[238px] shrink-0 items-center justify-center overflow-hidden px-5 min-[1750px]:px-7 text-[13px] min-[1750px]:text-[14px] font-extrabold tracking-[0.01em] text-white transition hover:-translate-y-[1px]"
+              style={{ clipPath: HEX }}
+            >
+              <HexFrame strong />
+              <span className="relative z-10 flex items-center gap-2.5 [text-shadow:0_0_14px_rgba(255,255,255,.10)]">
+                <Send
+                  className="h-[17px] w-[17px] text-cyan-50"
+                  strokeWidth={2.2}
+                />
+                Oddajte povpraševanje
+                <ArrowRight className="h-[16px] w-[16px] text-cyan-100 transition-transform duration-200 group-hover:translate-x-1" />
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* SMALLER DESKTOP / LARGE LAPTOP
+          Same 07 design, but split into two rows so no navigation item can disappear.
+      */}
+        <div className="relative z-10 hidden min-[1100px]:block min-[1760px]:hidden">
+          <div className="mx-auto max-w-[1500px] px-6 lg:px-8">
+            {/* logo + CTA row */}
+            <div className="grid min-h-[112px] grid-cols-[1fr_auto_1fr] items-center">
+              <div />
+
+              <Link
+                href={homeHref}
+                className="group relative flex h-[106px] w-[305px] items-center justify-center"
+                aria-label={brandName || "LazTek Engineering"}
+              >
+                <div className="pointer-events-none absolute inset-x-[8%] bottom-[7px] h-px bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent opacity-70 transition group-hover:via-cyan-200/55" />
+                <Image
+                  src={laztekLogo}
+                  alt="LazTek Engineering"
+                  priority
+                  sizes="305px"
+                  className="relative z-10 h-full w-full object-contain drop-shadow-[0_5px_16px_rgba(0,0,0,.26)]"
+                />
+              </Link>
+
+              <div className="flex justify-end">
+                <Link
+                  href="/kontakt"
+                  aria-current={isActive("/kontakt") ? "page" : undefined}
+                  className="group relative isolate inline-flex h-[52px] min-w-[225px] items-center justify-center overflow-hidden px-6 text-[13px] font-extrabold tracking-[0.01em] text-white transition hover:-translate-y-[1px]"
+                  style={{ clipPath: HEX }}
+                >
+                  <HexFrame strong />
+                  <span className="relative z-10 flex items-center gap-2.5">
+                    <Send
+                      className="h-[17px] w-[17px] text-cyan-50"
+                      strokeWidth={2.2}
+                    />
+                    Oddajte povpraševanje
+                    <ArrowRight className="h-[16px] w-[16px] text-cyan-100 transition-transform duration-200 group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </div>
+            </div>
+
+            {/* full navigation row */}
+            <nav className="flex items-center justify-center gap-[7px] pb-[16px]">
+              <Link
+                href={homeHref}
+                className={navButtonClass(pathname === "/")}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={pathname === "/"} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Home
+                    className="h-[14px] w-[14px] text-cyan-200/90"
+                    strokeWidth={2.2}
+                  />
+                  Domov
+                </span>
+              </Link>
+
+              <Link
+                href="/o-podjetju"
+                aria-current={isActive("/o-podjetju") ? "page" : undefined}
+                className={navButtonClass(isActive("/o-podjetju"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/o-podjetju")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Building2
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  O podjetju
+                </span>
+              </Link>
+
+              <div
+                ref={midDropdownRef}
+                className="relative shrink-0"
+                onMouseEnter={cancelCloseTimer}
+                onMouseLeave={startCloseTimer}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    cancelCloseTimer();
+                    setServicesOpen((value) => !value);
+                  }}
+                  className={navButtonClass(
+                    isActive("/storitve") || servicesOpen,
+                  )}
+                  style={{ clipPath: HEX }}
+                  aria-expanded={servicesOpen}
+                  aria-controls="laztek-laptop-services"
+                >
+                  <HexFrame active={isActive("/storitve") || servicesOpen} />
+                  <span className="relative z-10 flex items-center gap-2">
+                    <Wrench
+                      className="h-[14px] w-[14px] text-cyan-100/76"
+                      strokeWidth={2.1}
+                    />
+                    Storitve
+                    <ChevronDown
+                      className={`h-[13px] w-[13px] transition-transform duration-200 ${
+                        servicesOpen
+                          ? "rotate-180 text-cyan-200"
+                          : "text-white/56"
+                      }`}
+                    />
+                  </span>
+                </button>
+
+                {servicesOpen ? (
+                  <div
+                    id="laztek-laptop-services"
+                    className="absolute left-1/2 top-full z-[250] w-[370px] -translate-x-1/2 pt-3"
+                    onMouseEnter={cancelCloseTimer}
+                    onMouseLeave={startCloseTimer}
+                  >
+                    <div className="relative max-h-[calc(100dvh-250px)] overflow-y-auto rounded-[22px] border border-cyan-200/[0.14] bg-[#03131f]/[0.99] p-2.5 shadow-[0_28px_95px_rgba(0,5,12,.72),0_0_34px_rgba(49,183,201,.08)] backdrop-blur-2xl">
+                      <div className="pointer-events-none absolute inset-x-[11%] top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/75 to-transparent" />
+
+                      <div className="grid gap-1">
+                        {serviceLinks.map((item, index) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={() => setServicesOpen(false)}
+                            className={[
+                              "group/item flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold tracking-[0.005em] transition",
+                              index === 0
+                                ? "bg-cyan-300/[0.08] text-cyan-100 hover:bg-cyan-300/[0.13]"
+                                : "text-white/70 hover:bg-white/[0.055] hover:text-white",
+                            ].join(" ")}
+                          >
+                            <span>{item.label}</span>
+                            <ArrowRight className="h-3.5 w-3.5 -translate-x-1 text-cyan-300/0 transition group-hover/item:translate-x-0 group-hover/item:text-cyan-300/72" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
+                href="/linex"
+                aria-current={isActive("/linex") ? "page" : undefined}
+                className={navButtonClass(isActive("/linex"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/linex")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Box
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  LINEX HT v1
+                </span>
+              </Link>
+
+              <Link
+                href="/materiali"
+                aria-current={isActive("/materiali") ? "page" : undefined}
+                className={navButtonClass(isActive("/materiali"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/materiali")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Layers3
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Materiali
+                </span>
+              </Link>
+
+              <Link
+                href="/projekti"
+                aria-current={isActive("/projekti") ? "page" : undefined}
+                className={navButtonClass(isActive("/projekti"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/projekti")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <Folder
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Projekti
+                </span>
+              </Link>
+
+              <Link
+                href="/galerija"
+                aria-current={isActive("/galerija") ? "page" : undefined}
+                className={navButtonClass(isActive("/galerija"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/galerija")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <ImageIcon
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Galerija
+                </span>
+              </Link>
+
+              <Link
+                href="/blog"
+                aria-current={isActive("/blog") ? "page" : undefined}
+                className={navButtonClass(isActive("/blog"))}
+                style={{ clipPath: HEX }}
+              >
+                <HexFrame active={isActive("/blog")} />
+                <span className="relative z-10 flex items-center gap-2">
+                  <FileText
+                    className="h-[14px] w-[14px] text-cyan-100/74"
+                    strokeWidth={2.1}
+                  />
+                  Blog
+                </span>
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* TABLET + MOBILE */}
+        <div className="relative z-20 min-[1100px]:hidden">
+          <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+            <Link
+              href={homeHref}
+              onClick={closeMenus}
+              className="flex h-[60px] w-[205px] max-w-[60vw] items-center"
+              aria-label={brandName || "LazTek Engineering"}
+            >
+              <Image
+                src={laztekLogo}
+                alt="LazTek Engineering"
+                priority
+                sizes="205px"
+                className="h-full w-full object-contain"
+              />
+            </Link>
+
+            <div className="flex items-center gap-2">
               <Link
                 href="/kontakt"
                 aria-current={isActive("/kontakt") ? "page" : undefined}
-                onClick={closeMenus}
-                className="group relative isolate mt-1 inline-flex h-[50px] items-center justify-center overflow-hidden px-6 text-sm font-extrabold text-white sm:hidden"
+                className="group relative hidden h-[46px] items-center justify-center overflow-hidden px-5 text-xs font-extrabold text-white sm:inline-flex"
                 style={{ clipPath: HEX }}
               >
                 <HexFrame strong />
                 <span className="relative z-10 flex items-center gap-2">
                   <Send className="h-4 w-4" />
-                  Oddajte povpraševanje
-                  <ArrowRight className="h-4 w-4" />
+                  Povpraševanje
                 </span>
               </Link>
+
+              <button
+                type="button"
+                onClick={() => setMobileOpen((value) => !value)}
+                className="relative isolate flex h-[46px] w-[54px] items-center justify-center overflow-hidden text-white"
+                style={{ clipPath: HEX }}
+                aria-controls="laztek-mobile-navigation"
+                aria-expanded={mobileOpen}
+                aria-label={mobileOpen ? "Zapri meni" : "Odpri meni"}
+              >
+                <HexFrame active={mobileOpen} />
+                <span className="relative z-10">
+                  {mobileOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
+                </span>
+              </button>
             </div>
           </div>
-        ) : null}
-      </div>
-    </header>
+
+          {mobileOpen && !compactVisible ? (
+            <MobileNavigation
+              id="laztek-mobile-navigation"
+              closeMenus={closeMenus}
+              isActive={isActive}
+            />
+          ) : null}
+        </div>
+      </header>
+
+      {compactVisible ? (
+        <div
+          ref={compactHeaderRef}
+          data-laztek-header
+          data-laztek-compact
+          className={styles.compact}
+        >
+          <div className={styles.compactRow}>
+            <Link
+              href={homeHref}
+              onClick={closeMenus}
+              className={styles.compactLogo}
+              aria-label={`${brandName || "LazTek Engineering"} – Domov`}
+            >
+              <Image
+                src={laztekLogo}
+                alt="LazTek Engineering"
+                sizes="150px"
+                className="h-auto w-full"
+              />
+            </Link>
+            <nav
+              className={styles.compactNav}
+              aria-label="Glavna navigacija med pomikanjem"
+            >
+              <div
+                ref={compactDropdownRef}
+                className={styles.compactServices}
+                onMouseEnter={cancelCloseTimer}
+                onMouseLeave={startCloseTimer}
+              >
+                <button
+                  type="button"
+                  className={styles.compactLink}
+                  aria-expanded={servicesOpen}
+                  aria-controls="laztek-compact-services"
+                  onClick={() => {
+                    cancelCloseTimer();
+                    setServicesOpen((value) => !value);
+                  }}
+                >
+                  Storitve{" "}
+                  <ChevronDown
+                    size={14}
+                    className={servicesOpen ? "rotate-180" : ""}
+                  />
+                </button>
+                {servicesOpen ? (
+                  <div
+                    id="laztek-compact-services"
+                    className={styles.compactDropdown}
+                  >
+                    <Link href="/storitve" onClick={closeMenus}>
+                      Pregled vseh storitev <ArrowRight size={14} />
+                    </Link>
+                    {serviceGroups.map((group) => (
+                      <div key={group.label}>
+                        <p>{group.label}</p>
+                        {group.links.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={closeMenus}
+                            aria-current={
+                              isActive(item.href) ? "page" : undefined
+                            }
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+              {mainLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeMenus}
+                  className={styles.compactLink}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className={styles.compactActions}>
+              <ThemeToggle />
+              <Link
+                href="/kontakt"
+                onClick={closeMenus}
+                className={styles.compactCta}
+              >
+                Povpraševanje <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+              <button
+                type="button"
+                className={styles.compactMenuButton}
+                aria-label={mobileOpen ? "Zapri meni" : "Odpri meni"}
+                aria-expanded={mobileOpen}
+                aria-controls="laztek-compact-mobile-navigation"
+                onClick={() => setMobileOpen((value) => !value)}
+              >
+                {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
+          </div>
+          {mobileOpen ? (
+            <MobileNavigation
+              id="laztek-compact-mobile-navigation"
+              closeMenus={closeMenus}
+              isActive={isActive}
+            />
+          ) : null}
+        </div>
+      ) : null}
+    </>
   );
 }

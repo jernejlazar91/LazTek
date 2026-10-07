@@ -253,11 +253,13 @@ export function JumpNav({ items }: { items: { id: string; label: string }[] }) {
     <nav className="lt-jump" aria-label="Na tej strani">
       <div className="lt-container">
         <span>Na tej strani</span>
-        {items.map((item) => (
-          <a key={item.id} href={`#${item.id}`}>
-            {item.label}
-          </a>
-        ))}
+        <div className="lt-jump-links">
+          {items.map((item) => (
+            <a key={item.id} href={`#${item.id}`}>
+              {item.label}
+            </a>
+          ))}
+        </div>
       </div>
     </nav>
   );
