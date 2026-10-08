@@ -323,21 +323,21 @@ export default async function Home() {
                 <div className="mt-10 grid gap-5 md:grid-cols-3">
                   {[
                     {
-                      image: fenderReference,
+                      image: editor.image("s05.photoScan", fenderReference),
                       alt: "Plastični blatnik z referenčnimi markerji, pripravljen za 3D skeniranje",
                       label: "3D skeniranje",
                       href: "/storitve/3d-skeniranje-reverse-engineering",
                       text: "Priprava realnega kosa za natančen zajem geometrije.",
                     },
                     {
-                      image: clioFinalSet,
+                      image: editor.image("s05.photoReconstruction", clioFinalSet),
                       alt: "Komplet štirih izdelanih zračnih mrežic za Renault Clio 197",
                       label: "Reverse engineering",
                       href: "/storitve/3d-skeniranje-reverse-engineering",
                       text: "Končni komplet po rekonstrukciji in več razvojnih iteracijah.",
                     },
                     {
-                      image: smallSeriesProduction,
+                      image: editor.image("s05.photoProduction", smallSeriesProduction),
                       alt: "Manjša serija črnih tehničnih komponent na delovni površini LINEX",
                       label: "Mala serija",
                       href: "/storitve/industrijski-3d-tisk",

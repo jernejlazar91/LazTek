@@ -183,6 +183,27 @@
             "title": "Besedilo",
             "value": "Fotografije prikazujejo dejansko digitalizacijo, izdelavo in končne tehnične komponente iz delavnice LazTek Engineering.",
             "kind": "text"
+          },
+          {
+            "name": "photoScan",
+            "title": "3D skeniranje – referenčni kos",
+            "value": null,
+            "kind": "image",
+            "preview": "/static/editor-images/9e9bb86f4f85.webp"
+          },
+          {
+            "name": "photoReconstruction",
+            "title": "Reverse engineering – končni komplet",
+            "value": null,
+            "kind": "image",
+            "preview": "/static/editor-images/43285f43f7ba.webp"
+          },
+          {
+            "name": "photoProduction",
+            "title": "Mala serija – izdelava na LINEX",
+            "value": null,
+            "kind": "image",
+            "preview": "/static/editor-images/9f3bc2677e9c.webp"
           }
         ]
       },
